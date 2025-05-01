@@ -4,19 +4,30 @@ const patientSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
+      minlength: [3, "Name should have at least 3 characters"],
     },
     email: {
       type: String,
       unique: true,
-      required: true,
+      required: [true, "Email is required"],
+      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
+      minlength: [6, "Password should be at least 6 characters long"],
     },
-    age: Number,
-    gender: String,
+    age: {
+      type: Number,
+      required: [true, "Age is required"],
+      min: [1, "Age must be at least 1"],
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: [true, "Gender is required"],
+    },
     medicalReports: [
       {
         url: String,
