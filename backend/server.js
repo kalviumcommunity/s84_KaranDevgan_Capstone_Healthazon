@@ -13,16 +13,16 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
-app.use("/api/doctors", doctorRoutes);
-app.use("/api/patients", patientRoutes);
-app.use("/api/appointments", appointmentRoutes);
+app.use("/api", doctorRoutes);
+app.use("/api", patientRoutes);
+app.use("/api", appointmentRoutes);
 
 // Home route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Healthazon" });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
