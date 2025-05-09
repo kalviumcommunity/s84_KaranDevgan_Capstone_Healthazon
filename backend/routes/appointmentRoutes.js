@@ -41,7 +41,8 @@ router.post("/appointment", async (req, res) => {
       .json({ message: "Appointment created", appointment: newAppointment });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    const status = error.name === 'ValidationError' ? 400 : 500;
+    res.status(status).json({ message: error.message });
   }
 });
 
