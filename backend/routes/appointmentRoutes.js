@@ -14,4 +14,36 @@ router.get("/appointments", async (req, res) => {
   }
 });
 
+router.post("/appointment", async (req, res) => {
+  try {
+    const {
+      doctor,
+      patient,
+      appointmentDate,
+      timeSlot,
+      appointmentType,
+      notes,
+    } = req.body;
+    const newAppointment = new Appointment({
+      doctor,
+      patient,
+      appointmentDate,
+      timeSlot,
+      appointmentType,
+      notes,
+      status: "pending",
+    });
+
+    await newAppointment.save();
+
+    res
+      .status(201)
+      .json({ message: "Appointment created", appointment: newAppointment });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;
