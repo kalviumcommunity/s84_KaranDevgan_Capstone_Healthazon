@@ -8,9 +8,9 @@ router.get("/appointments", async (req, res) => {
       .populate("doctor", "-password -__v") // exclude sensitive info
       .populate("patient", "-password -__v");
 
-    res.status(200).json(appointments);
+    return res.status(200).json(appointments);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -36,14 +36,40 @@ router.post("/appointment", async (req, res) => {
 
     await newAppointment.save();
 
-    res
+    return res
       .status(201)
       .json({ message: "Appointment created", appointment: newAppointment });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
 
+router.put("/appointment/:id", async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const updatedData = req.body;
+
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      appointmentId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    return res.status(200).json({
+      message: "Appointment updated",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+});
 
 module.exports = router;
