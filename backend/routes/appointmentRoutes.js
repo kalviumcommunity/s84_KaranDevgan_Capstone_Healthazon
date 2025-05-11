@@ -5,7 +5,7 @@ const Appointment = require("../models/Appointment");
 router.get("/appointments", async (req, res) => {
   try {
     const appointments = await Appointment.find()
-      .populate("doctor", "-password -__v") // exclude sensitive info
+      .populate("doctor", "-password -__v")
       .populate("patient", "-password -__v");
 
     return res.status(200).json(appointments);
