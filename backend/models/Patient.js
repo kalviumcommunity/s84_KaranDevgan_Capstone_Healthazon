@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Appointment = require("../models/Appointment");
 const patientSchema = new mongoose.Schema(
   {
     name: {
@@ -28,6 +28,7 @@ const patientSchema = new mongoose.Schema(
       enum: ["male", "female", "other"],
       required: [true, "Gender is required"],
     },
+    appointments: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
     medicalReports: [
       {
         url: String,

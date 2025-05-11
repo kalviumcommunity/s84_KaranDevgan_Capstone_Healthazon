@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Appointment = require("../models/Appointment");
 const doctorSchema = new mongoose.Schema(
   {
     name: {
@@ -32,6 +32,9 @@ const doctorSchema = new mongoose.Schema(
       min: [0, "Experience cannot be negative"],
       max: [50, "Experience cannot be more than 50 years"],
     },
+    appointments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
+    ],
     availability: [
       {
         day: { type: String, required: true },
