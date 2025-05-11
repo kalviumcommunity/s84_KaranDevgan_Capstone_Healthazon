@@ -87,7 +87,9 @@ router.put("/doctor/:id", async (req, res) => {
       return res.status(404).json({ message: "Doctor not found" });
     }
 
-    res.status(200).json({ message: "Doctor updated", doctor: updatedDoctor });
+    const doctorToSend = { ...updatedDoctor._doc };
+    delete doctorToSend.password;
+    return res.status(200).json({ message: "Doctor updated", doctor: doctorToSend });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
