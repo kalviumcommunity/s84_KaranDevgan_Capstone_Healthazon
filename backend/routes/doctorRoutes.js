@@ -46,8 +46,8 @@ router.post("/doctor", async (req, res) => {
     });
 
     await newDoctor.save();
-
-    const doctorToSend = { ...newDoctor._doc };
+    
+    const doctorToSend = newDoctor.toObject();
     delete doctorToSend.password;
 
     return res.status(201).json({

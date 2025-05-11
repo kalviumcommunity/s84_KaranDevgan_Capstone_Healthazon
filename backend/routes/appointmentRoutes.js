@@ -41,7 +41,9 @@ router.post("/appointment", async (req, res) => {
       .json({ message: "Appointment created", appointment: newAppointment });
   } catch (error) {
     console.error(error);
+
     return res.status(400).json({ message: error.message });
+
   }
 });
 
