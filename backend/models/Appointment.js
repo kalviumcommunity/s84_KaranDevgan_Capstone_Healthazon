@@ -11,6 +11,7 @@ const appointmentSchema = new mongoose.Schema({
   },
   patient: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "Patient",
     required: [true, "Patient is required"],
   },
   appointmentDate: {
