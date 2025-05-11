@@ -6,9 +6,9 @@ const Doctor = require("../models/Doctor");
 router.get("/doctors", async (req, res) => {
   try {
     const doctors = await Doctor.find().select("-password");
-    res.status(200).json(doctors);
+    return res.status(200).json(doctors);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -25,7 +25,6 @@ router.post("/doctor", async (req, res) => {
   } = req.body;
 
   try {
-
     const existingDoctor = await Doctor.findOne({ email });
     if (existingDoctor) {
       return res
@@ -33,13 +32,12 @@ router.post("/doctor", async (req, res) => {
         .json({ message: "Doctor with this email already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    
     const newDoctor = new Doctor({
       name,
       email,
-      password: hashedPassword, 
+      password: hashedPassword,
       fees,
       specialization,
       experience,
@@ -48,24 +46,54 @@ router.post("/doctor", async (req, res) => {
     });
 
     await newDoctor.save();
-
     
     const doctorToSend = newDoctor.toObject();
     delete doctorToSend.password;
 
-    
-    res
-      .status(201)
-      .json({
-        message: "Doctor registered successfully",
-        doctor: doctorToSend,
-      });
+    return res.status(201).json({
+      message: "Doctor registered successfully",
+      doctor: doctorToSend,
+    });
   } catch (error) {
-    
     console.log(error);
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+router.put("/doctor/:id", async (req, res) => {
+  try {
+    const doctorId = req.params.id;
+    const updatedData = { ...req.body };
+
+    // If password is being updated, hash it
+    if (updatedData.password) {
+      const saltRounds = 10;
+      updatedData.password = await bcrypt.hash(
+        updatedData.password,
+        saltRounds
+      );
+    }
+
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      doctorId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const doctorToSend = { ...updatedDoctor._doc };
+    delete doctorToSend.password;
+    return res.status(200).json({ message: "Doctor updated", doctor: doctorToSend });
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
-  
+
 
 module.exports = router;

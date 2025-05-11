@@ -52,6 +52,45 @@ router.post("/patient", async (req, res) => {
   }
 });
   
+// Update patient details
+router.put("/patient/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const updatedData = { ...req.body };
+
+    // Hash password only if it's being updated
+    if (updatedData.password) {
+      const saltRounds = 10;
+      updatedData.password = await bcrypt.hash(
+        updatedData.password,
+        saltRounds
+      );
+    }
+
+    const updatedPatient = await Patient.findByIdAndUpdate(
+      patientId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const patientToSend = { ...updatedPatient._doc };
+    delete patientToSend.password;
+
+     return res
+      .status(200)
+      .json({ message: "Patient updated", patient: patientToSend });
+  } catch (error) {
+     return res.status(400).json({ message: error.message });
+  }
+});
+
 
 
 module.exports = router;
