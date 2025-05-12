@@ -1,0 +1,21 @@
+meta {
+  name: POST-Patient
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/api/patient
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name" : "Karan" ,
+    "email" : "Karab@gmail.com" , 
+    "password" : "111111" ,
+    "age" : "19" ,
+    "gender" : "male"
+  }
+}

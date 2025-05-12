@@ -1,0 +1,40 @@
+meta {
+  name: POST-Doctor
+  type: http
+  seq: 7
+}
+
+post {
+  url: http://localhost:3000/api/doctor
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name" : "Dr Deep Das" ,
+    "email" : "Deep@gmail.com" ,
+    "password" : "sfagggr" ,
+    "fees" : 1300 ,
+    "specialization" : "Dermatology" ,
+    "experience" : 13,
+    "availability": [
+    {
+      "day": "Monday",
+      "from": "09:00",
+      "to": "13:00"
+    },
+    {
+      "day": "Wednesday",
+      "from": "14:00",
+      "to": "18:00"
+    },
+    {
+      "day": "Friday",
+      "from": "10:00",
+      "to": "16:00"
+    }
+  ]
+  
+  }
+}
