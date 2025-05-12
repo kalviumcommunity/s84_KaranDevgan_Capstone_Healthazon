@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Capstone-API-TESTING",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
