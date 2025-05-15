@@ -22,7 +22,7 @@ function Doctors() {
   return (
     <main className="main">
       <h2>Meet Our Doctors</h2>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+      <div className="doctor-list-container">
         {doctors.map((doc) => (
           <DoctorCard key={doc._id} doctor={doc} />
         ))}
