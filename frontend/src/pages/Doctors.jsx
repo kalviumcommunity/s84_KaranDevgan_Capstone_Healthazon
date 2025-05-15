@@ -4,12 +4,19 @@ import DoctorCard from "../components/DoctorCard";
 
 function Doctors() {
   const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/doctors") 
       .then((res) => res.json())
-      .then((data) => setDoctors(data))
-      .catch((err) => console.error("Failed to fetch doctors", err));
+      .then((data) => {
+        setDoctors(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch doctors", err);
+        setLoading(false);
+      });
   }, []);
 
   return (
