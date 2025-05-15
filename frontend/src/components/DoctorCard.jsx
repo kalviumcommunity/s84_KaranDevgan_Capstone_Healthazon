@@ -1,4 +1,4 @@
-// DoctorCard.jsx
+
 import "./DoctorCard.css";
 
 function DoctorCard({ doctor }) {
