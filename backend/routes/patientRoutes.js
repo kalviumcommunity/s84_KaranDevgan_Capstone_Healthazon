@@ -61,6 +61,7 @@ router.post("/patient/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const patient = await Patient.findOne({ email });
+
     if (!patient) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -70,13 +71,23 @@ router.post("/patient/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "Server configuration error" });
+    }
+       
     const token = jwt.sign(
       { id: patient._id, role: "patient" },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ message: "Login successful", token });
+    const { password: _, ...patientData } = patient.toObject();
+ 
+  return res.status(200).json({
+  message: "Login successful",
+  token,
+ patient: patientData
+});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
