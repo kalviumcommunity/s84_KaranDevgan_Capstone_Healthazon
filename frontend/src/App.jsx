@@ -1,33 +1,28 @@
+
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import Doctors from "./pages/Doctors";
 
 function App() {
   return (
-    <div className="app">
+    <Router>
       <header className="header">
         <h1 className="logo">Healthazon</h1>
         <nav>
-          <a href="#">Home</a>
-          <a href="#">Doctors</a>
-          <a href="#">Login</a>
+          <Link to="/">Home</Link>
+          <Link to="/doctors">Doctors</Link>
+          <Link to="#">Login</Link>
         </nav>
       </header>
 
-      <main className="main">
-        <h2>Your Health, Just a Click Away</h2>
-        <p>
-          Book appointments, consult with doctors online or offline, and manage
-          your medical records—all from one place.
-        </p>
-        <div className="buttons">
-          <button className="primary">Book Appointment</button>
-          <button className="secondary">Learn More</button>
-        </div>
-      </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/doctors" element={<Doctors />} />
+      </Routes>
 
-      <footer className="footer">
-        © 2025 Healthazon. All rights reserved.
-      </footer>
-    </div>
+      <footer className="footer">© 2025 Healthazon. All rights reserved.</footer>
+    </Router>
   );
 }
 
