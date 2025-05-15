@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Patient = require("../models/Patient");
 
 router.get("/patients", async (req, res) => {
@@ -13,11 +14,12 @@ router.get("/patients", async (req, res) => {
   }
 });
 
-router.post("/patient", async (req, res) => {
-  const { name, email, password, age, gender, medicalReports, profileImage } =
-    req.body;
-
+router.post("/patient/register", async (req, res) => {
+    
   try {
+    const { name, email, password, age, gender, medicalReports, profileImage } =
+      req.body;
+
     const existingPatient = await Patient.findOne({ email });
     if (existingPatient) {
       return res
@@ -41,24 +43,51 @@ router.post("/patient", async (req, res) => {
     const patientToSend = { ...newPatient._doc };
     delete patientToSend.password;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Patient registered successfully",
       patient: patientToSend,
     });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
   
-// Update patient details
+
+
+router.post("/patient/login", async (req, res) => {
+  
+  try {
+    const { email, password } = req.body;
+    const patient = await Patient.findOne({ email });
+    if (!patient) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, patient.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { id: patient._id, role: "patient" },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.put("/patient/:id", async (req, res) => {
   try {
     const patientId = req.params.id;
     const updatedData = { ...req.body };
 
-    // Hash password only if it's being updated
+    
     if (updatedData.password) {
       const saltRounds = 10;
       updatedData.password = await bcrypt.hash(

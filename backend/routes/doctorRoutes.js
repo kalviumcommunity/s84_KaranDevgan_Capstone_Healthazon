@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Doctor = require("../models/Doctor");
 
 router.get("/doctors", async (req, res) => {
@@ -12,7 +13,7 @@ router.get("/doctors", async (req, res) => {
   }
 });
 
-router.post("/doctor", async (req, res) => {
+router.post("/doctor/register", async (req, res) => {
   const {
     name,
     email,
@@ -46,7 +47,7 @@ router.post("/doctor", async (req, res) => {
     });
 
     await newDoctor.save();
-    
+
     const doctorToSend = newDoctor.toObject();
     delete doctorToSend.password;
 
@@ -60,6 +61,40 @@ router.post("/doctor", async (req, res) => {
   }
 });
 
+router.post("/doctor/login", async (req, res) => {
+  
+  try {
+    const { email, password } = req.body;
+    
+    const doctor = await Doctor.findOne({ email });
+    if (!doctor) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, doctor.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+  
+    const token = jwt.sign(
+      { id: doctor._id, role: "doctor" },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "1h" }
+    );
+
+    
+    const { password: _, ...doctorData } = doctor.toObject();
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      doctor: doctorData,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 router.put("/doctor/:id", async (req, res) => {
   try {
     const doctorId = req.params.id;
