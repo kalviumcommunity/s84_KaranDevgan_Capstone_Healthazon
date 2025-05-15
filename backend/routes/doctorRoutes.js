@@ -79,7 +79,7 @@ router.post("/doctor/login", async (req, res) => {
   
     const token = jwt.sign(
       { id: doctor._id, role: "doctor" },
-      process.env.JWT_SECRET || "your_jwt_secret",
+      process.env.JWT_SECRET ,
       { expiresIn: "1h" }
     );
 
@@ -100,7 +100,7 @@ router.put("/doctor/:id", async (req, res) => {
     const doctorId = req.params.id;
     const updatedData = { ...req.body };
 
-    // If password is being updated, hash it
+    
     if (updatedData.password) {
       const saltRounds = 10;
       updatedData.password = await bcrypt.hash(
