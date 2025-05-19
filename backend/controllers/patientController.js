@@ -1,0 +1,117 @@
+const express = require("express");
+const router = express.Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const Patient = require("../models/Patient");
+
+
+router.get("/patients", async (req, res) => {
+  try {
+    const patients = await Patient.find().select("-password");
+    return res.status(200).json(patients);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+// POST /patient/register
+router.post("/patient/register", async (req, res) => {
+  const { name, email, password, age, contact, profileImage } = req.body;
+
+  try {
+    const existingPatient = await Patient.findOne({ email });
+    if (existingPatient) {
+      return res.status(400).json({ message: "Patient already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newPatient = new Patient({
+      name,
+      email,
+      password: hashedPassword,
+      age,
+      contact,
+      profileImage,
+    });
+
+    await newPatient.save();
+
+    const patientToSend = newPatient.toObject();
+    delete patientToSend.password;
+
+    return res.status(201).json({
+      message: "Patient registered successfully",
+      patient: patientToSend,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+});
+
+// POST /patient/login
+router.post("/patient/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const patient = await Patient.findOne({ email });
+    if (!patient) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, patient.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { id: patient._id, role: "patient" },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const { password: _, ...patientData } = patient.toObject();
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      patient: patientData,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// PUT /patient/:id
+router.put("/patient/:id", async (req, res) => {
+  try {
+    const patientId = req.params.id;
+    const updatedData = { ...req.body };
+
+    if (updatedData.password) {
+      updatedData.password = await bcrypt.hash(updatedData.password, 10);
+    }
+
+    const updatedPatient = await Patient.findByIdAndUpdate(
+      patientId,
+      updatedData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const patientToSend = updatedPatient.toObject();
+    delete patientToSend.password;
+
+    return res.status(200).json({
+      message: "Patient updated",
+      patient: patientToSend,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+module.exports = router;
