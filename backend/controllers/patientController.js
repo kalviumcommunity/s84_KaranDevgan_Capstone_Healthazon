@@ -16,7 +16,8 @@ router.get("/patients", async (req, res) => {
 
 // POST /patient/register
 router.post("/patient/register", async (req, res) => {
-  const { name, email, password, age, contact, profileImage } = req.body;
+  const { name, email, password, age, gender, contact, profileImage } =
+    req.body;
 
   try {
     const existingPatient = await Patient.findOne({ email });
@@ -29,6 +30,7 @@ router.post("/patient/register", async (req, res) => {
     const newPatient = new Patient({
       name,
       email,
+      gender,
       password: hashedPassword,
       age,
       contact,
@@ -45,6 +47,7 @@ router.post("/patient/register", async (req, res) => {
       patient: patientToSend,
     });
   } catch (error) {
+    console.error(error);
     return res.status(400).json({ message: error.message });
   }
 });

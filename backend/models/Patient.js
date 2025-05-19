@@ -26,7 +26,7 @@ const patientSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["male", "female", "other"],
-      required: [true, "Gender is required"],
+      required: [true, "gender is required"],
     },
     appointments: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
