@@ -35,13 +35,10 @@ const doctorSchema = new mongoose.Schema(
     appointments: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
     ],
-    availability: [
-      {
-        day: { type: String, required: true },
-        from: { type: String, required: true },
-        to: { type: String, required: true },
-      },
-    ],
+
+    googleId: { type: String, default: null },
+    isGoogleUser: { type: Boolean, default: false },
+
     profileImage: String,
   },
   { timestamps: true }
