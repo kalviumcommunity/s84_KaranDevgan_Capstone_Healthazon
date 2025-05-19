@@ -37,6 +37,9 @@ const patientSchema = new mongoose.Schema(
         uploadedAt: Date,
       },
     ],
+    googleId: { type: String, default: null },
+    isGoogleUser: { type: Boolean, default: false },
+
     profileImage: String,
   },
   { timestamps: true }
