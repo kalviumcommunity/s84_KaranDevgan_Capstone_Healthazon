@@ -14,6 +14,7 @@ app.use(cors());
 
 // Routes
 app.use("/api", doctorRoutes);
+
 app.use("/api", patientRoutes);
 app.use("/api", appointmentRoutes);
 

@@ -1,20 +1,19 @@
-const express = require("express");
-const router = express.Router();
+// doctorController.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Doctor = require("../models/Doctor");
 
-router.get("/doctors", async (req, res) => {
+// Define functions normally
+async function getAllDoctors(req, res) {
   try {
     const doctors = await Doctor.find().select("-password");
     return res.status(200).json(doctors);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-});
+}
 
-//  POST /doctor/register
-router.post("/doctor/register", async (req, res) => {
+async function registerDoctor(req, res) {
   const {
     name,
     email,
@@ -59,10 +58,9 @@ router.post("/doctor/register", async (req, res) => {
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
-});
+}
 
-//  POST /doctor/login
-router.post("/doctor/login", async (req, res) => {
+async function loginDoctor(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -82,7 +80,8 @@ router.post("/doctor/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    const { password: _, ...doctorData } = doctor.toObject();
+    const doctorData = doctor.toObject();
+    delete doctorData.password;
 
     res.status(200).json({
       message: "Login successful",
@@ -92,10 +91,9 @@ router.post("/doctor/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
-});
+}
 
-// PUT /doctor/:id
-router.put("/doctor/:id", async (req, res) => {
+async function updateDoctor(req, res) {
   try {
     const doctorId = req.params.id;
     const updatedData = { ...req.body };
@@ -107,10 +105,7 @@ router.put("/doctor/:id", async (req, res) => {
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       doctorId,
       updatedData,
-      {
-        new: true,
-        runValidators: true,
-      }
+      { new: true, runValidators: true }
     );
 
     if (!updatedDoctor) {
@@ -127,6 +122,12 @@ router.put("/doctor/:id", async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-});
+}
 
-module.exports = router;
+// Export all functions
+module.exports = {
+  getAllDoctors,
+  registerDoctor,
+  loginDoctor,
+  updateDoctor,
+};
