@@ -1,8 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const doctorController = require("../controllers/doctorController");
+const {
+  getAllDoctors,
+  registerDoctor,
+  loginDoctor,
+  updateDoctor,
+} = require("../controllers/doctorController");
+const {
+  doctorGoogleLogin,
+} = require("../controllers/doctorGoogleAuthController");
 
+router.post("/google-login", doctorGoogleLogin);
 
-router.use("/", doctorController);
+router.get("/doctors", getAllDoctors);
+router.post("/doctor/register", registerDoctor);
+router.post("/doctor/login", loginDoctor);
+router.put("/doctor/:id", updateDoctor);
+  
 
 module.exports = router;

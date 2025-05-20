@@ -4,42 +4,43 @@ const doctorSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
-      minlength: [3, "Name should have at least 3 characters"],
+      required: true,
     },
     email: {
       type: String,
+      required: true,
       unique: true,
-      required: [true, "Email is required"],
-      match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password should be at least 6 characters long"],
-    },
-    fees: {
-      type: Number,
-      required: [true, "Fees is required"],
-      min: [0, "Fees cannot be negative"],
+      required: function () {
+        return !this.isGoogleUser; // Password required for non-Google users
+      },
     },
     specialization: {
       type: String,
-      required: [true, "Specialization is required"],
+      required: function () {
+        return !this.isGoogleUser;
+      },
     },
-    experience: {
+    fees: {
       type: Number,
-      min: [0, "Experience cannot be negative"],
-      max: [50, "Experience cannot be more than 50 years"],
+      required: function () {
+        return !this.isGoogleUser;
+      },
     },
-    appointments: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
-    ],
-
-    googleId: { type: String, default: null },
-    isGoogleUser: { type: Boolean, default: false },
-
-    profileImage: String,
+    profileImage: {
+      type: String,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Only some doctors will have it
+    },
+    isGoogleUser: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
