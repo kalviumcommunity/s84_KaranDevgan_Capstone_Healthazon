@@ -124,6 +124,7 @@ async function updateDoctor(req, res) {
   }
 }
 
+
 // Export all functions
 module.exports = {
   getAllDoctors,
