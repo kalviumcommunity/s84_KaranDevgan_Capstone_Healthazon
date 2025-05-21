@@ -1,21 +1,18 @@
-const express = require("express");
-const router = express.Router();
+// controllers/patientController.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Patient = require("../models/Patient");
 
-
-router.get("/patients", async (req, res) => {
+async function getAllPatients(req, res) {
   try {
     const patients = await Patient.find().select("-password");
     return res.status(200).json(patients);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-});
+}
 
-// POST /patient/register
-router.post("/patient/register", async (req, res) => {
+async function registerPatient(req, res) {
   const { name, email, password, age, gender, contact, profileImage } =
     req.body;
 
@@ -47,13 +44,11 @@ router.post("/patient/register", async (req, res) => {
       patient: patientToSend,
     });
   } catch (error) {
-    console.error(error);
     return res.status(400).json({ message: error.message });
   }
-});
+}
 
-// POST /patient/login
-router.post("/patient/login", async (req, res) => {
+async function loginPatient(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -73,7 +68,8 @@ router.post("/patient/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    const { password: _, ...patientData } = patient.toObject();
+    const patientData = patient.toObject();
+    delete patientData.password;
 
     res.status(200).json({
       message: "Login successful",
@@ -83,10 +79,9 @@ router.post("/patient/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
-});
+}
 
-// PUT /patient/:id
-router.put("/patient/:id", async (req, res) => {
+async function updatePatient(req, res) {
   try {
     const patientId = req.params.id;
     const updatedData = { ...req.body };
@@ -115,6 +110,11 @@ router.put("/patient/:id", async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-});
+}
 
-module.exports = router;
+module.exports = {
+  getAllPatients,
+  registerPatient,
+  loginPatient,
+  updatePatient,
+};

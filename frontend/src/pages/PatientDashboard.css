@@ -1,0 +1,62 @@
+/* PatientDashboard.css */
+
+.main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .profile-card {
+    background-color: #f0f8ff;
+    border: 2px solid #87ceeb;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+  }
+  
+  .profile-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .edit-btn,
+  .logout-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .edit-btn {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .logout-btn {
+    background-color: #ff4d4f;
+    color: white;
+  }
+  
+  .dashboard-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 0.5rem;
+  }
+  

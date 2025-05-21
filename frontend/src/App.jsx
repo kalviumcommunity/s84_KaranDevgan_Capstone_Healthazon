@@ -3,10 +3,17 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google"; 
 
 import Home from "./pages/Home";
+//Doctor imports
 import Doctors from "./pages/Doctors";
-import DoctorLogin from "./pages/DoctorLogin";
-import DoctorRegister from "./pages/DoctorRegister";
+import DoctorLogin from "./components/doctor/DoctorLogin"
+import DoctorRegister from "./components/doctor/DoctorRegister";
 import DoctorDashboard from "./pages/DoctorDashboard";
+
+//Patient imports
+import LoginPatient from "./components/patient/LoginPatient";
+import RegisterPatient from "./components/patient/RegisterPatient";
+import PatientDashboard from "./pages/PatientDashboard";
+
 
 const clientId =
   "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com"; 
@@ -31,6 +38,16 @@ function App() {
                 <Link to="/doctor-dashboard">Dashboard</Link>
               </div>
             </div>
+
+            <div className="dropdown">
+              <span className="dropdown-title">Patients ▾</span>
+              <div className="dropdown-content">
+                <Link to="/patient/login">Login</Link>
+                <Link to="/patient/register">Register</Link>
+                <Link to="/patient/dashboard">Dashboard</Link>
+                
+              </div>
+            </div>
             {/* Later use */}
           </nav>
         </header>
@@ -41,6 +58,10 @@ function App() {
           <Route path="/doctor-login" element={<DoctorLogin />} />
           <Route path="/doctor-register" element={<DoctorRegister />} />
           <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+
+          <Route path="/patient/login" element={<LoginPatient />} />
+          <Route path="/patient/register" element={<RegisterPatient />} />
+          <Route path="/patient/dashboard" element={<PatientDashboard />} />
         </Routes>
 
         <footer className="footer">
