@@ -1,8 +1,5 @@
 ﻿# 🏥 Capstone Project: Healthazon
 
-**Render Deployment link** : https://s84-karandevgan-capstone-healthazon.onrender.com
-
-**Netlify Deployment link** : https://681b13fecad164d44eb28597--elaborate-gecko-d78a1a.netlify.app/
 **Duration:** 6 Weeks  
 **Type:** Full-Stack MERN App  
 **Theme:** Health-tech – Patient-Doctor Appointment & Consultation Platform
