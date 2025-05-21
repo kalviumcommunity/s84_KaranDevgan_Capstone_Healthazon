@@ -12,6 +12,13 @@ async function getAllPatients(req, res) {
   }
 }
 
+async function getPatientProfile(req, res) {
+  // req.user was set by authenticatePatient
+  const patient = req.user.toObject();
+  delete patient.password;
+  res.json({ patient });
+}
+
 async function registerPatient(req, res) {
   const { name, email, password, age, gender, contact, profileImage } =
     req.body;
@@ -112,9 +119,31 @@ async function updatePatient(req, res) {
   }
 }
 
+async function updatePatientProfile(req, res) {
+  try {
+    const patient = req.user; // from authenticatePatient middleware
+    const { name, age, contact } = req.body;
+
+    if (name !== undefined) patient.name = name;
+    if (age !== undefined) patient.age = age;
+    if (contact !== undefined) patient.contact = contact;
+
+    await patient.save();
+
+    const result = patient.toObject();
+    delete result.password;
+
+    res.json({ message: "Profile updated", patient: result });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
 module.exports = {
   getAllPatients,
   registerPatient,
   loginPatient,
   updatePatient,
+  getPatientProfile,
+  updatePatientProfile,
 };

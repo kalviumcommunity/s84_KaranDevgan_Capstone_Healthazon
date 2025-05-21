@@ -9,12 +9,19 @@ const {
   registerPatient,
   loginPatient,
   updatePatient,
+  updatePatientProfile ,
+  getPatientProfile
 } = require("../controllers/patientController");
+const { authenticatePatient } = require("../middleware/authMiddleware");
 
 router.get("/patients", getAllPatients);
 router.post("/patient/register", registerPatient);
 router.post("/patient/login", loginPatient);
+router.post("/patient/google-login", patientGoogleLogin);
+
+router.get("/profile", authenticatePatient, getPatientProfile);
+router.put("/patient/profile" , authenticatePatient , updatePatientProfile);
+
 router.put("/patient/:id", updatePatient);
 
-router.post("/patient/google-login", patientGoogleLogin);
 module.exports = router;

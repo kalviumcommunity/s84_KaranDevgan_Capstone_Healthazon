@@ -9,13 +9,14 @@ const {
 const {
   doctorGoogleLogin,
 } = require("../controllers/doctorGoogleAuthController");
+const { authenticateDoctor } = require("../middleware/authMiddleware");
 
 router.post("/google-login", doctorGoogleLogin);
-
-router.get("/doctors", getAllDoctors);
 router.post("/doctor/register", registerDoctor);
 router.post("/doctor/login", loginDoctor);
-router.put("/doctor/:id", updateDoctor);
+
+router.get("/doctors", getAllDoctors);
+router.put("/doctor/:id", authenticateDoctor, updateDoctor);
   
 
 module.exports = router;
