@@ -124,11 +124,38 @@ async function updateDoctor(req, res) {
   }
 }
 
+async function getDoctorProfile(req, res) {
+  // req.user is set by authenticateDoctor
+  const doc = req.user.toObject();
+  delete doc.password;
+  res.json({ doctor: doc });
+}
 
+async function updateDoctorProfile(req, res) {
+  try {
+    const doctor = req.user; // from authenticateDoctor
+    const { name, specialization, fees, profileImage } = req.body;
+    
+    if (name !== undefined) doctor.name = name;
+    if (specialization !== undefined) doctor.specialization = specialization;
+    if (fees !== undefined) doctor.fees = fees;
+    if (profileImage !== undefined) doctor.profileImage = profileImage;
+
+    await doctor.save();
+
+    const updated = doctor.toObject();
+    delete updated.password;
+    res.json({ message: "Profile updated", doctor: updated });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
 // Export all functions
 module.exports = {
   getAllDoctors,
   registerDoctor,
   loginDoctor,
   updateDoctor,
+  getDoctorProfile,
+  updateDoctorProfile,
 };

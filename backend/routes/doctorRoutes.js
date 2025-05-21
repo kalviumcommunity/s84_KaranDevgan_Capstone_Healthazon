@@ -5,6 +5,8 @@ const {
   registerDoctor,
   loginDoctor,
   updateDoctor,
+  getDoctorProfile ,
+  updateDoctorProfile
 } = require("../controllers/doctorController");
 const {
   doctorGoogleLogin,
@@ -16,7 +18,10 @@ router.post("/doctor/register", registerDoctor);
 router.post("/doctor/login", loginDoctor);
 
 router.get("/doctors", getAllDoctors);
+
+router.get("/doctor/profile", authenticateDoctor, getDoctorProfile);
+router.put("/doctor/profile", authenticateDoctor, updateDoctorProfile);
+
 router.put("/doctor/:id", authenticateDoctor, updateDoctor);
-  
 
 module.exports = router;

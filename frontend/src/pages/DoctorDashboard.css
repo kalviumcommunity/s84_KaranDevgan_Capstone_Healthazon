@@ -72,3 +72,19 @@
     color: white;
   }
   
+  .profile-field {
+    margin: 0.75rem 0;
+  }
+  
+  .profile-field input {
+    margin-left: 0.5rem;
+    padding: 6px;
+  }
+  
+  .small-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+  
