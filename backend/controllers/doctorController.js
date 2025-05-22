@@ -3,15 +3,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Doctor = require("../models/Doctor");
 
-// Define functions normally
-async function getAllDoctors(req, res) {
+// Define functions normallyasync 
+  async function getAllDoctors(req, res) {
   try {
-    const doctors = await Doctor.find().select("-password");
+    const query = {};
+
+    if (req.query.specialization) {
+      query.specialization = req.query.specialization;
+    }
+
+    if (req.query.fees) {
+      query.fees = { $lte: Number(req.query.fees) };
+    }
+
+    const doctors = await Doctor.find(query).select("-password");
     return res.status(200).json(doctors);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 
 async function registerDoctor(req, res) {
   const {
