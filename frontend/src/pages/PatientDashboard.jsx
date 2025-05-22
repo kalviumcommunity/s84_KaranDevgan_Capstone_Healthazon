@@ -1,6 +1,8 @@
+
 // src/pages/PatientDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DoctorCard from "../components/DoctorCard" // adjust the path as needed
 import "./PatientDashboard.css";
 
 export default function PatientDashboard() {
@@ -9,7 +11,14 @@ export default function PatientDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
-  // 1) Load profile from backend
+  // Doctor filter & list states
+  const [doctors, setDoctors] = useState([]);
+  const [specialization, setSpecialization] = useState("");
+  const [maxFees, setMaxFees] = useState("");
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [errorDoctors, setErrorDoctors] = useState("");
+
+  // 1) Load patient profile
   useEffect(() => {
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
@@ -36,13 +45,44 @@ export default function PatientDashboard() {
     loadProfile();
   }, [navigate]);
 
-  // 2) Handle field changes
+  // 2) Load doctors when filters change
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      setLoadingDoctors(true);
+      setErrorDoctors("");
+      try {
+        let query = [];
+        if (specialization) query.push(`specialization=${encodeURIComponent(specialization)}`);
+        if (maxFees) query.push(`fees=${encodeURIComponent(maxFees)}`);
+        const queryString = query.length ? `?${query.join("&")}` : "";
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:3000/api/doctors${queryString}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch doctors");
+
+        const data = await res.json();
+        setDoctors(data);
+      } catch (e) {
+        setErrorDoctors(e.message);
+      } finally {
+        setLoadingDoctors(false);
+      }
+    };
+
+    fetchDoctors();
+  }, [specialization, maxFees]);
+
+  // 3) Handle profile form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  // 3) Save updated profile
+  // 4) Save updated profile
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:3000/api/patient/profile", {
@@ -65,7 +105,7 @@ export default function PatientDashboard() {
     alert("Profile updated");
   };
 
-  // 4) Logout
+  // 5) Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/patient/login");
@@ -147,6 +187,51 @@ export default function PatientDashboard() {
           <p>[Placeholder] Your health records will appear here.</p>
         </div>
       </div>
+
+      {/* --- Doctor filter and list section --- */}
+      <section className="filter-section" style={{ marginTop: "2rem" }}>
+        <h3>Filter Doctors</h3>
+
+        <label>
+          Specialization:
+          <select
+            value={specialization}
+            onChange={(e) => setSpecialization(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Neurology">Neurology</option>
+            {/* Add more options as needed */}
+          </select>
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Max Fees:
+          <input
+            type="number"
+            min="0"
+            value={maxFees}
+            onChange={(e) => setMaxFees(e.target.value)}
+            placeholder="Enter max fees"
+            style={{ marginLeft: "0.5rem" }}
+          />
+        </label>
+      </section>
+
+      <section className="doctor-list-section" style={{ marginTop: "1rem" }}>
+        <h3>Doctors</h3>
+
+        {loadingDoctors && <p>Loading doctors...</p>}
+        {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
+        {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
+
+        <div className="doctor-list" style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+          {doctors.map((doc) => (
+            <DoctorCard key={doc._id} doctor={doc} />
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
