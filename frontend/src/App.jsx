@@ -1,11 +1,11 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google"; 
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import Home from "./pages/Home";
 //Doctor imports
 import Doctors from "./pages/Doctors";
-import DoctorLogin from "./components/doctor/DoctorLogin"
+import DoctorLogin from "./components/doctor/DoctorLogin";
 import DoctorRegister from "./components/doctor/DoctorRegister";
 import DoctorDashboard from "./pages/DoctorDashboard";
 
@@ -14,9 +14,8 @@ import LoginPatient from "./components/patient/LoginPatient";
 import RegisterPatient from "./components/patient/RegisterPatient";
 import PatientDashboard from "./pages/PatientDashboard";
 
-
 const clientId =
-  "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com"; 
+  "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com";
 
 function App() {
   return (
@@ -45,7 +44,6 @@ function App() {
                 <Link to="/patient/login">Login</Link>
                 <Link to="/patient/register">Register</Link>
                 <Link to="/patient/dashboard">Dashboard</Link>
-                
               </div>
             </div>
             {/* Later use */}
