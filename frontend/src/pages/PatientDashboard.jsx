@@ -1,8 +1,253 @@
+// // src/pages/PatientDashboard.jsx
+// import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import DoctorCard from "../components/DoctorCard"; // adjust the path as needed
+// import "./PatientDashboard.css";
+
+// export default function PatientDashboard() {
+//   const [patient, setPatient] = useState(null);
+//   const [form, setForm] = useState({ name: "", age: "", contact: "" });
+//   const [isEditing, setIsEditing] = useState(false);
+//   const navigate = useNavigate();
+
+//   // Doctor filter & list states
+//   const [doctors, setDoctors] = useState([]);
+//   const [specialization, setSpecialization] = useState("");
+//   const [maxFees, setMaxFees] = useState("");
+//   const [loadingDoctors, setLoadingDoctors] = useState(false);
+//   const [errorDoctors, setErrorDoctors] = useState("");
+
+//   // 1) Load patient profile
+//   useEffect(() => {
+//     const loadProfile = async () => {
+//       const token = localStorage.getItem("token");
+//       if (!token) return navigate("/patient/login");
+
+//       const res = await fetch("http://localhost:3000/api/patient/profile", {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
+//       if (!res.ok) {
+//         // invalid token or not found
+//         localStorage.removeItem("token");
+//         navigate("/patient/login");
+//         return;
+//       }
+//       const { patient: data } = await res.json();
+//       setPatient(data);
+//       setForm({
+//         name: data.name || "",
+//         age: data.age || "",
+//         contact: data.contact || "",
+//       });
+//     };
+
+//     loadProfile();
+//   }, [navigate]);
+
+//   // 2) Load doctors when filters change
+//   useEffect(() => {
+//     const fetchDoctors = async () => {
+//       setLoadingDoctors(true);
+//       setErrorDoctors("");
+//       try {
+//         let query = [];
+//         if (specialization)
+//           query.push(`specialization=${encodeURIComponent(specialization)}`);
+//         if (maxFees) query.push(`fees=${encodeURIComponent(maxFees)}`);
+//         const queryString = query.length ? `?${query.join("&")}` : "";
+
+//         const token = localStorage.getItem("token");
+
+//         const res = await fetch(
+//           `http://localhost:3000/api/doctors${queryString}`,
+//           {
+//             headers: { Authorization: `Bearer ${token}` },
+//           }
+//         );
+
+//         if (!res.ok) throw new Error("Failed to fetch doctors");
+
+//         const data = await res.json();
+//         setDoctors(data);
+//       } catch (e) {
+//         setErrorDoctors(e.message);
+//       } finally {
+//         setLoadingDoctors(false);
+//       }
+//     };
+
+//     fetchDoctors();
+//   }, [specialization, maxFees]);
+
+//   // 3) Handle profile form changes
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setForm((f) => ({ ...f, [name]: value }));
+//   };
+
+//   // 4) Save updated profile
+//   const saveProfile = async () => {
+//     const token = localStorage.getItem("token");
+//     const res = await fetch("http://localhost:3000/api/patient/profile", {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify(form),
+//     });
+
+//     const data = await res.json();
+//     if (!res.ok) {
+//       alert(data.message || "Update failed");
+//       return;
+//     }
+
+//     setPatient(data.patient);
+//     setIsEditing(false);
+//     alert("Profile updated");
+//   };
+
+//   // 5) Logout handler
+//   const handleLogout = () => {
+//     localStorage.removeItem("token");
+//     navigate("/patient/login");
+//   };
+
+//   if (!patient) return <p>Loading profile...</p>;
+
+//   return (
+//     <main className="main">
+//       <h2>Welcome back, {patient.name} 👋</h2>
+//       <div className="profile-card">
+//         <div className="profile-header">
+//           <img
+//             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=patient-${patient._id}`}
+//             alt="Avatar"
+//             className="profile-avatar"
+//           />
+//         </div>
+
+//         <div className="profile-field">
+//           <strong>Name:</strong>{" "}
+//           {isEditing ? (
+//             <input name="name" value={form.name} onChange={handleChange} />
+//           ) : (
+//             patient.name
+//           )}
+//         </div>
+
+//         <div className="profile-field">
+//           <strong>Age:</strong>{" "}
+//           {isEditing ? (
+//             <input
+//               name="age"
+//               type="number"
+//               min="1"
+//               value={form.age}
+//               onChange={handleChange}
+//             />
+//           ) : (
+//             patient.age
+//           )}
+//         </div>
+
+//         <div className="profile-field">
+//           <strong>Contact:</strong>{" "}
+//           {isEditing ? (
+//             <input
+//               name="contact"
+//               value={form.contact}
+//               onChange={handleChange}
+//             />
+//           ) : (
+//             patient.contact || "Not provided"
+//           )}
+//         </div>
+
+//         <div className="profile-actions">
+//           {isEditing ? (
+//             <button className="edit-btn" onClick={saveProfile}>
+//               Save
+//             </button>
+//           ) : (
+//             <button className="edit-btn" onClick={() => setIsEditing(true)}>
+//               Edit Profile
+//             </button>
+//           )}
+//           <button className="logout-btn" onClick={handleLogout}>
+//             Logout
+//           </button>
+//         </div>
+
+//         <div className="dashboard-section">
+//           <h3>Your Appointments</h3>
+//           <p>[Placeholder] Upcoming appointments will be shown here.</p>
+//         </div>
+
+//         <div className="dashboard-section">
+//           <h3>Health Records</h3>
+//           <p>[Placeholder] Your health records will appear here.</p>
+//         </div>
+//       </div>
+
+//       {/* --- Doctor filter and list section --- */}
+//       <section className="filter-section" style={{ marginTop: "2rem" }}>
+//         <h3>Filter Doctors</h3>
+
+//         <label>
+//           Specialization:
+//           <select
+//             value={specialization}
+//             onChange={(e) => setSpecialization(e.target.value)}
+//           >
+//             <option value="">All</option>
+//             <option value="Cardiology">Cardiology</option>
+//             <option value="Dermatology">Dermatology</option>
+//             <option value="Neurology">Neurology</option>
+//             {/* Add more options as needed */}
+//           </select>
+//         </label>
+
+//         <label style={{ marginLeft: "1rem" }}>
+//           Max Fees:
+//           <input
+//             type="number"
+//             min="0"
+//             value={maxFees}
+//             onChange={(e) => setMaxFees(e.target.value)}
+//             placeholder="Enter max fees"
+//             style={{ marginLeft: "0.5rem" }}
+//           />
+//         </label>
+//       </section>
+
+//       <section className="doctor-list-section" style={{ marginTop: "1rem" }}>
+//         <h3>Doctors</h3>
+
+//         {loadingDoctors && <p>Loading doctors...</p>}
+//         {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
+//         {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
+
+//         <div
+//           className="doctor-list"
+//           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
+//         >
+//           {doctors.map((doc) => (
+//             <DoctorCard key={doc._id} doctor={doc} />
+//           ))}
+//         </div>
+//       </section>
+//     </main>
+//   );
+// }
+
 
 // src/pages/PatientDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DoctorCard from "../components/DoctorCard" // adjust the path as needed
+import DoctorCard from "../components/DoctorCard";
+import DoctorDetailsModal from "../components/doctor/DoctorDetails"; // NEW
 import "./PatientDashboard.css";
 
 export default function PatientDashboard() {
@@ -11,14 +256,15 @@ export default function PatientDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
-  // Doctor filter & list states
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [maxFees, setMaxFees] = useState("");
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [errorDoctors, setErrorDoctors] = useState("");
 
-  // 1) Load patient profile
+  const [selectedDoctor, setSelectedDoctor] = useState(null); // NEW
+
+  // Load patient profile
   useEffect(() => {
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
@@ -27,12 +273,13 @@ export default function PatientDashboard() {
       const res = await fetch("http://localhost:3000/api/patient/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       if (!res.ok) {
-        // invalid token or not found
         localStorage.removeItem("token");
         navigate("/patient/login");
         return;
       }
+
       const { patient: data } = await res.json();
       setPatient(data);
       setForm({
@@ -45,22 +292,27 @@ export default function PatientDashboard() {
     loadProfile();
   }, [navigate]);
 
-  // 2) Load doctors when filters change
+  // Load doctors when filters change
   useEffect(() => {
     const fetchDoctors = async () => {
       setLoadingDoctors(true);
       setErrorDoctors("");
+
       try {
         let query = [];
-        if (specialization) query.push(`specialization=${encodeURIComponent(specialization)}`);
+        if (specialization)
+          query.push(`specialization=${encodeURIComponent(specialization)}`);
         if (maxFees) query.push(`fees=${encodeURIComponent(maxFees)}`);
         const queryString = query.length ? `?${query.join("&")}` : "";
 
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:3000/api/doctors${queryString}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/doctors${queryString}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (!res.ok) throw new Error("Failed to fetch doctors");
 
@@ -76,13 +328,11 @@ export default function PatientDashboard() {
     fetchDoctors();
   }, [specialization, maxFees]);
 
-  // 3) Handle profile form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  // 4) Save updated profile
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:3000/api/patient/profile", {
@@ -105,10 +355,22 @@ export default function PatientDashboard() {
     alert("Profile updated");
   };
 
-  // 5) Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/patient/login");
+  };
+
+  // NEW: Book appointment and view details
+  const handleBookAppointment = (doctor) => {
+    alert(`Booking appointment with Dr. ${doctor.name}`);
+  };
+
+  const handleViewDetails = (doctor) => {
+    setSelectedDoctor(doctor);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedDoctor(null);
   };
 
   if (!patient) return <p>Loading profile...</p>;
@@ -188,7 +450,6 @@ export default function PatientDashboard() {
         </div>
       </div>
 
-      {/* --- Doctor filter and list section --- */}
       <section className="filter-section" style={{ marginTop: "2rem" }}>
         <h3>Filter Doctors</h3>
 
@@ -202,7 +463,6 @@ export default function PatientDashboard() {
             <option value="Cardiology">Cardiology</option>
             <option value="Dermatology">Dermatology</option>
             <option value="Neurology">Neurology</option>
-            {/* Add more options as needed */}
           </select>
         </label>
 
@@ -226,12 +486,25 @@ export default function PatientDashboard() {
         {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
         {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
 
-        <div className="doctor-list" style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+        <div
+          className="doctor-list"
+          style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
+        >
           {doctors.map((doc) => (
-            <DoctorCard key={doc._id} doctor={doc} />
+            <DoctorCard
+              key={doc._id}
+              doctor={doc}
+              onViewDetails={handleViewDetails}
+              onBookAppointment={handleBookAppointment}
+            />
           ))}
         </div>
       </section>
+
+      {/* Show modal if doctor is selected */}
+      {selectedDoctor && (
+        <DoctorDetailsModal doctor={selectedDoctor} onClose={handleCloseModal} />
+      )}
     </main>
   );
 }
