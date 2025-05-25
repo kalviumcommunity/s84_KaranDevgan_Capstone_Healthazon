@@ -38,7 +38,10 @@ const appointmentSchema = new mongoose.Schema({
     enum: ["pending", "confirmed", "cancelled", "completed"],
     default: "pending",
   },
-  notes: String,
+  healthIssue: { type: String },
+  doctorNotificationRead: { type: Boolean, default: false },
+  patientNotificationRead: { type: Boolean, default: true },
+
   createdAt: {
     type: Date,
     default: Date.now,

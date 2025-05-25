@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Doctor = require("../models/Doctor");
+const Appointment = require("../models/Appointment")
 const availabilitySlotSchema = new mongoose.Schema(
   {
     doctor: {
@@ -9,7 +10,12 @@ const availabilitySlotSchema = new mongoose.Schema(
     },
     date: { type: String, required: true }, // Format: 'YYYY-MM-DD'
     time: { type: String, required: true }, // Format: '10:00 AM - 11:00 AM'
-    isBooked: { type: Boolean, default: false },
+    appointment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      default: null,
+    },
+
     mode: { type: String, enum: ["online", "offline"], default: "offline" },
   },
   { timestamps: true }
