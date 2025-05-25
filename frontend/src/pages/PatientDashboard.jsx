@@ -1,7 +1,10 @@
+
+
 // // src/pages/PatientDashboard.jsx
 // import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
-// import DoctorCard from "../components/DoctorCard"; // adjust the path as needed
+// import DoctorCard from "../components/DoctorCard";
+// import DoctorDetailsModal from "../components/doctor/DoctorDetails"; // NEW
 // import "./PatientDashboard.css";
 
 // export default function PatientDashboard() {
@@ -10,14 +13,15 @@
 //   const [isEditing, setIsEditing] = useState(false);
 //   const navigate = useNavigate();
 
-//   // Doctor filter & list states
 //   const [doctors, setDoctors] = useState([]);
 //   const [specialization, setSpecialization] = useState("");
 //   const [maxFees, setMaxFees] = useState("");
 //   const [loadingDoctors, setLoadingDoctors] = useState(false);
 //   const [errorDoctors, setErrorDoctors] = useState("");
 
-//   // 1) Load patient profile
+//   const [selectedDoctor, setSelectedDoctor] = useState(null); // NEW
+
+//   // Load patient profile
 //   useEffect(() => {
 //     const loadProfile = async () => {
 //       const token = localStorage.getItem("token");
@@ -26,12 +30,13 @@
 //       const res = await fetch("http://localhost:3000/api/patient/profile", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       });
+
 //       if (!res.ok) {
-//         // invalid token or not found
 //         localStorage.removeItem("token");
 //         navigate("/patient/login");
 //         return;
 //       }
+
 //       const { patient: data } = await res.json();
 //       setPatient(data);
 //       setForm({
@@ -44,11 +49,12 @@
 //     loadProfile();
 //   }, [navigate]);
 
-//   // 2) Load doctors when filters change
+//   // Load doctors when filters change
 //   useEffect(() => {
 //     const fetchDoctors = async () => {
 //       setLoadingDoctors(true);
 //       setErrorDoctors("");
+
 //       try {
 //         let query = [];
 //         if (specialization)
@@ -79,13 +85,11 @@
 //     fetchDoctors();
 //   }, [specialization, maxFees]);
 
-//   // 3) Handle profile form changes
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
 //     setForm((f) => ({ ...f, [name]: value }));
 //   };
 
-//   // 4) Save updated profile
 //   const saveProfile = async () => {
 //     const token = localStorage.getItem("token");
 //     const res = await fetch("http://localhost:3000/api/patient/profile", {
@@ -108,10 +112,22 @@
 //     alert("Profile updated");
 //   };
 
-//   // 5) Logout handler
 //   const handleLogout = () => {
 //     localStorage.removeItem("token");
 //     navigate("/patient/login");
+//   };
+
+//   // NEW: Book appointment and view details
+//   const handleBookAppointment = (doctor) => {
+//     alert(`Booking appointment with Dr. ${doctor.name}`);
+//   };
+
+//   const handleViewDetails = (doctor) => {
+//     setSelectedDoctor(doctor);
+//   };
+
+//   const handleCloseModal = () => {
+//     setSelectedDoctor(null);
 //   };
 
 //   if (!patient) return <p>Loading profile...</p>;
@@ -191,7 +207,6 @@
 //         </div>
 //       </div>
 
-//       {/* --- Doctor filter and list section --- */}
 //       <section className="filter-section" style={{ marginTop: "2rem" }}>
 //         <h3>Filter Doctors</h3>
 
@@ -205,7 +220,6 @@
 //             <option value="Cardiology">Cardiology</option>
 //             <option value="Dermatology">Dermatology</option>
 //             <option value="Neurology">Neurology</option>
-//             {/* Add more options as needed */}
 //           </select>
 //         </label>
 
@@ -234,10 +248,20 @@
 //           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
 //         >
 //           {doctors.map((doc) => (
-//             <DoctorCard key={doc._id} doctor={doc} />
+//             <DoctorCard
+//               key={doc._id}
+//               doctor={doc}
+//               onViewDetails={handleViewDetails}
+//               onBookAppointment={handleBookAppointment}
+//             />
 //           ))}
 //         </div>
 //       </section>
+
+//       {/* Show modal if doctor is selected */}
+//       {selectedDoctor && (
+//         <DoctorDetailsModal doctor={selectedDoctor} onClose={handleCloseModal} />
+//       )}
 //     </main>
 //   );
 // }
@@ -247,7 +271,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DoctorCard from "../components/DoctorCard";
-import DoctorDetailsModal from "../components/doctor/DoctorDetails"; // NEW
+import DoctorDetailsModal from "../components/doctor/DoctorDetails";
 import "./PatientDashboard.css";
 
 export default function PatientDashboard() {
@@ -256,13 +280,16 @@ export default function PatientDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
+  // Doctor filter & list states
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [maxFees, setMaxFees] = useState("");
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [errorDoctors, setErrorDoctors] = useState("");
 
-  const [selectedDoctor, setSelectedDoctor] = useState(null); // NEW
+  // Modal logic
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Load patient profile
   useEffect(() => {
@@ -273,13 +300,11 @@ export default function PatientDashboard() {
       const res = await fetch("http://localhost:3000/api/patient/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!res.ok) {
         localStorage.removeItem("token");
         navigate("/patient/login");
         return;
       }
-
       const { patient: data } = await res.json();
       setPatient(data);
       setForm({
@@ -292,27 +317,21 @@ export default function PatientDashboard() {
     loadProfile();
   }, [navigate]);
 
-  // Load doctors when filters change
+  // Load doctors on filter change
   useEffect(() => {
     const fetchDoctors = async () => {
       setLoadingDoctors(true);
       setErrorDoctors("");
-
       try {
         let query = [];
-        if (specialization)
-          query.push(`specialization=${encodeURIComponent(specialization)}`);
+        if (specialization) query.push(`specialization=${encodeURIComponent(specialization)}`);
         if (maxFees) query.push(`fees=${encodeURIComponent(maxFees)}`);
         const queryString = query.length ? `?${query.join("&")}` : "";
 
         const token = localStorage.getItem("token");
-
-        const res = await fetch(
-          `http://localhost:3000/api/doctors${queryString}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await fetch(`http://localhost:3000/api/doctors${queryString}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (!res.ok) throw new Error("Failed to fetch doctors");
 
@@ -328,11 +347,13 @@ export default function PatientDashboard() {
     fetchDoctors();
   }, [specialization, maxFees]);
 
+  // Form change handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  // Save profile
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:3000/api/patient/profile", {
@@ -355,22 +376,25 @@ export default function PatientDashboard() {
     alert("Profile updated");
   };
 
+  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/patient/login");
   };
 
-  // NEW: Book appointment and view details
-  const handleBookAppointment = (doctor) => {
-    alert(`Booking appointment with Dr. ${doctor.name}`);
-  };
-
+  // Modal handlers
   const handleViewDetails = (doctor) => {
     setSelectedDoctor(doctor);
+    setShowDetails(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseDetails = () => {
     setSelectedDoctor(null);
+    setShowDetails(false);
+  };
+
+  const handleBookAppointment = (doctor) => {
+    alert(`Booking appointment with Dr. ${doctor.name}`);
   };
 
   if (!patient) return <p>Loading profile...</p>;
@@ -414,11 +438,7 @@ export default function PatientDashboard() {
         <div className="profile-field">
           <strong>Contact:</strong>{" "}
           {isEditing ? (
-            <input
-              name="contact"
-              value={form.contact}
-              onChange={handleChange}
-            />
+            <input name="contact" value={form.contact} onChange={handleChange} />
           ) : (
             patient.contact || "Not provided"
           )}
@@ -450,15 +470,13 @@ export default function PatientDashboard() {
         </div>
       </div>
 
+      {/* --- Doctor filter and list section --- */}
       <section className="filter-section" style={{ marginTop: "2rem" }}>
         <h3>Filter Doctors</h3>
 
         <label>
           Specialization:
-          <select
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-          >
+          <select value={specialization} onChange={(e) => setSpecialization(e.target.value)}>
             <option value="">All</option>
             <option value="Cardiology">Cardiology</option>
             <option value="Dermatology">Dermatology</option>
@@ -486,10 +504,7 @@ export default function PatientDashboard() {
         {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
         {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
 
-        <div
-          className="doctor-list"
-          style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
-        >
+        <div className="doctor-list" style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
           {doctors.map((doc) => (
             <DoctorCard
               key={doc._id}
@@ -501,9 +516,9 @@ export default function PatientDashboard() {
         </div>
       </section>
 
-      {/* Show modal if doctor is selected */}
-      {selectedDoctor && (
-        <DoctorDetailsModal doctor={selectedDoctor} onClose={handleCloseModal} />
+      {/* Doctor Details Modal */}
+      {showDetails && (
+        <DoctorDetailsModal doctor={selectedDoctor} onClose={handleCloseDetails} />
       )}
     </main>
   );
