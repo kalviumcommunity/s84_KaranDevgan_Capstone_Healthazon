@@ -6,7 +6,7 @@ const cors = require("cors");
 const doctorRoutes = require("./routes/doctorRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
-
+const availabilityRoutes = require("./routes/availabilityRoutes");
 const app = express();
 
 app.use(express.json());
@@ -14,9 +14,9 @@ app.use(cors());
 
 // Routes
 app.use("/api", doctorRoutes);
-
 app.use("/api", patientRoutes);
 app.use("/api", appointmentRoutes);
+app.use("/api", availabilityRoutes);
 
 // Home route
 app.get("/", (req, res) => {
