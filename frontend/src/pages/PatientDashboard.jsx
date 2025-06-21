@@ -1,5 +1,3 @@
-
-
 // src/pages/PatientDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,22 +8,28 @@ import "./PatientDashboard.css";
 
 export default function PatientDashboard() {
   const [patient, setPatient] = useState(null);
-  const [form, setForm] = useState({ name: "", age: "", contact: "" });
+  const [form, setForm] = useState({
+    name: "",
+    age: "",
+    contact: "",
+    email: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
-  // Doctor filter & list states
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [maxFees, setMaxFees] = useState("");
+  const [location, setLocation] = useState("");
+  const [experience, setExperience] = useState("");
+  const [availableDay, setAvailableDay] = useState("");
+  const [language, setLanguage] = useState("");
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [errorDoctors, setErrorDoctors] = useState("");
 
-  // Modal logic
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
-  // Load patient profile
   useEffect(() => {
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
@@ -39,33 +43,44 @@ export default function PatientDashboard() {
         navigate("/patient/login");
         return;
       }
+
       const { patient: data } = await res.json();
       setPatient(data);
       setForm({
         name: data.name || "",
         age: data.age || "",
         contact: data.contact || "",
+        email: data.email || "",
       });
     };
 
     loadProfile();
   }, [navigate]);
 
-  // Load doctors on filter change
   useEffect(() => {
     const fetchDoctors = async () => {
       setLoadingDoctors(true);
       setErrorDoctors("");
       try {
         let query = [];
-        if (specialization) query.push(`specialization=${encodeURIComponent(specialization)}`);
+        if (specialization)
+          query.push(`specialization=${encodeURIComponent(specialization)}`);
         if (maxFees) query.push(`fees=${encodeURIComponent(maxFees)}`);
+        if (location) query.push(`location=${encodeURIComponent(location)}`);
+        if (experience)
+          query.push(`experience=${encodeURIComponent(experience)}`);
+        if (availableDay)
+          query.push(`availableDay=${encodeURIComponent(availableDay)}`);
+        if (language) query.push(`language=${encodeURIComponent(language)}`);
         const queryString = query.length ? `?${query.join("&")}` : "";
 
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3000/api/doctors${queryString}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/doctors${queryString}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (!res.ok) throw new Error("Failed to fetch doctors");
 
@@ -79,17 +94,25 @@ export default function PatientDashboard() {
     };
 
     fetchDoctors();
-  }, [specialization, maxFees]);
+  }, [specialization, maxFees, location, experience, availableDay, language]);
 
-  // Form change handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  // Save profile
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
+
+    if (!patient.isGoogleUser && form.email !== patient.email) {
+      const confirmed = window.confirm(
+        `You're changing your email from ${patient.email} to ${form.email}. Are you sure?`
+      );
+      if (!confirmed) {
+        return; // Cancel save
+      }
+    }
+
     const res = await fetch("http://localhost:3000/api/patient/profile", {
       method: "PUT",
       headers: {
@@ -110,13 +133,11 @@ export default function PatientDashboard() {
     alert("Profile updated");
   };
 
-  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/patient/login");
   };
 
-  // Modal handlers
   const handleViewDetails = (doctor) => {
     setSelectedDoctor(doctor);
     setShowDetails(true);
@@ -130,7 +151,6 @@ export default function PatientDashboard() {
   const handleBookAppointment = (doctor) => {
     navigate("/patient/book", { state: { doctor } });
   };
-  
 
   if (!patient) return <p>Loading profile...</p>;
 
@@ -183,6 +203,20 @@ export default function PatientDashboard() {
           )}
         </div>
 
+        <div className="profile-field">
+          <strong>Email:</strong>{" "}
+          {isEditing && !patient.isGoogleUser ? (
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+            />
+          ) : (
+            patient.email
+          )}
+        </div>
+
         <div className="profile-actions">
           {isEditing ? (
             <button className="edit-btn" onClick={saveProfile}>
@@ -209,7 +243,6 @@ export default function PatientDashboard() {
         </div>
       </div>
 
-      {/* --- Doctor filter and list section --- */}
       <section className="filter-section" style={{ marginTop: "2rem" }}>
         <h3>Filter Doctors</h3>
 
@@ -237,19 +270,67 @@ export default function PatientDashboard() {
             style={{ marginLeft: "0.5rem" }}
           />
         </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Location:
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Enter location"
+            style={{ marginLeft: "0.5rem" }}
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Min Experience (yrs):
+          <input
+            type="number"
+            min="0"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            placeholder="Years"
+            style={{ marginLeft: "0.5rem" }}
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Available Day:
+          <select
+            value={availableDay}
+            onChange={(e) => setAvailableDay(e.target.value)}
+            style={{ marginLeft: "0.5rem" }}
+          >
+            <option value="">Any</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Language:
+          <input
+            type="text"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            placeholder="e.g. Hindi"
+            style={{ marginLeft: "0.5rem" }}
+          />
+        </label>
       </section>
 
       <section className="doctor-list-section" style={{ marginTop: "1rem" }}>
         <h3>Doctors</h3>
-
         {loadingDoctors && <p>Loading doctors...</p>}
         {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
         {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
 
-        <div
-          className="doctor-list"
-          style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
           {doctors.map((doc) => (
             <DoctorCard
               key={doc._id}
@@ -261,7 +342,6 @@ export default function PatientDashboard() {
         </div>
       </section>
 
-      {/* Doctor Details Modal */}
       {showDetails && (
         <DoctorDetailsModal
           doctor={selectedDoctor}

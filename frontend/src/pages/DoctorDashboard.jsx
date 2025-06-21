@@ -1,6 +1,9 @@
+
 // src/pages/DoctorDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DoctorAppointmentsList from "../components/doctor/DoctorAppointmentsList";
+import NotificationBell from "../components/NotificationBell";
 import "./DoctorDashboard.css";
 
 export default function DoctorDashboard() {
@@ -10,11 +13,14 @@ export default function DoctorDashboard() {
     specialization: "",
     fees: "",
     profileImage: "",
+    location: "",
+    experience: "",
+    availableDays: [],
+    languagesSpoken: [],
   });
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
-  // 1) Load profile
   useEffect(() => {
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
@@ -23,29 +29,39 @@ export default function DoctorDashboard() {
       const res = await fetch("http://localhost:3000/api/doctor/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       if (!res.ok) {
         localStorage.removeItem("token");
         return navigate("/doctor-login");
       }
+
       const { doctor: data } = await res.json();
       setDoctor(data);
       setForm({
-        name: data.name,
-        specialization: data.specialization,
-        fees: data.fees,
+        name: data.name || "",
+        specialization: data.specialization || "",
+        fees: data.fees || "",
         profileImage: data.profileImage || "",
+        location: data.location || "",
+        experience: data.experience || "",
+        availableDays: data.availableDays || [],
+        languagesSpoken: data.languagesSpoken || [],
       });
     };
     loadProfile();
   }, [navigate]);
 
-  // 2) Handle form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  // 3) Save profile
+  const handleMultiChange = (e) => {
+    const { name, value } = e.target;
+    const values = value.split(",").map((v) => v.trim());
+    setForm((f) => ({ ...f, [name]: values }));
+  };
+
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:3000/api/doctor/profile", {
@@ -56,17 +72,18 @@ export default function DoctorDashboard() {
       },
       body: JSON.stringify(form),
     });
+
     const data = await res.json();
     if (!res.ok) {
       alert(data.message || "Update failed");
       return;
     }
+
     setDoctor(data.doctor);
     setIsEditing(false);
     alert("Profile updated");
   };
 
-  // Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/doctor-login");
@@ -76,7 +93,8 @@ export default function DoctorDashboard() {
 
   return (
     <main className="main">
-      <h2>Welcome back, {doctor.name} 👋</h2>
+          <NotificationBell />
+      <h2>Welcome back,  Dr {doctor.name} 👋</h2>
       <div className="profile-card">
         <div className="profile-header">
           <img
@@ -86,6 +104,7 @@ export default function DoctorDashboard() {
           />
         </div>
 
+        {/* Name */}
         <div className="profile-field">
           <strong>Name:</strong>{" "}
           {isEditing ? (
@@ -95,6 +114,7 @@ export default function DoctorDashboard() {
           )}
         </div>
 
+        {/* Specialization */}
         <div className="profile-field">
           <strong>Specialization:</strong>{" "}
           {isEditing ? (
@@ -108,6 +128,7 @@ export default function DoctorDashboard() {
           )}
         </div>
 
+        {/* Fees */}
         <div className="profile-field">
           <strong>Fees (₹):</strong>{" "}
           {isEditing ? (
@@ -123,6 +144,71 @@ export default function DoctorDashboard() {
           )}
         </div>
 
+        {/* Location */}
+        <div className="profile-field">
+          <strong>Location:</strong>{" "}
+          {isEditing ? (
+            <input
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+            />
+          ) : (
+            doctor.location || "Not specified"
+          )}
+        </div>
+
+        {/* Experience */}
+        <div className="profile-field">
+          <strong>Experience (years):</strong>{" "}
+          {isEditing ? (
+            <input
+              name="experience"
+              type="number"
+              min="0"
+              value={form.experience}
+              onChange={handleChange}
+            />
+          ) : (
+            doctor.experience ?? "Not specified"
+          )}
+        </div>
+
+        {/* Available Days */}
+        <div className="profile-field">
+          <strong>Available Days:</strong>{" "}
+          {isEditing ? (
+            <input
+              name="availableDays"
+              value={form.availableDays.join(", ")}
+              onChange={handleMultiChange}
+              placeholder="e.g. Monday, Wednesday"
+            />
+          ) : doctor.availableDays?.length ? (
+            doctor.availableDays.join(", ")
+          ) : (
+            "Not specified"
+          )}
+        </div>
+
+        {/* Languages Spoken */}
+        <div className="profile-field">
+          <strong>Languages Spoken:</strong>{" "}
+          {isEditing ? (
+            <input
+              name="languagesSpoken"
+              value={form.languagesSpoken.join(", ")}
+              onChange={handleMultiChange}
+              placeholder="e.g. English, Hindi"
+            />
+          ) : doctor.languagesSpoken?.length ? (
+            doctor.languagesSpoken.join(", ")
+          ) : (
+            "Not specified"
+          )}
+        </div>
+
+        {/* Profile Image */}
         <div className="profile-field">
           <strong>Profile Image URL:</strong>{" "}
           {isEditing ? (
@@ -142,6 +228,7 @@ export default function DoctorDashboard() {
           )}
         </div>
 
+        {/* Buttons */}
         <div className="profile-actions">
           {isEditing ? (
             <button className="edit-btn" onClick={saveProfile}>
@@ -157,6 +244,7 @@ export default function DoctorDashboard() {
           </button>
         </div>
       </div>
+      <DoctorAppointmentsList />
     </main>
   );
 }

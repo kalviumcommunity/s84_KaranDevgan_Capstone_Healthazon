@@ -35,7 +35,7 @@ function App() {
                 <Link to="/doctors">List of Doctors</Link>
                 <Link to="/doctor-login">Login</Link>
                 <Link to="/doctor-register">Register</Link>
-                <Link to="/doctor-dashboard">Dashboard</Link>
+                <Link to="/doctor-dashboard">Doctor Dashboard</Link>
               </div>
             </div>
 
@@ -44,7 +44,7 @@ function App() {
               <div className="dropdown-content">
                 <Link to="/patient/login">Login</Link>
                 <Link to="/patient/register">Register</Link>
-                <Link to="/patient/dashboard">Dashboard</Link>
+                <Link to="/patient/dashboard"> Patient Dashboard</Link>
               </div>
             </div>
             {/* Later use */}

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -69,11 +67,7 @@ const BookAppointmentForm = () => {
       setLoading(false);
       return;
     }
-    console.log("Checking availability with:", {
-      doctorId: formData.doctor,
-      date: formData.date,
-      time: formData.time,
-    });
+
     try {
       const checkRes = await axios.post(
         "http://localhost:3000/api/availability",
@@ -107,7 +101,6 @@ const BookAppointmentForm = () => {
 
       setMessage("✅ Appointment booked successfully (Pending Confirmation).");
 
-      // Reset form
       setFormData({
         doctor: selectedDoctor?._id || "",
         date: "",
@@ -126,6 +119,19 @@ const BookAppointmentForm = () => {
   };
 
   const todayDate = new Date().toISOString().split("T")[0];
+
+  const generateTimeSlots = () => {
+    const slots = [];
+    const startHour = 9;
+    const endHour = 17;
+
+    for (let hour = startHour; hour < endHour; hour++) {
+      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      slots.push(`${hour.toString().padStart(2, "0")}:30`);
+    }
+
+    return slots;
+  };
 
   return (
     <form
@@ -205,14 +211,20 @@ const BookAppointmentForm = () => {
 
       <div className="mb-3">
         <label className="block font-medium mb-1">Time Slot:</label>
-        <input
-          type="time"
+        <select
           name="time"
           value={formData.time}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded"
-        />
+        >
+          <option value="">-- Select Time Slot --</option>
+          {generateTimeSlots().map((slot) => (
+            <option key={slot} value={slot}>
+              {slot}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">

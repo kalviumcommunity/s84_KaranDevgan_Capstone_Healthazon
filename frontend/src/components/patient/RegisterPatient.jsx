@@ -7,8 +7,10 @@ export default function RegisterPatient() {
     email: "",
     password: "",
     age: "",
-    gender: "",
+    gender: "Male",
     contact: "",
+    address: "",
+    profileImage: "",
   });
 
   const handleChange = (e) => {
@@ -28,7 +30,7 @@ export default function RegisterPatient() {
       const data = await res.json();
       if (res.ok) {
         alert("Registered successfully!");
-        // Redirect to login or dashboard
+        // window.location.href = "/patient/login"; // or navigate with useNavigate
       } else {
         alert(data.message || "Registration failed");
       }
@@ -77,15 +79,31 @@ export default function RegisterPatient() {
           min={1}
         />
         <select name="gender" value={formData.gender} onChange={handleChange}>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
         </select>
         <input
-          type="text"
+          type="tel"
           name="contact"
           placeholder="Contact Number"
+          pattern="[6-9]\d{9}"
+          title="Enter a valid 10-digit Indian mobile number"
           value={formData.contact}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="Address (Optional)"
+          value={formData.address}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="profileImage"
+          placeholder="Profile Image URL (Optional)"
+          value={formData.profileImage}
           onChange={handleChange}
         />
         <button type="submit">Register</button>
