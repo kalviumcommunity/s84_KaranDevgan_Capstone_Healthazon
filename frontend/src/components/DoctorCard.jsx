@@ -15,7 +15,7 @@ function DoctorCard({ doctor, onViewDetails, onBookAppointment }) {
 
   return (
     <div className="doctor-card">
-      <h3>{doctor.name}</h3>
+      <h3> Dr {doctor.name}</h3>
       <p>
         <strong>Specialization:</strong> {doctor.specialization}
       </p>

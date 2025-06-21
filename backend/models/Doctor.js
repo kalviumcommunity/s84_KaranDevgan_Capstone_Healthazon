@@ -1,20 +1,14 @@
+
 const mongoose = require("mongoose");
 
 const doctorSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: {
       type: String,
       required: function () {
-        return !this.isGoogleUser; // Password required for non-Google users
+        return !this.isGoogleUser;
       },
     },
     specialization: {
@@ -29,18 +23,14 @@ const doctorSchema = new mongoose.Schema(
         return !this.isGoogleUser;
       },
     },
-    profileImage: {
-      type: String,
-    },
-    googleId: {
-      type: String,
-      unique: true,
-      sparse: true, // Only some doctors will have it
-    },
-    isGoogleUser: {
-      type: Boolean,
-      default: false,
-    },
+    location: { type: String }, // NEW
+    experience: { type: Number }, // NEW, years of experience
+    availableDays: [{ type: String }], // e.g. ["Monday", "Wednesday"]
+    languagesSpoken: [{ type: String }], // e.g. ["English", "Hindi"]
+
+    profileImage: { type: String },
+    googleId: { type: String, unique: true, sparse: true },
+    isGoogleUser: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

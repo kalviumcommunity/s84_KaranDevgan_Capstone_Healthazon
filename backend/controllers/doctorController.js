@@ -1,28 +1,37 @@
-// doctorController.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Doctor = require("../models/Doctor");
 
-// Define functions normallyasync 
-  async function getAllDoctors(req, res) {
+async function getAllDoctors(req, res) {
   try {
     const query = {};
 
-    if (req.query.specialization) {
+    if (req.query.specialization)
       query.specialization = req.query.specialization;
+
+    if (req.query.fees) query.fees = { $lte: Number(req.query.fees) };
+
+    if (req.query.location) query.location = req.query.location;
+
+    if (req.query.experience)
+      query.experience = { $gte: Number(req.query.experience) };
+
+    if (req.query.availableDay) {
+      const days = req.query.availableDay.split(",");
+      query.availableDays = { $in: days };
     }
 
-    if (req.query.fees) {
-      query.fees = { $lte: Number(req.query.fees) };
+    if (req.query.language) {
+      const langs = req.query.language.split(",");
+      query.languagesSpoken = { $in: langs };
     }
 
-    const doctors = await Doctor.find(query).select("-password");
+    const doctors = await Doctor.find(query);
     return res.status(200).json(doctors);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
-
 
 async function registerDoctor(req, res) {
   const {
@@ -32,7 +41,9 @@ async function registerDoctor(req, res) {
     fees,
     specialization,
     experience,
-    availability,
+    location,
+    availableDays,
+    languagesSpoken,
     profileImage,
   } = req.body;
 
@@ -53,7 +64,9 @@ async function registerDoctor(req, res) {
       fees,
       specialization,
       experience,
-      availability,
+      location,
+      availableDays,
+      languagesSpoken,
       profileImage,
     });
 
@@ -78,6 +91,13 @@ async function loginDoctor(req, res) {
     const doctor = await Doctor.findOne({ email });
     if (!doctor) {
       return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    if (doctor.isGoogleUser) {
+      return res.status(400).json({
+        message:
+          "This account is linked with Google. Please login using Google.",
+      });
     }
 
     const isMatch = await bcrypt.compare(password, doctor.password);
@@ -136,7 +156,6 @@ async function updateDoctor(req, res) {
 }
 
 async function getDoctorProfile(req, res) {
-  // req.user is set by authenticateDoctor
   const doc = req.user.toObject();
   delete doc.password;
   res.json({ doctor: doc });
@@ -144,13 +163,26 @@ async function getDoctorProfile(req, res) {
 
 async function updateDoctorProfile(req, res) {
   try {
-    const doctor = req.user; // from authenticateDoctor
-    const { name, specialization, fees, profileImage } = req.body;
-    
+    const doctor = req.user;
+    const {
+      name,
+      specialization,
+      fees,
+      profileImage,
+      location,
+      experience,
+      availableDays,
+      languagesSpoken,
+    } = req.body;
+
     if (name !== undefined) doctor.name = name;
     if (specialization !== undefined) doctor.specialization = specialization;
     if (fees !== undefined) doctor.fees = fees;
     if (profileImage !== undefined) doctor.profileImage = profileImage;
+    if (location !== undefined) doctor.location = location;
+    if (experience !== undefined) doctor.experience = experience;
+    if (availableDays !== undefined) doctor.availableDays = availableDays;
+    if (languagesSpoken !== undefined) doctor.languagesSpoken = languagesSpoken;
 
     await doctor.save();
 
@@ -161,7 +193,7 @@ async function updateDoctorProfile(req, res) {
     res.status(400).json({ message: err.message });
   }
 }
-// Export all functions
+
 module.exports = {
   getAllDoctors,
   registerDoctor,

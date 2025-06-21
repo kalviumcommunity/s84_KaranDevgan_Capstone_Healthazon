@@ -10,7 +10,7 @@ const AppointmentCard = ({ appointment }) => {
     status,
     healthIssue,
   } = appointment;
-
+// 
   const formattedDate = new Date(appointmentDate).toLocaleDateString();
 
   return (
@@ -18,7 +18,7 @@ const AppointmentCard = ({ appointment }) => {
       <div className="appointment-header">
         <div>
           <h3 className="doctor-name">
-            {doctor?.name}
+             Dr {doctor?.name}
             <span className="specialization"> ({doctor?.specialization})</span>
           </h3>
         </div>
@@ -49,3 +49,4 @@ const AppointmentCard = ({ appointment }) => {
 };
 
 export default AppointmentCard;
+
