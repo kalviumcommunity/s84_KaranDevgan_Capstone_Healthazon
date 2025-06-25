@@ -1,60 +1,161 @@
-.main {
-    background-color: #f5f9ff;
-    padding: 4rem 2rem;
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;           /* Vertically center */
+  justify-content: center;       /* Horizontally center */
+  gap: 2rem;
+  padding: 4rem 2rem;
+  background-color: #f5f9ff;
+  min-height: 80vh;
+  text-align: center;
+}
+
+.alert {
+  margin-top: 1rem;
+  color: #c53030;
+  font-weight: 500;
+}
+.hero-text {
+  flex: 1 1 100%;
+  padding: 0 1rem;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero-text h2 {
+  font-size: 2.5rem;
+  color: #2b6cb0;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+.hero-image {
+  flex: 1 1 400px;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button.primary {
+  background-color: #2b6cb0;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.primary:hover {
+  background-color: #2c5282;
+}
+
+button.secondary {
+  background-color: white;
+  color: #2b6cb0;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #2b6cb0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button.secondary:hover {
+  background-color: #2b6cb0;
+  color: white;
+}
+
+/* Cards Section */
+.cards-section {
+  padding: 4rem 2rem;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.cards-section h3 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2b6cb0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  padding: 2rem;
+  background-color: #f5f9ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.card h4 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #2b6cb0;
+}
+
+.card p {
+  color: #4a5568;
+  font-size: 1rem;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .hero-text {
+    padding-right: 0;
     text-align: center;
-    color: #1a202c;
-    min-height: calc(100vh - 150px); /* Adjust if your header/footer height differs */
   }
-  
-  .main h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #2b6cb0;
-    font-weight: 700;
+
+  .hero-text h2 {
+    font-size: 2rem;
   }
-  
-  .main p {
-    font-size: 1.1rem;
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    color: #4a5568;
+
+  .hero-text p {
+    font-size: 1rem;
   }
-  
-  .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+
+  .hero {
+    text-align: center;
+    flex-direction: column-reverse;
   }
-  
-  button.primary {
-    background-color: #2b6cb0;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+
+  .hero-image img {
+    width: 25px;     /* or use max-width: 100% for responsiveness */
+    height: 100 px;     /* keeps aspect ratio */
+    border-radius: 12px;  /* optional: soft corners */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* optional: add a subtle shadow */
   }
-  
-  button.primary:hover {
-    background-color: #2c5282;
-  }
-  
-  button.secondary {
-    background-color: white;
-    color: #2b6cb0;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid #2b6cb0;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  button.secondary:hover {
-    background-color: #2b6cb0;
-    color: white;
-  }
-  
+}

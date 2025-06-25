@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import Home from "./pages/Home";
+import About from "./pages/About";
 //Doctor imports
 import Doctors from "./pages/Doctors";
 import DoctorLogin from "./components/doctor/DoctorLogin";
@@ -53,6 +54,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctor-login" element={<DoctorLogin />} />
           <Route path="/doctor-register" element={<DoctorRegister />} />
