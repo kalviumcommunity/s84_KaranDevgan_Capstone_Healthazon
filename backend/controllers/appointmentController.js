@@ -61,7 +61,7 @@ async function createAppointment(req, res) {
       appointmentDate,
       timeSlot,
       appointmentType,
-      notes,
+      healthIssue: notes,
       status: "pending",
     });
 

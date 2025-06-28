@@ -10,19 +10,20 @@ const AppointmentCard = ({ appointment }) => {
     status,
     healthIssue,
   } = appointment;
-// 
+
   const formattedDate = new Date(appointmentDate).toLocaleDateString();
 
   return (
-    <div className={`appointment-card ${status}`}>
+    <div className="appointment-card">
       <div className="appointment-header">
-        <div>
-          <h3 className="doctor-name">
-             Dr {doctor?.name}
-            <span className="specialization"> ({doctor?.specialization})</span>
-          </h3>
-        </div>
-        <span className="status">{status}</span>
+        <h3 className="doctor-name">
+          Dr {doctor?.name}
+          <span className="specialization"> ({doctor?.specialization})</span>
+        </h3>
+
+        <span className={`status-badge status-${status}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
       </div>
 
       <div className="appointment-details">
@@ -36,17 +37,13 @@ const AppointmentCard = ({ appointment }) => {
           <strong>Type:</strong> {appointmentType}
         </p>
         {healthIssue && (
-          <p>
+          <p className="issue-text">
             <strong>Issue:</strong> {healthIssue}
           </p>
         )}
       </div>
-      {/* <p className={`status-label ${appointment.status}`}>
-        Status: {appointment.status}
-      </p> */}
     </div>
   );
 };
 
 export default AppointmentCard;
-

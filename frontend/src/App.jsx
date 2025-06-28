@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Navbar from './components/Navbar'
 //Doctor imports
 import Doctors from "./pages/Doctors";
 import DoctorLogin from "./components/doctor/DoctorLogin";
@@ -25,32 +26,8 @@ function App() {
       {" "}
       {/*  Wrap Router */}
       <Router>
-        <header className="header">
-          <h1 className="logo">Healthazon</h1>
-          <nav>
-            <Link to="/">Home</Link>
-
-            <div className="dropdown">
-              <span className="dropdown-title">Doctors ▾</span>
-              <div className="dropdown-content">
-                <Link to="/doctors">List of Doctors</Link>
-                <Link to="/doctor-login">Login</Link>
-                <Link to="/doctor-register">Register</Link>
-                <Link to="/doctor-dashboard">Doctor Dashboard</Link>
-              </div>
-            </div>
-
-            <div className="dropdown">
-              <span className="dropdown-title">Patients ▾</span>
-              <div className="dropdown-content">
-                <Link to="/patient/login">Login</Link>
-                <Link to="/patient/register">Register</Link>
-                <Link to="/patient/dashboard"> Patient Dashboard</Link>
-              </div>
-            </div>
-            {/* Later use */}
-          </nav>
-        </header>
+        <Navbar />
+        
 
         <Routes>
           <Route path="/" element={<Home />} />

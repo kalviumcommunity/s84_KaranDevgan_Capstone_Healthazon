@@ -8,6 +8,7 @@ import "./PatientDashboard.css";
 
 export default function PatientDashboard() {
   const [patient, setPatient] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [form, setForm] = useState({
     name: "",
     age: "",
@@ -100,7 +101,22 @@ export default function PatientDashboard() {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
+  
+const handleFileChange = (e) => {
+  setSelectedFiles(Array.from(e.target.files));
+};
 
+  const handleRemoveFile = (index) => {
+    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const handleUpload = async () => {
+    console.log("Files ready for upload:", selectedFiles);
+
+    // later: send these files to your backend using FormData
+    alert("Health records uploaded successfully! (Frontend only)");
+    setSelectedFiles([]);
+  };
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
 
@@ -153,194 +169,229 @@ export default function PatientDashboard() {
   };
 
   if (!patient) return <p>Loading profile...</p>;
-
+<h2>Welcome back, {patient.name} 👋</h2>;
   return (
-    <main className="main">
-      <h2>Welcome back, {patient.name} 👋</h2>
-      <div className="profile-card">
-        <div className="profile-header">
-          <img
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=patient-${patient._id}`}
-            alt="Avatar"
-            className="profile-avatar"
-          />
-        </div>
+    <main className="dashboard-grid-2col">
+      <div className="left-column">
+        <section className="profile-section">
+          <div className="profile-card">
+            <div className="profile-header">
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=patient-${patient._id}`}
+                alt="Avatar"
+                className="profile-avatar"
+              />
+              <h2 className="profile-name">{patient.name}</h2>
+            </div>
 
-        <div className="profile-field">
-          <strong>Name:</strong>{" "}
-          {isEditing ? (
-            <input name="name" value={form.name} onChange={handleChange} />
-          ) : (
-            patient.name
-          )}
-        </div>
+            <div className="profile-info">
+              <div className="profile-field">
+                <strong>Age:</strong>{" "}
+                {isEditing ? (
+                  <input
+                    name="age"
+                    type="number"
+                    min="1"
+                    value={form.age}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  patient.age
+                )}
+              </div>
 
-        <div className="profile-field">
-          <strong>Age:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="age"
-              type="number"
-              min="1"
-              value={form.age}
-              onChange={handleChange}
-            />
-          ) : (
-            patient.age
-          )}
-        </div>
+              <div className="profile-field">
+                <strong>Contact:</strong>{" "}
+                {isEditing ? (
+                  <input
+                    name="contact"
+                    value={form.contact}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  patient.contact || "Not provided"
+                )}
+              </div>
 
-        <div className="profile-field">
-          <strong>Contact:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="contact"
-              value={form.contact}
-              onChange={handleChange}
-            />
-          ) : (
-            patient.contact || "Not provided"
-          )}
-        </div>
+              <div className="profile-field">
+                <strong>Email:</strong>{" "}
+                {isEditing && !patient.isGoogleUser ? (
+                  <input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                  />
+                ) : (
+                  patient.email
+                )}
+              </div>
+            </div>
 
-        <div className="profile-field">
-          <strong>Email:</strong>{" "}
-          {isEditing && !patient.isGoogleUser ? (
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-            />
-          ) : (
-            patient.email
-          )}
-        </div>
-
-        <div className="profile-actions">
-          {isEditing ? (
-            <button className="edit-btn" onClick={saveProfile}>
-              Save
-            </button>
-          ) : (
-            <button className="edit-btn" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
-          )}
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-
-        <div className="dashboard-section">
+            <div className="profile-actions">
+              {isEditing ? (
+                <button className="edit-btn" onClick={saveProfile}>
+                  Save
+                </button>
+              ) : (
+                <button className="edit-btn" onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </button>
+              )}
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </section>
+        <section className="appointments-section">
           <h3>Your Appointments</h3>
           <AppointmentList />
-        </div>
+        </section>
 
-        <div className="dashboard-section">
+        <section className="health-records-section">
           <h3>Health Records</h3>
-          <p>[Placeholder] Your health records will appear here.</p>
-        </div>
+          <div className="upload-container">
+            <input
+              type="file"
+              id="healthRecordUpload"
+              accept=".pdf,.jpg,.jpeg,.png"
+              multiple
+              onChange={handleFileChange}
+            />
+            <label htmlFor="healthRecordUpload" className="upload-label">
+              Select Files
+            </label>
+
+            {selectedFiles.length > 0 && (
+              <div className="file-preview-list">
+                {selectedFiles.map((file, index) => (
+                  <div className="file-preview-item" key={index}>
+                    <span>{file.name}</span>
+                    <button
+                      type="button"
+                      className="remove-btn"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button"
+              className="upload-btn"
+              disabled={selectedFiles.length === 0}
+              onClick={handleUpload}
+            >
+              Upload Records
+            </button>
+          </div>
+        </section>
       </div>
 
-      <section className="filter-section" style={{ marginTop: "2rem" }}>
-        <h3>Filter Doctors</h3>
+      <div className="right-column">
+        <section className="filter-section" style={{ marginBottom: "2rem" }}>
+          <h3>Filter Doctors</h3>
 
-        <label>
-          Specialization:
-          <select
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
-          >
-            <option value="">All</option>
-            <option value="Cardiology">Cardiology</option>
-            <option value="Dermatology">Dermatology</option>
-            <option value="Neurology">Neurology</option>
-          </select>
-        </label>
+          <label>
+            Specialization:
+            <select
+              value={specialization}
+              onChange={(e) => setSpecialization(e.target.value)}
+            >
+              <option value="">All</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Dermatology">Dermatology</option>
+              <option value="Neurology">Neurology</option>
+            </select>
+          </label>
 
-        <label style={{ marginLeft: "1rem" }}>
-          Max Fees:
-          <input
-            type="number"
-            min="0"
-            value={maxFees}
-            onChange={(e) => setMaxFees(e.target.value)}
-            placeholder="Enter max fees"
-            style={{ marginLeft: "0.5rem" }}
-          />
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          Location:
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Enter location"
-            style={{ marginLeft: "0.5rem" }}
-          />
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          Min Experience (yrs):
-          <input
-            type="number"
-            min="0"
-            value={experience}
-            onChange={(e) => setExperience(e.target.value)}
-            placeholder="Years"
-            style={{ marginLeft: "0.5rem" }}
-          />
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          Available Day:
-          <select
-            value={availableDay}
-            onChange={(e) => setAvailableDay(e.target.value)}
-            style={{ marginLeft: "0.5rem" }}
-          >
-            <option value="">Any</option>
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-            <option value="Sunday">Sunday</option>
-          </select>
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          Language:
-          <input
-            type="text"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            placeholder="e.g. Hindi"
-            style={{ marginLeft: "0.5rem" }}
-          />
-        </label>
-      </section>
-
-      <section className="doctor-list-section" style={{ marginTop: "1rem" }}>
-        <h3>Doctors</h3>
-        {loadingDoctors && <p>Loading doctors...</p>}
-        {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
-        {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-          {doctors.map((doc) => (
-            <DoctorCard
-              key={doc._id}
-              doctor={doc}
-              onViewDetails={handleViewDetails}
-              onBookAppointment={handleBookAppointment}
+          <label style={{ marginTop: "1rem" }}>
+            Max Fees:
+            <input
+              type="number"
+              min="0"
+              value={maxFees}
+              onChange={(e) => setMaxFees(e.target.value)}
+              placeholder="Enter max fees"
+              style={{ marginLeft: "0.5rem" }}
             />
-          ))}
-        </div>
-      </section>
+          </label>
+
+          <label style={{ marginTop: "1rem" }}>
+            Location:
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter location"
+              style={{ marginLeft: "0.5rem" }}
+            />
+          </label>
+
+          <label style={{ marginTop: "1rem" }}>
+            Min Experience (yrs):
+            <input
+              type="number"
+              min="0"
+              value={experience}
+              onChange={(e) => setExperience(e.target.value)}
+              placeholder="Years"
+              style={{ marginLeft: "0.5rem" }}
+            />
+          </label>
+
+          <label style={{ marginTop: "1rem" }}>
+            Available Day:
+            <select
+              value={availableDay}
+              onChange={(e) => setAvailableDay(e.target.value)}
+              style={{ marginLeft: "0.5rem" }}
+            >
+              <option value="">Any</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+          </label>
+
+          <label style={{ marginTop: "1rem" }}>
+            Language:
+            <input
+              type="text"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              placeholder="e.g. Hindi"
+              style={{ marginLeft: "0.5rem" }}
+            />
+          </label>
+        </section>
+
+        <section className="doctor-list-section">
+          <h3>Doctors</h3>
+          {loadingDoctors && <p>Loading doctors...</p>}
+          {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
+          {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
+
+          <div className="doctor-cards-container">
+            {doctors.map((doc) => (
+              <DoctorCard
+                key={doc._id}
+                doctor={doc}
+                onViewDetails={handleViewDetails}
+                onBookAppointment={handleBookAppointment}
+              />
+            ))}
+          </div>
+        </section>
+      </div>
 
       {showDetails && (
         <DoctorDetailsModal
