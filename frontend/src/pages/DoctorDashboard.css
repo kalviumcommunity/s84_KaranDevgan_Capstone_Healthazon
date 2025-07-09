@@ -87,4 +87,29 @@
     border-radius: 50%;
     vertical-align: middle;
   }
-  
+
+
+  .tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1.2rem;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.tab:hover {
+  background: #e0e0e0;
+}
+
+.tab.active {
+  background: #007bff;
+  color: white;
+}

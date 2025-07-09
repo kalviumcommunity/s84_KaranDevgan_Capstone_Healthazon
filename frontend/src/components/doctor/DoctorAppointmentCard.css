@@ -1,0 +1,17 @@
+.doctor-appointment-card {
+  background: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.doctor-appointment-card h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+.doctor-appointment-card select {
+  padding: 0.3rem 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+}

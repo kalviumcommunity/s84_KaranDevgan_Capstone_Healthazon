@@ -2,6 +2,8 @@
 // src/components/doctor/DoctorAppointmentsList.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import DoctorAppointmentCard from "./DoctorAppointmentCard";
+import "./DoctorAppointmentsList.css";
 
 export default function DoctorAppointmentsList() {
   const [appointments, setAppointments] = useState([]);
@@ -31,7 +33,7 @@ export default function DoctorAppointmentsList() {
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+  }, [token]);
 
   const handleUpdateStatus = async (appointmentId, newStatus) => {
     try {
@@ -40,68 +42,50 @@ export default function DoctorAppointmentsList() {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(`Appointment ${newStatus}`);
+      alert(`Appointment marked as ${newStatus}`);
       fetchAppointments(); // Refresh after update
     } catch (err) {
       console.error("Error updating appointment status:", err);
       alert("Error updating status");
     }
   };
+  const groupedAppointments = {
+    pending: [],
+    confirmed: [],
+    cancelled: [],
+    completed: [],
+  };
+  appointments.forEach((app) => {
+    if (groupedAppointments.hasOwnProperty(app.status)) {
+      groupedAppointments[app.status].push(app);
+    }
+  });
 
   return (
-    <div>
+    <div className="appointment-list">
       <h3>Your Appointments</h3>
+
       {loading ? (
         <p>Loading...</p>
       ) : appointments.length === 0 ? (
         <p>No appointments found</p>
       ) : (
-        appointments.map((appointment) => (
-          <div
-            key={appointment._id}
-            style={{
-              border: "1px solid #ccc",
-              margin: "10px",
-              padding: "10px",
-              borderRadius: "4px",
-            }}
-          >
-            <p>
-              <strong>Patient:</strong> {appointment.patient?.name}
-            </p>
-            <p>
-              <strong>Date:</strong>{" "}
-              {new Date(appointment.appointmentDate).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>Time:</strong> {appointment.timeSlot}
-            </p>
-            <p>
-              <strong>Status:</strong>{" "}
-              <span style={{ textTransform: "capitalize" }}>
-                {appointment.status}
-              </span>
-            </p>
+        Object.keys(groupedAppointments).map((status) => (
+          <div key={status} className="appointment-section">
+            <h4 className={`section-heading status-${status}`}>
+              {status.charAt(0).toUpperCase() + status.slice(1)} Appointments
+            </h4>
 
-            {/* Confirm/Cancel only if appointment is pending */}
-            {appointment.status === "pending" && (
-              <div style={{ marginTop: "10px" }}>
-                <button
-                  style={{ marginRight: "10px" }}
-                  onClick={() =>
-                    handleUpdateStatus(appointment._id, "accepted")
-                  }
-                >
-                  ✅ Confirm
-                </button>
-                <button
-                  onClick={() =>
-                    handleUpdateStatus(appointment._id, "cancelled")
-                  }
-                >
-                  ❌ Cancel
-                </button>
-              </div>
+            {groupedAppointments[status].length > 0 ? (
+              groupedAppointments[status].map((appointment) => (
+                <DoctorAppointmentCard
+                  key={appointment._id}
+                  appointment={appointment}
+                  onStatusChange={handleUpdateStatus}
+                />
+              ))
+            ) : (
+              <p className="empty-message">No {status} appointments.</p>
             )}
           </div>
         ))
