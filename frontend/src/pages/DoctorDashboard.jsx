@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DoctorAppointmentsList from "../components/doctor/DoctorAppointmentsList";
 import NotificationBell from "../components/NotificationBell";
+
+import DoctorProfile from "../components/doctor/DoctorProfile";
 import "./DoctorDashboard.css";
 
 export default function DoctorDashboard() {
   const [doctor, setDoctor] = useState(null);
+  const [activeTab, setActiveTab] = useState("profile");
   const [form, setForm] = useState({
     name: "",
     specialization: "",
@@ -93,158 +96,36 @@ export default function DoctorDashboard() {
 
   return (
     <main className="main">
-          <NotificationBell />
-      <h2>Welcome back,  Dr {doctor.name} 👋</h2>
-      <div className="profile-card">
-        <div className="profile-header">
-          <img
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=doctor-${doctor._id}`}
-            alt="Avatar"
-            className="profile-avatar"
-          />
-        </div>
-
-        {/* Name */}
-        <div className="profile-field">
-          <strong>Name:</strong>{" "}
-          {isEditing ? (
-            <input name="name" value={form.name} onChange={handleChange} />
-          ) : (
-            doctor.name
-          )}
-        </div>
-
-        {/* Specialization */}
-        <div className="profile-field">
-          <strong>Specialization:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="specialization"
-              value={form.specialization}
-              onChange={handleChange}
-            />
-          ) : (
-            doctor.specialization
-          )}
-        </div>
-
-        {/* Fees */}
-        <div className="profile-field">
-          <strong>Fees (₹):</strong>{" "}
-          {isEditing ? (
-            <input
-              name="fees"
-              type="number"
-              min="0"
-              value={form.fees}
-              onChange={handleChange}
-            />
-          ) : (
-            doctor.fees
-          )}
-        </div>
-
-        {/* Location */}
-        <div className="profile-field">
-          <strong>Location:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-            />
-          ) : (
-            doctor.location || "Not specified"
-          )}
-        </div>
-
-        {/* Experience */}
-        <div className="profile-field">
-          <strong>Experience (years):</strong>{" "}
-          {isEditing ? (
-            <input
-              name="experience"
-              type="number"
-              min="0"
-              value={form.experience}
-              onChange={handleChange}
-            />
-          ) : (
-            doctor.experience ?? "Not specified"
-          )}
-        </div>
-
-        {/* Available Days */}
-        <div className="profile-field">
-          <strong>Available Days:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="availableDays"
-              value={form.availableDays.join(", ")}
-              onChange={handleMultiChange}
-              placeholder="e.g. Monday, Wednesday"
-            />
-          ) : doctor.availableDays?.length ? (
-            doctor.availableDays.join(", ")
-          ) : (
-            "Not specified"
-          )}
-        </div>
-
-        {/* Languages Spoken */}
-        <div className="profile-field">
-          <strong>Languages Spoken:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="languagesSpoken"
-              value={form.languagesSpoken.join(", ")}
-              onChange={handleMultiChange}
-              placeholder="e.g. English, Hindi"
-            />
-          ) : doctor.languagesSpoken?.length ? (
-            doctor.languagesSpoken.join(", ")
-          ) : (
-            "Not specified"
-          )}
-        </div>
-
-        {/* Profile Image */}
-        <div className="profile-field">
-          <strong>Profile Image URL:</strong>{" "}
-          {isEditing ? (
-            <input
-              name="profileImage"
-              value={form.profileImage}
-              onChange={handleChange}
-            />
-          ) : doctor.profileImage ? (
-            <img
-              src={doctor.profileImage}
-              alt="Profile"
-              className="small-avatar"
-            />
-          ) : (
-            "None"
-          )}
-        </div>
-
-        {/* Buttons */}
-        <div className="profile-actions">
-          {isEditing ? (
-            <button className="edit-btn" onClick={saveProfile}>
-              Save
-            </button>
-          ) : (
-            <button className="edit-btn" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
-          )}
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+      <NotificationBell />
+      <h2>Welcome back, Dr {doctor.name} 👋</h2>
+      <div className="tabs">
+        <button
+          className={activeTab === "profile" ? "tab active" : "tab"}
+          onClick={() => setActiveTab("profile")}
+        >
+          Profile
+        </button>
+        <button
+          className={activeTab === "appointments" ? "tab active" : "tab"}
+          onClick={() => setActiveTab("appointments")}
+        >
+          Appointments
+        </button>
       </div>
-      <DoctorAppointmentsList />
+
+      {activeTab === "profile" && (
+        <DoctorProfile
+          doctor={doctor}
+          form={form}
+          setForm={setForm}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          saveProfile={saveProfile}
+          handleLogout={handleLogout}
+        />
+      )}
+
+      {activeTab === "appointments" && <DoctorAppointmentsList />}
     </main>
   );
 }

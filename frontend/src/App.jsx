@@ -1,25 +1,33 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link , useLocation } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+// public pages
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Navbar from './components/Navbar'
-//Doctor imports
 import Doctors from "./pages/Doctors";
+import BookAppointmentPage from "./pages/BookAppointmentPage";
+// public shared components
+import Navbar from './components/Navbar'
+
+// Doctor Auth
 import DoctorLogin from "./components/doctor/DoctorLogin";
 import DoctorRegister from "./components/doctor/DoctorRegister";
-import DoctorDashboard from "./pages/DoctorDashboard";
 
-//Patient imports
+//Patient Auth + Dashboard
 import LoginPatient from "./components/patient/LoginPatient";
 import RegisterPatient from "./components/patient/RegisterPatient";
 import PatientDashboard from "./pages/PatientDashboard";
 
-import BookAppointmentPage from "./pages/BookAppointmentPage";
+// Doctor Pages
+import DoctorDashboard from "./pages/DoctorDashboard";
+//import DoctorAppointments from "./pages/DoctorAppointments"; // NEW
+//import DoctorProfile from "./pages/DoctorProfile"; // NEW
+//import DoctorLayout from "./layouts/DoctorLayout"; // NEW
 const clientId =
   "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com";
 
+  
 function App() {
   return (
     <GoogleOAuthProvider clientId={clientId}>
@@ -53,3 +61,4 @@ function App() {
 }
 
 export default App;
+
