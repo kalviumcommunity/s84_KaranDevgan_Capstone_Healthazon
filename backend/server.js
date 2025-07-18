@@ -11,10 +11,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://s84-karandevgan-capstone-healthazon-1.onrender.com",
+    origin: ["https://healthazon.netlify.app", "http://localhost:3000"],
     credentials: true,
   })
 );
+
 // Routes
 app.use("/api", doctorRoutes);
 app.use("/api", patientRoutes);
