@@ -1,4 +1,3 @@
-
 // src/components/DoctorCard.jsx
 import "./DoctorCard.css";
 
