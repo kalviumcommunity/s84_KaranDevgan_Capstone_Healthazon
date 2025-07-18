@@ -28,9 +28,12 @@ export default function DoctorDashboard() {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/doctor-login");
 
-      const res = await fetch("http://localhost:3000/api/doctor/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/profile",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) {
         localStorage.removeItem("token");

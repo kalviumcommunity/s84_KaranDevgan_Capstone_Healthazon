@@ -86,7 +86,7 @@ const BookAppointmentForm = () => {
         }
       );
 
-      setMessage("✅ Appointment booked successfully (Pending Confirmation).");
+      setMessage("✅ Appointment booked successfully (Pending Confirmation). You will be notified via email");
 
       setFormData({
         doctor: selectedDoctor?._id || "",
