@@ -1,4 +1,5 @@
-const sendAppointmentNotification = require("./mailController");
+const {sendAppointmentNotification} = require("./mailController");
+const {sendAppointmentStatusUpdate} = require("./mailController");
 const Appointment = require("../models/Appointment");
 const mongoose = require("mongoose");
 
@@ -42,6 +43,19 @@ async function createAppointment(req, res) {
     const appointmentDateStr = new Date(appointmentDate)
       .toISOString()
       .split("T")[0];
+    const existingAppointment = await Appointment.findOne({
+      doctor: req.body.doctor,
+      appointmentDate: req.body.appointmentDate,
+      timeSlot: req.body.timeSlot,
+      status: { $ne: "cancelled" }, // optional: allow reuse of cancelled slots
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        message:
+          "This time slot is already booked. Please choose another slot.",
+      });
+    }
 
     // Create appointment
     const newAppointment = new Appointment({
@@ -84,19 +98,24 @@ async function updateAppointment(req, res) {
         new: true,
         runValidators: false,
       }
-    );
+    )
+      .populate("doctor")
+      .populate("patient");
 
     if (!updatedAppointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // Optional: You may want to update the AvailabilitySlot appointment link if status changed to cancelled or completed
-    // For example, if appointment cancelled, clear slot.appointment
-    if (updatedData.status === "cancelled") {
-      await AvailabilitySlot.updateOne(
-        { appointment: updatedAppointment._id },
-        { $set: { appointment: null } }
-      );
+    // 📨 Send email on status change
+    if (
+      updatedData.status === "confirmed" ||
+      updatedData.status === "cancelled"
+    ) {
+      await sendAppointmentStatusUpdate({
+        doctor: updatedAppointment.doctor,
+        patient: updatedAppointment.patient,
+        appointment: updatedAppointment,
+      });
     }
 
     return res.status(200).json({
@@ -149,6 +168,7 @@ async function getAppointmentsByDoctor(req, res) {
       .json({ message: "Server error while fetching appointments" });
   }
 }
+
 
 const getDoctorNotifications = async (req, res) => {
   const doctorId = req.user._id; // Assuming you have doctor auth middleware!
