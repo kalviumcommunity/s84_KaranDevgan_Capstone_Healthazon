@@ -7,9 +7,10 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const doctorGoogleLogin = async (req, res) => {
+  console.log(GOOGLE_CLIENT_ID);
   try {
     const { tokenId } = req.body;
-
+     
     const ticket = await client.verifyIdToken({
       idToken: tokenId,
       audience: GOOGLE_CLIENT_ID,
@@ -18,7 +19,7 @@ const doctorGoogleLogin = async (req, res) => {
     const payload = ticket.getPayload();
     const { email, name, picture, sub: googleId } = payload;
 
-    let doctor = await Doctor.findOne({ googleId });
+    let doctor = await Doctor.findOne({ email });
 
     if (!doctor) {
       doctor = new Doctor({

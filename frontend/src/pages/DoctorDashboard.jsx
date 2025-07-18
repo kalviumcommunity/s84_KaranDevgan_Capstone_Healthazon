@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DoctorAppointmentsList from "../components/doctor/DoctorAppointmentsList";
-import NotificationBell from "../components/NotificationBell";
-
+//import NotificationBell from "../components/NotificationBell";
 import DoctorProfile from "../components/doctor/DoctorProfile";
 import "./DoctorDashboard.css";
 
@@ -96,7 +95,7 @@ export default function DoctorDashboard() {
 
   return (
     <main className="main">
-      <NotificationBell />
+      
       <h2>Welcome back, Dr {doctor.name} 👋</h2>
       <div className="tabs">
         <button

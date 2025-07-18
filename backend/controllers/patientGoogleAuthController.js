@@ -1,4 +1,3 @@
-// patientGoogleAuthController.js;
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 const Patient = require("../models/Patient");
@@ -7,6 +6,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const patientGoogleLogin = async (req, res) => {
+  //console.log("GOOGLE_CLIENT_ID:", GOOGLE_CLIENT_ID);
   try {
     const { tokenId } = req.body;
 
@@ -27,14 +27,14 @@ const patientGoogleLogin = async (req, res) => {
         googleId,
         isGoogleUser: true,
         profileImage: picture,
-        password: null, // skipped since user is from Google
-        age: undefined, // default or ask on first dashboard load
+        password: null,
+        age: undefined,
         gender: "male",
       });
       await patient.save();
     }
 
-    const token = jwt.sign(
+    const jwtToken = jwt.sign(
       { id: patient._id, role: "patient" },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -45,7 +45,7 @@ const patientGoogleLogin = async (req, res) => {
 
     res.status(200).json({
       message: "Google login successful",
-      token,
+      token: jwtToken,
       patient: patientData,
     });
   } catch (error) {

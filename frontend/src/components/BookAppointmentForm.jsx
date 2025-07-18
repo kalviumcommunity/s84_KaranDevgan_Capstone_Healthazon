@@ -69,21 +69,6 @@ const BookAppointmentForm = () => {
     }
 
     try {
-      const checkRes = await axios.post(
-        "http://localhost:3000/api/availability",
-        {
-          doctor: formData.doctor,
-          date: formData.date,
-          time: formData.time,
-        }
-      );
-
-      if (!checkRes.data.available) {
-        setMessage("❌ Doctor not available at selected time.");
-        setLoading(false);
-        return;
-      }
-
       await axios.post(
         "http://localhost:3000/api/appointment",
         {

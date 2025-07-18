@@ -9,6 +9,11 @@ function DoctorLogin() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Utility: clear any existing patient session
+  const clearPatientSession = () => {
+    localStorage.removeItem("patientToken");
+    localStorage.removeItem("patient");
+  };
   // Handle email/password login
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +26,7 @@ function DoctorLogin() {
 
       const data = await res.json();
       if (res.ok) {
+        clearPatientSession();
         localStorage.setItem("token", data.token);
         localStorage.setItem("doctor", JSON.stringify(data.doctor));
         navigate("/doctor-dashboard");
