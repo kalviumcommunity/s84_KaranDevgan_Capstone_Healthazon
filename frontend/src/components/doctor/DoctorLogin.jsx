@@ -18,11 +18,14 @@ function DoctorLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/doctor/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {
@@ -42,11 +45,14 @@ function DoctorLogin() {
   // Handle Google login success
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const res = await fetch("http://localhost:3000/api/google-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tokenId: credentialResponse.credential }),
-      });
+      const res = await fetch(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/google-login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tokenId: credentialResponse.credential }),
+        }
+      );
 
       const data = await res.json();
       if (res.ok) {

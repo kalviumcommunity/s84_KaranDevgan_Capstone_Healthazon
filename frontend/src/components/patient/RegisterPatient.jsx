@@ -22,15 +22,17 @@ export default function RegisterPatient() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/patient/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         alert("Registered successfully!");
-        // window.location.href = "/patient/login"; // or navigate with useNavigate
       } else {
         alert(data.message || "Registration failed");
       }

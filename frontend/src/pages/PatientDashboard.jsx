@@ -36,9 +36,12 @@ export default function PatientDashboard() {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/patient/login");
 
-      const res = await fetch("http://localhost:3000/api/patient/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/profile",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!res.ok) {
         localStorage.removeItem("token");
         navigate("/patient/login");
@@ -77,7 +80,7 @@ export default function PatientDashboard() {
 
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `http://localhost:3000/api/doctors${queryString}`,
+          `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctors${queryString}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -129,14 +132,17 @@ const handleFileChange = (e) => {
       }
     }
 
-    const res = await fetch("http://localhost:3000/api/patient/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(
+      "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/profile",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      }
+    );
 
     const data = await res.json();
     if (!res.ok) {

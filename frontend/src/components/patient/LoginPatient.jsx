@@ -20,10 +20,13 @@ const LoginPatient = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/api/patient/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/login",
+        {
+          email,
+          password,
+        }
+      );
       clearDoctorSession(); // ✅ clear doctor session
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
@@ -46,7 +49,7 @@ const LoginPatient = () => {
       const tokenId = credentialResponse.credential;
       console.log(tokenId);
       const res = await axios.post(
-        "http://localhost:3000/api/patient/google-login",
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/google-login",
         { tokenId }
       );
 

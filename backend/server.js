@@ -9,8 +9,12 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "https://s84-karandevgan-capstone-healthazon-1.onrender.com",
+    credentials: true,
+  })
+);
 // Routes
 app.use("/api", doctorRoutes);
 app.use("/api", patientRoutes);
