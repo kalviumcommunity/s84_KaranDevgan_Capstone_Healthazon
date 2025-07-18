@@ -7,7 +7,7 @@
 ---
 
 ## Backend Deployment Link :  https://s84-karandevgan-capstone-healthazon-1.onrender.com
-## Frontend Deployment Link : https://685bb75f113b36a6506867dd--coruscating-granita-48ddd7.netlify.app/
+## Frontend Deployment Link : https://healthazon.netlify.app
 
 ## ✨ Project Brief
 
