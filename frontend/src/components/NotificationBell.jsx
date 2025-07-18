@@ -13,7 +13,7 @@ const NotificationBell = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3000/api/doctor/notifications",
+          "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/notifications",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setNotifications(res.data);
@@ -27,7 +27,7 @@ const NotificationBell = () => {
   const markAsRead = async (appointmentId) => {
     try {
       await axios.put(
-        `http://localhost:3000/api/doctor/notification/${appointmentId}`,
+        `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/notification/${appointmentId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -18,7 +18,7 @@ export default function DoctorAppointmentsList() {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/appointment/doctor/${doctor._id}`, // ✅ correct URL
+        `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment/doctor/${doctor._id}`, // ✅ correct URL
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -38,7 +38,7 @@ export default function DoctorAppointmentsList() {
   const handleUpdateStatus = async (appointmentId, newStatus) => {
     try {
       await axios.put(
-        `http://localhost:3000/api/appointment/${appointmentId}`,
+        `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment/${appointmentId}`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -47,7 +47,9 @@ const BookAppointmentForm = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/api/doctors")
+      .get(
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctors"
+      )
       .then((res) => setDoctors(res.data))
       .catch((err) => console.error("Error fetching doctors:", err))
       .finally(() => setLoading(false));
@@ -70,7 +72,7 @@ const BookAppointmentForm = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/api/appointment",
+        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment",
         {
           doctor: formData.doctor,
           patient: patientInfo._id,

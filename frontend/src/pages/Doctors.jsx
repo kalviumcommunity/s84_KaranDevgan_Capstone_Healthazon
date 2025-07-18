@@ -7,7 +7,9 @@ function Doctors() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/doctors") 
+    fetch(
+      "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctors"
+    )
       .then((res) => res.json())
       .then((data) => {
         setDoctors(data);

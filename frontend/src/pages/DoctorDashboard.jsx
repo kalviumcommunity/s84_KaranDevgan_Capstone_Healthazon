@@ -66,14 +66,17 @@ export default function DoctorDashboard() {
 
   const saveProfile = async () => {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:3000/api/doctor/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(
+      "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/profile",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(form),
+      }
+    );
 
     const data = await res.json();
     if (!res.ok) {
