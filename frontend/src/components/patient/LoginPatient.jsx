@@ -10,6 +10,12 @@ const LoginPatient = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // 🔐 Utility: clear any existing doctor session
+  const clearDoctorSession = () => {
+    localStorage.removeItem("doctor");
+    localStorage.removeItem("doctorToken");
+    
+  };
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -18,7 +24,7 @@ const LoginPatient = () => {
         email,
         password,
       });
-
+      clearDoctorSession(); // ✅ clear doctor session
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
 
@@ -33,9 +39,12 @@ const LoginPatient = () => {
   };
 
   const handleGoogleLogin = async (credentialResponse) => {
+    clearDoctorSession();
     setLoading(true);
+  
     try {
       const tokenId = credentialResponse.credential;
+      console.log(tokenId);
       const res = await axios.post(
         "http://localhost:3000/api/patient/google-login",
         { tokenId }

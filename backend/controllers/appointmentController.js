@@ -1,6 +1,9 @@
+const sendAppointmentNotification = require("./mailController");
 const Appointment = require("../models/Appointment");
 const mongoose = require("mongoose");
-const AvailabilitySlot = require("../models/AvailabilitySlot");
+
+const Doctor = require("../models/Doctor");
+const Patient = require("../models/Patient");
 
 async function getAllAppointments(req, res) {
   try {
@@ -40,20 +43,6 @@ async function createAppointment(req, res) {
       .toISOString()
       .split("T")[0];
 
-    // Check for availability slot with no appointment booked
-    const slot = await AvailabilitySlot.findOne({
-      doctor,
-      date: appointmentDateStr,
-      time: timeSlot,
-      appointment: null,
-    });
-
-    if (!slot) {
-      return res.status(400).json({
-        message: "Doctor not available at the selected date/time slot",
-      });
-    }
-
     // Create appointment
     const newAppointment = new Appointment({
       doctor,
@@ -66,11 +55,14 @@ async function createAppointment(req, res) {
     });
 
     await newAppointment.save();
+    const selectedDoctor = await Doctor.findById(newAppointment.doctor);
+    const selectedPatient = await Patient.findById(newAppointment.patient);
 
-    // Mark slot as booked by linking appointment
-    slot.appointment = newAppointment._id;
-    await slot.save();
-
+    await sendAppointmentNotification({
+      doctor: selectedDoctor,
+      patient: selectedPatient,
+      appointment: newAppointment,
+    });
     return res
       .status(201)
       .json({ message: "Appointment created", appointment: newAppointment });
