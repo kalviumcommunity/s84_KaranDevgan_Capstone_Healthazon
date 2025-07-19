@@ -43,10 +43,7 @@ function App() {
           <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
 
           <Route path="/patient/login" element={<LoginPatient />} />
-          <Route
-            path="/patient/forgot-password"
-            element={<PatientForgotPassword />}
-          />
+          
           <Route path="/patient/register" element={<RegisterPatient />} />
           <Route path="/patient/dashboard" element={<PatientDashboard />} />
 
