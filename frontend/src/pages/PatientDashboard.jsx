@@ -32,6 +32,8 @@ export default function PatientDashboard() {
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
+    localStorage.removeItem("doctorToken");
+    localStorage.removeItem("doctor");
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/patient/login");

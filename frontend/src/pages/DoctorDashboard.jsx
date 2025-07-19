@@ -24,6 +24,7 @@ export default function DoctorDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+  
     const loadProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/doctor-login");
