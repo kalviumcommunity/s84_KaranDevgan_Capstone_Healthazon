@@ -33,7 +33,7 @@ const doctorSchema = new mongoose.Schema(
     isGoogleUser: { type: Boolean, default: false },
     otp: { type: String },
     otpExpiry: { type: Date },
-    role : "doctor"
+    
   },
   { timestamps: true }
 );

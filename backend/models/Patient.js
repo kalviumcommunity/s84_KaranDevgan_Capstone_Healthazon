@@ -19,7 +19,6 @@ const patientSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other" , "male" , "female"],
       default: "Other",
     },
     contact: {
@@ -38,7 +37,7 @@ const patientSchema = new mongoose.Schema(
     medicalNotes: [{ type: String }], // Optional, for future patient record keeping
     otp: { type: String },
     otpExpiry: { type: Date },
-    role : "patient"
+
   },
   { timestamps: true } // Adds createdAt and updatedAt automatically
 );
