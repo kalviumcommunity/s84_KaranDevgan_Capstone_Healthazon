@@ -6,12 +6,17 @@ const cors = require("cors");
 const doctorRoutes = require("./routes/doctorRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 app.use(express.json());
 app.use(
   cors({
-    origin: ["https://healthazon.netlify.app", "http://localhost:3000"],
+    origin: [
+      "https://healthazon.netlify.app",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
     credentials: true,
   })
 );
@@ -20,7 +25,7 @@ app.use(
 app.use("/api", doctorRoutes);
 app.use("/api", patientRoutes);
 app.use("/api", appointmentRoutes);
-
+app.use("/api", authRoutes);
 // Home route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Healthazon" });

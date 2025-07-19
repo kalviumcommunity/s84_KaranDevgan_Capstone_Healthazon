@@ -36,6 +36,8 @@ const patientSchema = new mongoose.Schema(
     isGoogleUser: { type: Boolean, default: false },
     googleId: { type: String },
     medicalNotes: [{ type: String }], // Optional, for future patient record keeping
+    otp: { type: String },
+    otpExpiry: { type: Date },
   },
   { timestamps: true } // Adds createdAt and updatedAt automatically
 );

@@ -3,6 +3,7 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "./PatientAuth.css";
+import PatientForgotPassword from "../../pages/PatientForgotPassword";
 
 const LoginPatient = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,6 @@ const LoginPatient = () => {
   const clearDoctorSession = () => {
     localStorage.removeItem("doctor");
     localStorage.removeItem("doctorToken");
-    
   };
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,10 +31,10 @@ const LoginPatient = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
 
-      console.log("Login Success:", res.data);
+      //console.log("Login Success:", res.data);
       navigate("/patient/dashboard");
     } catch (err) {
-      console.error("Login Failed:", err.response?.data || err.message);
+      //console.error("Login Failed:", err.response?.data || err.message);
       alert("Login failed. Check your credentials.");
     } finally {
       setLoading(false);
@@ -44,10 +44,10 @@ const LoginPatient = () => {
   const handleGoogleLogin = async (credentialResponse) => {
     clearDoctorSession();
     setLoading(true);
-  
+
     try {
       const tokenId = credentialResponse.credential;
-      console.log(tokenId);
+      //console.log(tokenId);
       const res = await axios.post(
         "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/google-login",
         { tokenId }
@@ -56,7 +56,7 @@ const LoginPatient = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
 
-      console.log("Google Login Success:", res.data);
+      //console.log("Google Login Success:", res.data);
 
       // Optionally: Redirect Google user to complete their profile
       if (!res.data.patient.age || !res.data.patient.contact) {
@@ -97,7 +97,18 @@ const LoginPatient = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
-
+      <p style={{ marginTop: "10px" }}>
+        <span
+          style={{
+            color: "#007bff",
+            cursor: "pointer",
+            textDecoration: "underline",
+          }}
+          onClick={() => navigate("/patient/forgot-password")}
+        >
+          Forgot Password?
+        </span>
+      </p>
       <div className="google-login">
         <p>Or</p>
         <GoogleLogin

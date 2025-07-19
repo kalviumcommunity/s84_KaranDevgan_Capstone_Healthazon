@@ -23,7 +23,7 @@ const AppointmentList = () => {
           `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment/patient/${patient._id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log("Fetched appointments:", res.data);
+        //console.log("Fetched appointments:", res.data);
         setAppointments(res.data);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
