@@ -96,18 +96,7 @@ const LoginPatient = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
-      <p style={{ marginTop: "10px" }}>
-        <span
-          style={{
-            color: "#007bff",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={() => navigate("/patient/forgot-password")}
-        >
-          Forgot Password?
-        </span>
-      </p>
+      
       <div className="google-login">
         <p>Or</p>
         <GoogleLogin
