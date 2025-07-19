@@ -18,6 +18,7 @@ import DoctorRegister from "./components/doctor/DoctorRegister";
 import LoginPatient from "./components/patient/LoginPatient";
 import RegisterPatient from "./components/patient/RegisterPatient";
 import PatientDashboard from "./pages/PatientDashboard";
+import PatientForgotPassword from "./pages/PatientForgotPassword";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/DoctorDashboard";
@@ -27,7 +28,6 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 const clientId =
   "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com";
 
-  
 function App() {
   return (
     <GoogleOAuthProvider clientId={clientId}>
@@ -35,7 +35,6 @@ function App() {
       {/*  Wrap Router */}
       <Router>
         <Navbar />
-        
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -46,6 +45,10 @@ function App() {
           <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
 
           <Route path="/patient/login" element={<LoginPatient />} />
+          <Route
+            path="/patient/forgot-password"
+            element={<PatientForgotPassword />}
+          />
           <Route path="/patient/register" element={<RegisterPatient />} />
           <Route path="/patient/dashboard" element={<PatientDashboard />} />
 

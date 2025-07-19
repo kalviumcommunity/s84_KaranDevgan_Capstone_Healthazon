@@ -31,6 +31,8 @@ const doctorSchema = new mongoose.Schema(
     profileImage: { type: String },
     googleId: { type: String, unique: true, sparse: true },
     isGoogleUser: { type: Boolean, default: false },
+    otp: { type: String },
+    otpExpiry: { type: Date },
   },
   { timestamps: true }
 );
