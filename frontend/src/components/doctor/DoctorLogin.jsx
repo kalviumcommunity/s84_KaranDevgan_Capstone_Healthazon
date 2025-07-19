@@ -30,7 +30,7 @@ function DoctorLogin() {
       const data = await res.json();
       if (res.ok) {
         clearPatientSession();
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("doctorToken", data.token);
         localStorage.setItem("doctor", JSON.stringify(data.doctor));
         navigate("/doctor-dashboard");
       } else {
@@ -56,7 +56,9 @@ function DoctorLogin() {
 
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        clearPatientSession();
+
+        localStorage.setItem("doctorToken", data.token);
         localStorage.setItem("doctor", JSON.stringify(data.doctor));
         navigate("/doctor-dashboard");
       } else {

@@ -18,7 +18,7 @@ import DoctorRegister from "./components/doctor/DoctorRegister";
 import LoginPatient from "./components/patient/LoginPatient";
 import RegisterPatient from "./components/patient/RegisterPatient";
 import PatientDashboard from "./pages/PatientDashboard";
-import PatientForgotPassword from "./pages/PatientForgotPassword";
+
 
 // Doctor Pages
 import DoctorDashboard from "./pages/DoctorDashboard";

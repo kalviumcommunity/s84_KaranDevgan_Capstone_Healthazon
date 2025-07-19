@@ -3,7 +3,6 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "./PatientAuth.css";
-import PatientForgotPassword from "../../pages/PatientForgotPassword";
 
 const LoginPatient = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +27,7 @@ const LoginPatient = () => {
         }
       );
       clearDoctorSession(); // ✅ clear doctor session
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("patientToken", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
 
       //console.log("Login Success:", res.data);
