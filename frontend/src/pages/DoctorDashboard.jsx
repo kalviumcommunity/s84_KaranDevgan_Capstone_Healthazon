@@ -24,38 +24,44 @@ export default function DoctorDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  
     const loadProfile = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("doctorToken");
       if (!token) return navigate("/doctor-login");
 
-      const res = await fetch(
-        "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/profile",
-        {
-          headers: { Authorization: `Bearer ${token}` },
+      try {
+        const res = await fetch(
+          "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Unauthorized");
         }
-      );
 
-      if (!res.ok) {
-        localStorage.removeItem("token");
-        return navigate("/doctor-login");
+        const { doctor: data } = await res.json();
+        setDoctor(data);
+        setForm({
+          name: data.name || "",
+          specialization: data.specialization || "",
+          fees: data.fees || "",
+          profileImage: data.profileImage || "",
+          location: data.location || "",
+          experience: data.experience || "",
+          availableDays: data.availableDays || [],
+          languagesSpoken: data.languagesSpoken || [],
+        });
+      } catch (error) {
+        console.error("Failed to load doctor profile:", error);
+        localStorage.removeItem("doctorToken");
+        navigate("/doctor-login");
       }
-
-      const { doctor: data } = await res.json();
-      setDoctor(data);
-      setForm({
-        name: data.name || "",
-        specialization: data.specialization || "",
-        fees: data.fees || "",
-        profileImage: data.profileImage || "",
-        location: data.location || "",
-        experience: data.experience || "",
-        availableDays: data.availableDays || [],
-        languagesSpoken: data.languagesSpoken || [],
-      });
     };
+
     loadProfile();
   }, [navigate]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,7 +75,7 @@ export default function DoctorDashboard() {
   };
 
   const saveProfile = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("doctorToken");
     const res = await fetch(
       "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctor/profile",
       {
@@ -94,7 +100,7 @@ export default function DoctorDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("doctorToken");
     navigate("/doctor-login");
   };
 

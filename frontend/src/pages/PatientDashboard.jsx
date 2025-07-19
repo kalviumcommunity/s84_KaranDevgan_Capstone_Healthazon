@@ -35,7 +35,7 @@ export default function PatientDashboard() {
     localStorage.removeItem("doctorToken");
     localStorage.removeItem("doctor");
     const loadProfile = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("patientToken");
       if (!token) return navigate("/patient/login");
 
       const res = await fetch(
@@ -45,7 +45,7 @@ export default function PatientDashboard() {
         }
       );
       if (!res.ok) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("patientToken");
         navigate("/patient/login");
         return;
       }
@@ -80,7 +80,8 @@ export default function PatientDashboard() {
         if (language) query.push(`language=${encodeURIComponent(language)}`);
         const queryString = query.length ? `?${query.join("&")}` : "";
 
-        const token = localStorage.getItem("token");
+
+        const token = localStorage.getItem("patientToken");
         const res = await fetch(
           `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctors${queryString}`,
           {
@@ -123,7 +124,7 @@ const handleFileChange = (e) => {
     setSelectedFiles([]);
   };
   const saveProfile = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("patientToken");
 
     if (!patient.isGoogleUser && form.email !== patient.email) {
       const confirmed = window.confirm(
@@ -158,7 +159,7 @@ const handleFileChange = (e) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("patientToken");
     navigate("/patient/login");
   };
 
@@ -177,9 +178,9 @@ const handleFileChange = (e) => {
   };
 
   if (!patient) return <p>Loading profile...</p>;
-<h2>Welcome back, {patient.name} 👋</h2>;
   return (
     <main className="dashboard-grid-2col">
+       <h2>Welcome back, {patient.name} 👋</h2>
       <div className="left-column">
         <section className="profile-section">
           <div className="profile-card">
