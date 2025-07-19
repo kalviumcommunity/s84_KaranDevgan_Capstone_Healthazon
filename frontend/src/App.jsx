@@ -22,9 +22,7 @@ import PatientDashboard from "./pages/PatientDashboard";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/DoctorDashboard";
-//import DoctorAppointments from "./pages/DoctorAppointments"; // NEW
-//import DoctorProfile from "./pages/DoctorProfile"; // NEW
-//import DoctorLayout from "./layouts/DoctorLayout"; // NEW
+
 const clientId =
   "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com";
 
