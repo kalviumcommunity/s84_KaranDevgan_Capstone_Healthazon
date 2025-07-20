@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const path = require("path");
 const jwt = require("jsonwebtoken");
 const Doctor = require("../models/Doctor");
 
@@ -34,20 +35,27 @@ async function getAllDoctors(req, res) {
 }
 
 async function registerDoctor(req, res) {
-  const {
-    name,
-    email,
-    password,
-    fees,
-    specialization,
-    experience,
-    location,
-    availableDays,
-    languagesSpoken,
-    profileImage,
-  } = req.body;
-
   try {
+    const {
+      name,
+      email,
+      password,
+      fees,
+      specialization,
+      experience,
+      location,
+    } = req.body;
+
+    // Parse arrays correctly (FormData sends them as strings)
+    const availableDays = req.body.availableDays
+      ? req.body.availableDays.split(",").map((d) => d.trim())
+      : [];
+
+    const languagesSpoken = req.body.languagesSpoken
+      ? req.body.languagesSpoken.split(",").map((l) => l.trim())
+      : [];
+
+    // Check existing doctor
     const existingDoctor = await Doctor.findOne({ email });
     if (existingDoctor) {
       return res
@@ -55,7 +63,13 @@ async function registerDoctor(req, res) {
         .json({ message: "Doctor with this email already exists" });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Handle profile image if uploaded
+    const profileImagePath = req.file
+      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+      : "";
 
     const newDoctor = new Doctor({
       name,
@@ -67,7 +81,7 @@ async function registerDoctor(req, res) {
       location,
       availableDays,
       languagesSpoken,
-      profileImage,
+      profileImage: profileImagePath,
     });
 
     await newDoctor.save();
@@ -80,10 +94,9 @@ async function registerDoctor(req, res) {
       doctor: doctorToSend,
     });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: error.message || "Server error" });
   }
 }
-
 async function loginDoctor(req, res) {
   try {
     const { email, password } = req.body;
@@ -124,81 +137,52 @@ async function loginDoctor(req, res) {
   }
 }
 
-async function updateDoctor(req, res) {
-  try {
-    const doctorId = req.params.id;
-    const updatedData = { ...req.body };
-
-    if (updatedData.password) {
-      updatedData.password = await bcrypt.hash(updatedData.password, 10);
-    }
-
-    const updatedDoctor = await Doctor.findByIdAndUpdate(
-      doctorId,
-      updatedData,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedDoctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
-
-    const doctorToSend = updatedDoctor.toObject();
-    delete doctorToSend.password;
-
-    return res.status(200).json({
-      message: "Doctor updated",
-      doctor: doctorToSend,
-    });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-}
-
 async function getDoctorProfile(req, res) {
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
   const doc = req.user.toObject();
   delete doc.password;
   res.json({ doctor: doc });
 }
 
-async function updateDoctorProfile(req, res) {
+const updateDoctorProfile = async (req, res) => {
   try {
-    const doctor = req.user;
-    const {
-      name,
-      specialization,
-      fees,
-      profileImage,
-      location,
-      experience,
-      availableDays,
-      languagesSpoken,
-    } = req.body;
+    const doctorId = req.user._id;
+    const updates = req.body;
 
-    if (name !== undefined) doctor.name = name;
-    if (specialization !== undefined) doctor.specialization = specialization;
-    if (fees !== undefined) doctor.fees = fees;
-    if (profileImage !== undefined) doctor.profileImage = profileImage;
-    if (location !== undefined) doctor.location = location;
-    if (experience !== undefined) doctor.experience = experience;
-    if (availableDays !== undefined) doctor.availableDays = availableDays;
-    if (languagesSpoken !== undefined) doctor.languagesSpoken = languagesSpoken;
+    if (req.file) {
+      updates.profileImage = `${req.protocol}://${req.get("host")}/uploads/${
+        req.file.filename
+      }`;
+    }
 
-    await doctor.save();
+    // For array fields from form, convert if sent as strings (optional)
+    if (typeof updates.languagesSpoken === "string") {
+      updates.languagesSpoken = updates.languagesSpoken
+        .split(",")
+        .map((s) => s.trim());
+    }
+    if (typeof updates.availableDays === "string") {
+      updates.availableDays = updates.availableDays
+        .split(",")
+        .map((s) => s.trim());
+    }
 
-    const updated = doctor.toObject();
-    delete updated.password;
-    res.json({ message: "Profile updated", doctor: updated });
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      doctorId,
+      { $set: updates },
+      { new: true }
+    ).select("-password");
+
+    res.json({ message: "Profile updated", doctor: updatedDoctor });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
-}
+};
 
 module.exports = {
   getAllDoctors,
   registerDoctor,
   loginDoctor,
-  updateDoctor,
   getDoctorProfile,
   updateDoctorProfile,
 };

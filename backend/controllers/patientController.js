@@ -122,11 +122,18 @@ async function updatePatient(req, res) {
 async function updatePatientProfile(req, res) {
   try {
     const patient = req.user; // from authenticatePatient middleware
-    const { name, age, contact } = req.body;
+    const { name, age, contact, email } = req.body;
 
     if (name !== undefined) patient.name = name;
     if (age !== undefined) patient.age = age;
     if (contact !== undefined) patient.contact = contact;
+    if (email !== undefined && email !== patient.email) {
+      const existing = await Patient.findOne({ email });
+      if (existing) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+      patient.email = email;
+    }
 
     await patient.save();
 
@@ -138,7 +145,6 @@ async function updatePatientProfile(req, res) {
     res.status(400).json({ message: err.message });
   }
 }
-
 module.exports = {
   getAllPatients,
   registerPatient,

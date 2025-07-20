@@ -42,7 +42,7 @@ const BookAppointmentForm = () => {
   }, [selectedDoctor]);
 
   const patientInfo = JSON.parse(localStorage.getItem("patient")) || {};
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("patientToken");
 
   useEffect(() => {
     setLoading(true);

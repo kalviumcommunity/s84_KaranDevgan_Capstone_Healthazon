@@ -4,9 +4,12 @@ import "./Navbar.css"; // optional, if you want separate navbar styles
 
 function Navbar() {
   const navigate = useNavigate();
-
-  const doctor = JSON.parse(localStorage.getItem("doctor"));
-  const patient = JSON.parse(localStorage.getItem("patient"));
+  const doctor = localStorage.getItem("doctorToken")
+    ? JSON.parse(localStorage.getItem("doctor"))
+    : null;
+  const patient = localStorage.getItem("patientToken")
+    ? JSON.parse(localStorage.getItem("patient"))
+    : null;
 
   const handleLogout = () => {
     localStorage.removeItem("doctor");

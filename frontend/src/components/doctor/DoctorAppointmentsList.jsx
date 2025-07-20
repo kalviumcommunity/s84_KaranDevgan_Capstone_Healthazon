@@ -1,4 +1,3 @@
-
 // src/components/doctor/DoctorAppointmentsList.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -9,16 +8,15 @@ export default function DoctorAppointmentsList() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-  const doctor = JSON.parse(localStorage.getItem("doctor")); // ✅ get doctor ID from storage
+  const token = localStorage.getItem("doctorToken");
+  const doctor = JSON.parse(localStorage.getItem("doctor"));
 
-  // Fetch appointments for the logged-in doctor
   const fetchAppointments = async () => {
     if (!token || !doctor?._id) return;
 
     try {
       const res = await axios.get(
-        `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment/doctor/${doctor._id}`, // ✅ correct URL
+        `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/appointment/doctor/${doctor._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -43,18 +41,20 @@ export default function DoctorAppointmentsList() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert(`Appointment marked as ${newStatus}`);
-      fetchAppointments(); // Refresh after update
+      fetchAppointments();
     } catch (err) {
       console.error("Error updating appointment status:", err);
       alert("Error updating status");
     }
   };
+
   const groupedAppointments = {
     pending: [],
     confirmed: [],
     cancelled: [],
     completed: [],
   };
+
   appointments.forEach((app) => {
     if (groupedAppointments.hasOwnProperty(app.status)) {
       groupedAppointments[app.status].push(app);
@@ -62,7 +62,7 @@ export default function DoctorAppointmentsList() {
   });
 
   return (
-    <div className="appointment-list">
+    <div className="doctor-appointments-container">
       <h3>Your Appointments</h3>
 
       {loading ? (
@@ -70,25 +70,28 @@ export default function DoctorAppointmentsList() {
       ) : appointments.length === 0 ? (
         <p>No appointments found</p>
       ) : (
-        Object.keys(groupedAppointments).map((status) => (
-          <div key={status} className="appointment-section">
-            <h4 className={`section-heading status-${status}`}>
-              {status.charAt(0).toUpperCase() + status.slice(1)} Appointments
-            </h4>
-
-            {groupedAppointments[status].length > 0 ? (
-              groupedAppointments[status].map((appointment) => (
-                <DoctorAppointmentCard
-                  key={appointment._id}
-                  appointment={appointment}
-                  onStatusChange={handleUpdateStatus}
-                />
-              ))
-            ) : (
-              <p className="empty-message">No {status} appointments.</p>
-            )}
-          </div>
-        ))
+        <div className="appointments-sections">
+          {Object.keys(groupedAppointments).map((status) => (
+            <div key={status} className="appointments-section">
+              <h4 className={`section-heading status-${status}`}>
+                {status.charAt(0).toUpperCase() + status.slice(1)} Appointments
+              </h4>
+              <div className="appointment-grid">
+                {groupedAppointments[status].length > 0 ? (
+                  groupedAppointments[status].map((appointment) => (
+                    <DoctorAppointmentCard
+                      key={appointment._id}
+                      appointment={appointment}
+                      onStatusChange={handleUpdateStatus}
+                    />
+                  ))
+                ) : (
+                  <p className="empty-message">No {status} appointments.</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
