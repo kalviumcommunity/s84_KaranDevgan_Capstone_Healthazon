@@ -8,7 +8,7 @@ const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("patientToken");
   const patient = JSON.parse(localStorage.getItem("patient"));
 
   useEffect(() => {

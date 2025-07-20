@@ -1,122 +1,135 @@
-.dashboard-grid-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;  /* left: profile, right: filters + doctors */
-  gap: 2rem;
-  align-items: start;
-  padding: 1rem;
+.patient-dashboard {
+  padding: 2rem;
+  background-color: #f9fafb;
+  min-height: 100vh;
 }
 
-@media (max-width: 900px) {
-  .dashboard-grid-2col {
-    grid-template-columns: 1fr;    /* stack vertically on small screens */
+.dashboard-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dashboard-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .dashboard-columns {
+    flex-direction: row;
+    align-items: flex-start;
   }
 }
 
-.left-column,
-.right-column {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.profile-card {
-  background-color: #f0f8ff;
-  border: 2px solid #87ceeb;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.15);
+.dashboard-left,
+.dashboard-right {
+  flex: 1;
 }
 
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem;
+.dashboard-section {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #007bff;
-  margin-bottom: 0.75rem;
 }
 
 .profile-name {
-  font-size: 1.6rem;
-  color: #333;
-  margin: 0;
-}
-
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
 }
 
 .profile-field {
-  font-size: 1rem;
-  color: #555;
+  margin: 0.75rem 0;
 }
 
-.profile-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+.upload-container input[type="file"] {
+  display: none;
 }
 
-.edit-btn,
-.logout-btn {
+.upload-label {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.upload-btn {
+  margin-top: 1rem;
+  background-color: #10b981;
+  color: white;
   padding: 0.5rem 1rem;
   border: none;
-  font-weight: bold;
-  border-radius: 0.5rem;
+  border-radius: 4px;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  color: red;
   cursor: pointer;
-  font-size: 0.95rem;
+  margin-left: 0.5rem;
 }
 
-.edit-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.logout-btn {
-  background-color: #dc3545;
-  color: white;
-}
-
-.appointments-section,
-.health-records-section {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #ffffff;
-  border: 1px solid #dcdcdc;
-  border-radius: 0.75rem;
-}
-
-.filter-section label {
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.filter-section input,
-.filter-section select {
-  margin-top: 0.25rem;
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 0.4rem;
-}
-
-.doctor-cards-container {
+.file-preview-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
 }
 
-.doctor-list-section {
-  margin-top: 2rem;
+
+/* Styles for the filter section */
+.filter-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.filter-section h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.filter-grid label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.filter-grid input,
+.filter-grid select {
+  margin-top: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.filter-grid input:focus,
+.filter-grid select:focus {
+  border-color: #3b82f6; /* Light blue */
+  outline: none;
 }

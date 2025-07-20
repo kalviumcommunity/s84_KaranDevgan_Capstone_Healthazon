@@ -8,7 +8,7 @@ const BookAppointmentPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("patientToken");
     if (!token) {
       navigate("/patient/login");
     }

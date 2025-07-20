@@ -29,11 +29,10 @@ const LoginPatient = () => {
       clearDoctorSession(); // ✅ clear doctor session
       localStorage.setItem("patientToken", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
-
-      //console.log("Login Success:", res.data);
+      console.log("Login Success:", res.data);
       navigate("/patient/dashboard");
     } catch (err) {
-      //console.error("Login Failed:", err.response?.data || err.message);
+      console.error("Login Failed:", err.response?.data || err.message);
       alert("Login failed. Check your credentials.");
     } finally {
       setLoading(false);
@@ -46,16 +45,16 @@ const LoginPatient = () => {
 
     try {
       const tokenId = credentialResponse.credential;
-      //console.log(tokenId);
+      console.log(tokenId);
       const res = await axios.post(
         "https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/patient/google-login",
         { tokenId }
       );
 
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("patientToken", res.data.token);
       localStorage.setItem("patient", JSON.stringify(res.data.patient));
 
-      //console.log("Google Login Success:", res.data);
+      console.log("Google Login Success:", res.data);
 
       // Optionally: Redirect Google user to complete their profile
       if (!res.data.patient.age || !res.data.patient.contact) {

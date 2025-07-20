@@ -15,9 +15,20 @@ export default function PatientDashboard() {
     contact: "",
     email: "",
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate();
 
+  const [isEditing, setIsEditing] = useState(false);
+  useEffect(() => {
+    if (patient) {
+      setForm({
+        name: patient.name || "",
+        age: patient.age || "",
+        contact: patient.contact || "",
+        email: patient.email || "",
+      });
+    }
+  }, [patient]);
+
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState("");
   const [maxFees, setMaxFees] = useState("");
@@ -80,7 +91,6 @@ export default function PatientDashboard() {
         if (language) query.push(`language=${encodeURIComponent(language)}`);
         const queryString = query.length ? `?${query.join("&")}` : "";
 
-
         const token = localStorage.getItem("patientToken");
         const res = await fetch(
           `https://s84-karandevgan-capstone-healthazon-1.onrender.com/api/doctors${queryString}`,
@@ -107,10 +117,10 @@ export default function PatientDashboard() {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
   };
-  
-const handleFileChange = (e) => {
-  setSelectedFiles(Array.from(e.target.files));
-};
+
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files));
+  };
 
   const handleRemoveFile = (index) => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -126,7 +136,7 @@ const handleFileChange = (e) => {
   const saveProfile = async () => {
     const token = localStorage.getItem("patientToken");
 
-    if (!patient.isGoogleUser && form.email !== patient.email) {
+    if (!patient.isGoogleUser && form?.email && form.email !== patient.email) {
       const confirmed = window.confirm(
         `You're changing your email from ${patient.email} to ${form.email}. Are you sure?`
       );
@@ -154,6 +164,13 @@ const handleFileChange = (e) => {
     }
 
     setPatient(data.patient);
+    setForm({
+      name: data.patient.name || "",
+      age: data.patient.age || "",
+      contact: data.patient.contact || "",
+      email: data.patient.email || "",
+    }); // ✅ sync the form with latest data
+    localStorage.setItem("patient", JSON.stringify(data.patient));
     setIsEditing(false);
     alert("Profile updated");
   };
@@ -179,229 +196,240 @@ const handleFileChange = (e) => {
 
   if (!patient) return <p>Loading profile...</p>;
   return (
-    <main className="dashboard-grid-2col">
-       <h2>Welcome back, {patient.name} 👋</h2>
-      <div className="left-column">
-        <section className="profile-section">
-          <div className="profile-card">
-            <div className="profile-header">
-              <img
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=patient-${patient._id}`}
-                alt="Avatar"
-                className="profile-avatar"
+    <main className="patient-dashboard">
+      <h2 className="dashboard-title">Welcome back, {patient.name} 👋</h2>
+
+      <div className="dashboard-columns">
+        {/* ===== Left Column ===== */}
+        <div className="dashboard-left">
+          {/* Profile Section */}
+          <section className="dashboard-section profile-section">
+            <div className="profile-card">
+              <div className="profile-header">
+                <img
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=patient-${patient._id}`}
+                  alt="Avatar"
+                  className="profile-avatar"
+                />
+                <h2 className="profile-name">{patient.name}</h2>
+              </div>
+
+              <div className="profile-info">
+                <div className="profile-field">
+                  <strong>Age:</strong>{" "}
+                  {isEditing ? (
+                    <input
+                      name="age"
+                      type="number"
+                      min="1"
+                      value={form.age}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    patient.age
+                  )}
+                </div>
+
+                <div className="profile-field">
+                  <strong>Contact:</strong>{" "}
+                  {isEditing ? (
+                    <input
+                      name="contact"
+                      value={form.contact}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    patient.contact || "Not provided"
+                  )}
+                </div>
+
+                <div className="profile-field">
+                  <strong>Email:</strong>{" "}
+                  {isEditing && !patient.isGoogleUser ? (
+                    <input
+                      name="email"
+                      type="email"
+                      value={form.email}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    patient.email
+                  )}
+                </div>
+              </div>
+
+              <div className="profile-actions">
+                {isEditing ? (
+                  <button className="edit-btn" onClick={saveProfile}>
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    className="edit-btn"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Edit Profile
+                  </button>
+                )}
+                <button className="logout-btn" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Appointments */}
+          <section className="dashboard-section appointments-section">
+            <h3>Your Appointments</h3>
+            <AppointmentList />
+          </section>
+
+          {/* Health Records */}
+          <section className="dashboard-section health-records-section">
+            <h3>Health Records</h3>
+            <div className="upload-container">
+              <input
+                type="file"
+                id="healthRecordUpload"
+                accept=".pdf,.jpg,.jpeg,.png"
+                multiple
+                onChange={handleFileChange}
               />
-              <h2 className="profile-name">{patient.name}</h2>
-            </div>
+              <label htmlFor="healthRecordUpload" className="upload-label">
+                Select Files
+              </label>
 
-            <div className="profile-info">
-              <div className="profile-field">
-                <strong>Age:</strong>{" "}
-                {isEditing ? (
-                  <input
-                    name="age"
-                    type="number"
-                    min="1"
-                    value={form.age}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  patient.age
-                )}
-              </div>
-
-              <div className="profile-field">
-                <strong>Contact:</strong>{" "}
-                {isEditing ? (
-                  <input
-                    name="contact"
-                    value={form.contact}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  patient.contact || "Not provided"
-                )}
-              </div>
-
-              <div className="profile-field">
-                <strong>Email:</strong>{" "}
-                {isEditing && !patient.isGoogleUser ? (
-                  <input
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                  />
-                ) : (
-                  patient.email
-                )}
-              </div>
-            </div>
-
-            <div className="profile-actions">
-              {isEditing ? (
-                <button className="edit-btn" onClick={saveProfile}>
-                  Save
-                </button>
-              ) : (
-                <button className="edit-btn" onClick={() => setIsEditing(true)}>
-                  Edit Profile
-                </button>
+              {selectedFiles.length > 0 && (
+                <div className="file-preview-list">
+                  {selectedFiles.map((file, index) => (
+                    <div className="file-preview-item" key={index}>
+                      <span>{file.name}</span>
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => handleRemoveFile(index)}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
+
+              <button
+                type="button"
+                className="upload-btn"
+                disabled={selectedFiles.length === 0}
+                onClick={handleUpload}
+              >
+                Upload Records
               </button>
             </div>
-          </div>
-        </section>
-        <section className="appointments-section">
-          <h3>Your Appointments</h3>
-          <AppointmentList />
-        </section>
+          </section>
+        </div>
 
-        <section className="health-records-section">
-          <h3>Health Records</h3>
-          <div className="upload-container">
-            <input
-              type="file"
-              id="healthRecordUpload"
-              accept=".pdf,.jpg,.jpeg,.png"
-              multiple
-              onChange={handleFileChange}
-            />
-            <label htmlFor="healthRecordUpload" className="upload-label">
-              Select Files
-            </label>
+        {/* ===== Right Column ===== */}
+        <div className="dashboard-right">
+          <section className="dashboard-section filter-section">
+            <h3>Filter Doctors</h3>
+            <div className="filter-grid">
+              <label>
+                Specialization:
+                <select
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                >
+                  <option value="">All</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Dermatology">Dermatology</option>
+                  <option value="Neurology">Neurology</option>
+                </select>
+              </label>
 
-            {selectedFiles.length > 0 && (
-              <div className="file-preview-list">
-                {selectedFiles.map((file, index) => (
-                  <div className="file-preview-item" key={index}>
-                    <span>{file.name}</span>
-                    <button
-                      type="button"
-                      className="remove-btn"
-                      onClick={() => handleRemoveFile(index)}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <label>
+                Max Fees:
+                <input
+                  type="number"
+                  min="0"
+                  value={maxFees}
+                  onChange={(e) => setMaxFees(e.target.value)}
+                  placeholder="Enter max fees"
+                />
+              </label>
+
+              <label>
+                Location:
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Enter location"
+                />
+              </label>
+
+              <label>
+                Min Experience (yrs):
+                <input
+                  type="number"
+                  min="0"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  placeholder="Years"
+                />
+              </label>
+
+              <label>
+                Available Day:
+                <select
+                  value={availableDay}
+                  onChange={(e) => setAvailableDay(e.target.value)}
+                >
+                  <option value="">Any</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                </select>
+              </label>
+
+              <label>
+                Language:
+                <input
+                  type="text"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  placeholder="e.g. Hindi"
+                />
+              </label>
+            </div>
+          </section>
+
+          <section className="dashboard-section doctor-list-section">
+            <h3>Doctors</h3>
+            {loadingDoctors && <p>Loading doctors...</p>}
+            {errorDoctors && <p className="error">{errorDoctors}</p>}
+            {!loadingDoctors && doctors.length === 0 && (
+              <p>No doctors found.</p>
             )}
 
-            <button
-              type="button"
-              className="upload-btn"
-              disabled={selectedFiles.length === 0}
-              onClick={handleUpload}
-            >
-              Upload Records
-            </button>
-          </div>
-        </section>
+            <div className="doctor-cards-container">
+              {doctors.map((doc) => (
+                <DoctorCard
+                  key={doc._id}
+                  doctor={doc}
+                  onViewDetails={handleViewDetails}
+                  onBookAppointment={handleBookAppointment}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
-      <div className="right-column">
-        <section className="filter-section" style={{ marginBottom: "2rem" }}>
-          <h3>Filter Doctors</h3>
-
-          <label>
-            Specialization:
-            <select
-              value={specialization}
-              onChange={(e) => setSpecialization(e.target.value)}
-            >
-              <option value="">All</option>
-              <option value="Cardiology">Cardiology</option>
-              <option value="Dermatology">Dermatology</option>
-              <option value="Neurology">Neurology</option>
-            </select>
-          </label>
-
-          <label style={{ marginTop: "1rem" }}>
-            Max Fees:
-            <input
-              type="number"
-              min="0"
-              value={maxFees}
-              onChange={(e) => setMaxFees(e.target.value)}
-              placeholder="Enter max fees"
-              style={{ marginLeft: "0.5rem" }}
-            />
-          </label>
-
-          <label style={{ marginTop: "1rem" }}>
-            Location:
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter location"
-              style={{ marginLeft: "0.5rem" }}
-            />
-          </label>
-
-          <label style={{ marginTop: "1rem" }}>
-            Min Experience (yrs):
-            <input
-              type="number"
-              min="0"
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              placeholder="Years"
-              style={{ marginLeft: "0.5rem" }}
-            />
-          </label>
-
-          <label style={{ marginTop: "1rem" }}>
-            Available Day:
-            <select
-              value={availableDay}
-              onChange={(e) => setAvailableDay(e.target.value)}
-              style={{ marginLeft: "0.5rem" }}
-            >
-              <option value="">Any</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-              <option value="Sunday">Sunday</option>
-            </select>
-          </label>
-
-          <label style={{ marginTop: "1rem" }}>
-            Language:
-            <input
-              type="text"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              placeholder="e.g. Hindi"
-              style={{ marginLeft: "0.5rem" }}
-            />
-          </label>
-        </section>
-
-        <section className="doctor-list-section">
-          <h3>Doctors</h3>
-          {loadingDoctors && <p>Loading doctors...</p>}
-          {errorDoctors && <p style={{ color: "red" }}>{errorDoctors}</p>}
-          {!loadingDoctors && doctors.length === 0 && <p>No doctors found.</p>}
-
-          <div className="doctor-cards-container">
-            {doctors.map((doc) => (
-              <DoctorCard
-                key={doc._id}
-                doctor={doc}
-                onViewDetails={handleViewDetails}
-                onBookAppointment={handleBookAppointment}
-              />
-            ))}
-          </div>
-        </section>
-      </div>
-
+      {/* Doctor Details Modal */}
       {showDetails && (
         <DoctorDetailsModal
           doctor={selectedDoctor}
