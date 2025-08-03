@@ -1,21 +1,8 @@
-// backend/routes/authRoutes.js
-
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import {
-  registerUser,
-  loginUser,
-  getCurrentUser,
-  updateUserProfile,
-} from "../controllers/authController.js";
-import { protect } from "../middleware/authMiddleware.js"; // middleware for protected routes
+const { sendOtp, resetPassword } = require("../controllers/authController");
 
-// Public Routes
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post("/send-otp", sendOtp);
+router.post("/reset-password", resetPassword);
 
-// Protected Routes
-router.get("/current", protect, getCurrentUser);
-router.put("/profile", protect, updateUserProfile);
-
-export default router;
+module.exports = router;

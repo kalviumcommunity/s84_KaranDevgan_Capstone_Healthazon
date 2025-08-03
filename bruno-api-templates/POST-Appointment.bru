@@ -1,0 +1,24 @@
+meta {
+  name: POST-Appointment
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:3000/api/appointment
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "doctor": "68218712ce79cd5dc906eec6",     
+    "patient": "682185c1ce79cd5dc906eebe",   
+    "appointmentDate": "2025-05-18T10:00:00.000Z",
+    "timeSlot": "10:00 - 10:30",
+    "appointmentType": "offline",
+    "status": "pending",
+    "notes": "Patient has mild chest pain, needs diagnosis."
+  }
+  
+}

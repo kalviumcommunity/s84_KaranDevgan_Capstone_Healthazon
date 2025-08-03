@@ -1,24 +1,36 @@
-// backend/routes/doctorRoutes.js
-
-import express from "express";
-import {
-  getAllApprovedDoctors,
-  getDoctorById,
-  updateDoctorProfile,
-  getDoctorSelfInfo,
-  updateDoctorStatus,
-} from "../controllers/doctorController.js";
-
-import { protect } from "../middleware/authMiddleware.js";
-import { restrictTo } from "../middleware/roleMiddleware.js";
+const express = require("express");
 
 const router = express.Router();
+const {
+  getAllDoctors,
+  registerDoctor,
+  loginDoctor,
+  getDoctorProfile,
+  updateDoctorProfile,
+} = require("../controllers/doctorController");
 
-router.get("/", getAllApprovedDoctors); // GET /api/doctors
-router.put("/profile", protect, restrictTo("doctor"), updateDoctorProfile); // PUT /api/doctors/profile
-router.get("/me", protect, restrictTo("doctor"), getDoctorSelfInfo); // GET /api/doctors/me
-router.get("/:id", getDoctorById); // GET /api/doctors/:id
+const {
+  doctorGoogleLogin,
+} = require("../controllers/doctorGoogleAuthController");
 
-router.put("/status", protect, updateDoctorStatus); // PUT /api/doctors/status
+const { authenticateDoctor } = require("../middleware/authMiddleware");
 
-export default router;
+// Google login
+router.post("/doctor/google-login", doctorGoogleLogin);
+
+// Registration and login
+router.post("/doctor/register", registerDoctor);
+router.post("/doctor/login", loginDoctor);
+
+// Public listing of all doctors with filters
+router.get("/doctors", getAllDoctors);
+
+// Doctor profile (protected)
+router.get("/doctor/profile", authenticateDoctor, getDoctorProfile);
+router.put(
+  "/doctor/profile",
+  authenticateDoctor,
+  updateDoctorProfile
+);
+
+module.exports = router;
