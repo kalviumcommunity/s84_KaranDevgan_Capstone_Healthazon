@@ -1,68 +1,147 @@
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const Doctor = require("../models/Doctor");
-const Patient = require("../models/Patient");
-const sendMail = require("../utils/mailer");
+// backend/controllers/authController.js
 
-exports.sendOtp = async(req , res) => {
-    const {email , userType} = req.body;
-    if(!email || !userType) {
-        return res.status(400).json({message: "Email and user type are required"});
-    }
-    const User = userType === "doctor" ? Doctor : Patient;
-    const user = await User.findOne({ email });
-    if(!user) {
-        return res.status(404).json({message: `${userType.charAt(0).toUpperCase() + userType.slice(1)} not found with this email`});
-    }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry 
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    await user.save();
-    try {
-        await sendMail({
-            to: user.email,
-            subject: "Your OTP Code",
-            html: `<p>Your OTP code is <strong>${otp}</strong>. It is valid for 10 minutes.</p>`,
-        });
-        return res.status(200).json({message: "OTP sent successfully"});
-    }
- catch (error) {
-        console.error("Error sending OTP email:", error);
-        res.status(500).json({ message: "Failed to send OTP" });
+import asyncHandler from "express-async-handler";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
-    }    };
-    
-
-exports.resetPassword = async (req, res) => {
-  const { email, otp, newPassword, userType } = req.body;
-
-  if (!email || !otp || !newPassword || !userType) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const User = userType === "doctor" ? Doctor : Patient;
-  const user = await User.findOne({ email });
-
-  if (
-    !user ||
-    user.otp !== otp ||
-    !user.otpExpiry ||
-    user.otpExpiry < new Date()
-  ) {
-    return res.status(400).json({ message: "Invalid or expired OTP" });
-  }
-
-  try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
-
-    return res.status(200).json({ message: "Password reset successfully" });
-  } catch (error) {
-    console.error("Error resetting password:", error);
-    return res.status(500).json({ message: "Failed to reset password" });
-  }
+import User from "../models/User.js";
+// Utility to generate JWT
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
 };
+// @desc    Register new user
+// @route   POST /api/auth/register
+// @access  Public
+export const registerUser = asyncHandler(async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      res.status(400);
+      throw new Error("Please fill in all fields");
+    }
+    console.log("User model loaded:", typeof User.findOne);
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      res.status(400);
+      throw new Error("User already exists with this email");
+    }
+
+    const user = await User.create({ name, email, password, role });
+    console.log(user);
+    if (user) {
+      res.status(201).json({
+        message: "Registration successful.",
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(400);
+      throw new Error("Invalid user data");
+    }
+  } catch (error) {
+    console.error("Registration Error:", error.message);
+    res.status(500);
+    throw new Error("Server error during registration");
+  }
+});
+
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
+export const loginUser = asyncHandler(async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400);
+      throw new Error("Please enter both email and password");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user && (await user.matchPassword(password))) {
+      res.json({
+        message: "Login successful.",
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401);
+      throw new Error("Invalid email or password");
+    }
+  } catch (error) {
+    console.error("Login Error:", error.message);
+    res.status(500);
+    throw new Error("Server error during login");
+  }
+});
+
+// @route   GET /api/auth/current
+// @access  Private
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.error("Fetch Current User Error:", error.message);
+    res.status(500);
+    throw new Error("Server error while fetching current user");
+  }
+});
+
+// @desc    Update profile
+
+// @access  Private
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found");
+    }
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+user.contact = req.body.contact || user.contact;
+user.address = req.body.address || user.address;
+user.age = req.body.age || user.age;
+user.gender = req.body.gender || user.gender;
+
+    // Only update password if provided
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      message: "Profile updated successfully.",
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      token: generateToken(updatedUser._id),
+    });
+  } catch (error) {
+    console.error("Update Profile Error:", error.message);
+    res.status(500);
+    throw new Error("Server error while updating profile");
+  }
+});

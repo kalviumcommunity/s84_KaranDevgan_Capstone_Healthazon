@@ -1,188 +1,79 @@
-const bcrypt = require("bcrypt");
-const path = require("path");
-const jwt = require("jsonwebtoken");
-const Doctor = require("../models/Doctor");
+// backend/controllers/doctorController.js
 
-async function getAllDoctors(req, res) {
-  try {
-    const query = {};
+import asyncHandler from "express-async-handler";
+import User from "../models/User.js";
 
-    if (req.query.specialization)
-      query.specialization = req.query.specialization;
+// GET /api/doctors - All approved doctors (public or auth optional)
+export const getAllApprovedDoctors = asyncHandler(async (req, res) => {
+  const doctors = await User.find({ role: "doctor" }).select("-password");
+  res.status(200).json(doctors);
+});
 
-    if (req.query.fees) query.fees = { $lte: Number(req.query.fees) };
+// GET /api/doctor/me - Get own doctor profile (requires protect + restrictTo("doctor"))
+export const getDoctorSelfInfo = asyncHandler(async (req, res) => {
+  const doctor = await User.findById(req.user._id).select("-password");
+  res.status(200).json(doctor);
+});
 
-    if (req.query.location) query.location = req.query.location;
+// GET /api/doctors/:id - Single doctor by ID (public)
+export const getDoctorById = asyncHandler(async (req, res) => {
+  const doctor = await User.findOne({
+    _id: req.params.id,
+    role: "doctor",
+  }).select("-password");
 
-    if (req.query.experience)
-      query.experience = { $gte: Number(req.query.experience) };
-
-    if (req.query.availableDay) {
-      const days = req.query.availableDay.split(",");
-      query.availableDays = { $in: days };
-    }
-
-    if (req.query.language) {
-      const langs = req.query.language.split(",");
-      query.languagesSpoken = { $in: langs };
-    }
-
-    const doctors = await Doctor.find(query);
-    return res.status(200).json(doctors);
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+  if (!doctor) {
+    return res.status(404).json({ message: "Doctor not found" });
   }
-}
 
-async function registerDoctor(req, res) {
-  try {
-    const {
-      name,
-      email,
-      password,
-      fees,
-      specialization,
-      experience,
-      location,
-    } = req.body;
+  res.status(200).json(doctor);
+});
 
-    // Parse arrays correctly (FormData sends them as strings)
-    const availableDays = req.body.availableDays
-      ? req.body.availableDays.split(",").map((d) => d.trim())
-      : [];
+// PUT /api/doctors/profile - Doctor updates profile (requires protect + restrictTo("doctor"))
+export const updateDoctorProfile = asyncHandler(async (req, res) => {
+  const doctor = await User.findById(req.user._id);
 
-    const languagesSpoken = req.body.languagesSpoken
-      ? req.body.languagesSpoken.split(",").map((l) => l.trim())
-      : [];
+  doctor.name = req.body.name || doctor.name;
+  doctor.email = req.body.email || doctor.email;
+  doctor.specialization = req.body.specialization || doctor.specialization;
+  doctor.experience = req.body.experience || doctor.experience;
+  doctor.bio = req.body.bio || doctor.bio;
+  doctor.isApproved = req.body.isApproved || doctor.isApproved;
+  doctor.contact = req.body.contact || doctor.contact;
+  doctor.address = req.body.address || doctor.address;
+  doctor.availableTimings =
+    req.body.availableTimings || doctor.availableTimings;
+  const updated = await doctor.save();
 
-    // Check existing doctor
-    const existingDoctor = await Doctor.findOne({ email });
-    if (existingDoctor) {
-      return res
-        .status(400)
-        .json({ message: "Doctor with this email already exists" });
-    }
+  res.status(200).json({
+    message: "Profile updated successfully",
+    doctor: {
+      _id: updated._id,
+      name: updated.name,
+      email: updated.email,
+      role: updated.role,
+      specialization: updated.specialization,
+      experience: updated.experience,
+      bio: updated.bio,
+      isApproved: updated.isApproved,
+    },
+  });
+});
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+// PUT /api/doctors/status - Update doctor approval status (probably admin only)
+export const updateDoctorStatus = asyncHandler(async (req, res) => {
+  const { doctorId, isApproved } = req.body;
 
-    // Handle profile image if uploaded
-    const profileImagePath = req.file
-      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
-      : "";
-
-    const newDoctor = new Doctor({
-      name,
-      email,
-      password: hashedPassword,
-      fees,
-      specialization,
-      experience,
-      location,
-      availableDays,
-      languagesSpoken,
-      profileImage: profileImagePath,
-    });
-
-    await newDoctor.save();
-
-    const doctorToSend = newDoctor.toObject();
-    delete doctorToSend.password;
-
-    return res.status(201).json({
-      message: "Doctor registered successfully",
-      doctor: doctorToSend,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: error.message || "Server error" });
+  const doctor = await User.findById(doctorId);
+  if (!doctor) {
+    return res.status(404).json({ message: "Doctor not found" });
   }
-}
-async function loginDoctor(req, res) {
-  try {
-    const { email, password } = req.body;
 
-    const doctor = await Doctor.findOne({ email });
-    if (!doctor) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+  doctor.isApproved = isApproved;
+  const updated = await doctor.save();
 
-    if (doctor.isGoogleUser) {
-      return res.status(400).json({
-        message:
-          "This account is linked with Google. Please login using Google.",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, doctor.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
-
-    const token = jwt.sign(
-      { id: doctor._id, role: "doctor" },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    const doctorData = doctor.toObject();
-    delete doctorData.password;
-
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      doctor: doctorData,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-}
-
-async function getDoctorProfile(req, res) {
-  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-  const doc = req.user.toObject();
-  delete doc.password;
-  res.json({ doctor: doc });
-}
-
-const updateDoctorProfile = async (req, res) => {
-  try {
-    const doctorId = req.user._id;
-    const updates = req.body;
-
-    if (req.file) {
-      updates.profileImage = `${req.protocol}://${req.get("host")}/uploads/${
-        req.file.filename
-      }`;
-    }
-
-    // For array fields from form, convert if sent as strings (optional)
-    if (typeof updates.languagesSpoken === "string") {
-      updates.languagesSpoken = updates.languagesSpoken
-        .split(",")
-        .map((s) => s.trim());
-    }
-    if (typeof updates.availableDays === "string") {
-      updates.availableDays = updates.availableDays
-        .split(",")
-        .map((s) => s.trim());
-    }
-
-    const updatedDoctor = await Doctor.findByIdAndUpdate(
-      doctorId,
-      { $set: updates },
-      { new: true }
-    ).select("-password");
-
-    res.json({ message: "Profile updated", doctor: updatedDoctor });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-module.exports = {
-  getAllDoctors,
-  registerDoctor,
-  loginDoctor,
-  getDoctorProfile,
-  updateDoctorProfile,
-};
+  res.status(200).json({
+    message: `Doctor ${isApproved ? "approved" : "disapproved"} successfully`,
+    doctor: updated,
+  });
+});
