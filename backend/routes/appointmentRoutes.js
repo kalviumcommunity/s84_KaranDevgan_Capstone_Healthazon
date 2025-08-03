@@ -1,62 +1,26 @@
-const express = require("express");
+// routes/appointmentRoutes.js
+import express from "express";
+import {
+  bookAppointment,
+  getPatientAppointments,
+  getDoctorAppointments,
+  updateAppointmentStatus,
+  cancelAppointment,
+} from "../controllers/appointmentController.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { restrictTo } from "../middleware/roleMiddleware.js";
+
 const router = express.Router();
-const {
-  authenticateDoctor,
-  authenticatePatient,
-} = require("../middleware/authMiddleware");
-const {
-  getAllAppointments,
-  createAppointment,
-  updateAppointment,
-  getAppointmentsByPatient,
-  getAppointmentsByDoctor,
-  getDoctorNotifications,
-  getPatientNotifications,
-  getAppointmentsByStatus,
-  markNotificationAsRead,
-  acceptAppointment,
-  rejectAppointment,
-} = require("../controllers/appointmentController");
 
-router.get("/appointments", getAllAppointments);
-router.post("/appointment", createAppointment);
-router.put("/appointment/:id", updateAppointment);
-router.get("/appointment/patient/:patientId", getAppointmentsByPatient);
-router.get("/appointment/doctor/:doctorId", getAppointmentsByDoctor);
-
-router.get(
-  "/patient/notifications",
-  authenticatePatient,
-  getPatientNotifications
-);
-router.get("/doctor/notifications", authenticateDoctor, getDoctorNotifications);
+router.post("/new", protect, restrictTo("patient"), bookAppointment);
+router.get("/patient", protect, restrictTo("patient"), getPatientAppointments);
+router.get("/doctor", protect, restrictTo("doctor"), getDoctorAppointments);
 router.put(
-  "/doctor/notification/:id",
-  authenticateDoctor,
-  markNotificationAsRead
+  "/:id/status",
+  protect,
+  restrictTo("doctor"),
+  updateAppointmentStatus
 );
+router.delete("/:id", protect, cancelAppointment); // optional: restrict to same user or admin
 
-router.put("/appointment/:id/accept", authenticateDoctor, acceptAppointment);
-router.put("/appointment/:id/reject", authenticateDoctor, rejectAppointment);
-
-router.get(
-  "/appointments/status/:status/doctor",
-  authenticateDoctor,
-  (req, res, next) => {
-    req.params.role = "doctor"; // inject role into params
-    next();
-  },
-  getAppointmentsByStatus
-);
-
-router.get(
-  "/appointments/status/:status/patient",
-  authenticatePatient,
-  (req, res, next) => {
-    req.params.role = "patient"; // inject role into params
-    next();
-  },
-  getAppointmentsByStatus
-);
-
-module.exports = router;
+export default router;
