@@ -8,9 +8,8 @@ import authRoutes from "./routes/authRoutes.js";
 import patientRoutes from "./routes/patientRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
 
-import commonRoutes from "./routes/commonRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
-//import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+
 
 dotenv.config();
 connectDB();
@@ -21,13 +20,11 @@ app.get("/", (req, res) => {
 });
 app.use(cors());
 app.use(express.json());
-//app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/patient", patientRoutes);
 app.use("/api/doctor", doctorRoutes);
-app.use("/api/common", commonRoutes);
 app.use("/api/appointment" , appointmentRoutes);
 // Error Handling
 // app.use(notFound);

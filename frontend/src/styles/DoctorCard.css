@@ -1,0 +1,30 @@
+.doctor-card {
+  padding: 15px;
+  background-color: #fff;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+}
+
+.doctor-card:hover {
+  border-color: #3498db;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.12);
+}
+
+.doctor-card.selected {
+  border-color: #2ecc71;
+  background-color: #ecfdf5;
+}
+
+.doctor-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+
+.doctor-card p {
+  margin: 0;
+  color: #555;
+}

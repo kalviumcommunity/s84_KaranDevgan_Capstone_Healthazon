@@ -1,0 +1,31 @@
+/* PublicDoctors.css */
+.public-doctors {
+  padding: 20px;
+}
+
+.doctor-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.doctor-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.view-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.view-btn:hover {
+  background: #0056b3;
+}

@@ -1,0 +1,84 @@
+:root {
+  --primary: #2563eb;
+  --secondary: #60a5fa;
+  --background: #f9fafb;
+  --text: #1f2937;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+}
+
+.home-container {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero {
+  background: linear-gradient(to right, #60a5fa, #2563eb);
+  color: white;
+  padding: 80px 20px;
+  border-radius: 20px;
+  margin-bottom: 50px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.brand {
+  color: #facc15;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-bottom: 30px;
+}
+
+.cta-button {
+  background-color: #facc15;
+  color: #1f2937;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #fde68a;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.feature-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.feature-card p {
+  color: #4b5563;
+  font-size: 15px;
+}

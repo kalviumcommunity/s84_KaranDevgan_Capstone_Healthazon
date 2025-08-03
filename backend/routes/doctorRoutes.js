@@ -14,11 +14,11 @@ import { restrictTo } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllApprovedDoctors); // GET /api/doctors
-router.put("/profile", protect, restrictTo("doctor"), updateDoctorProfile); // PUT /api/doctors/profile
-router.get("/me", protect, restrictTo("doctor"), getDoctorSelfInfo); // GET /api/doctors/me
-router.get("/:id", getDoctorById); // GET /api/doctors/:id
+router.get("/", getAllApprovedDoctors); 
+router.put("/profile", protect, restrictTo("doctor"), updateDoctorProfile); 
+router.get("/me", protect, restrictTo("doctor"), getDoctorSelfInfo); 
+router.get("/:id", getDoctorById); 
 
-router.put("/status", protect, updateDoctorStatus); // PUT /api/doctors/status
+router.put("/status", protect, updateDoctorStatus); 
 
 export default router;
