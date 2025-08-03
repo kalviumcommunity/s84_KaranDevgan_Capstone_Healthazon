@@ -4,11 +4,27 @@ import Appointment from "../models/Appointment.js";
 // Book appointment (patient)
 export const bookAppointment = async (req, res) => {
   try {
-    const { doctor, date, time } = req.body;
+    console.log("Incoming body: " , req.body);
+    const { doctor, date, time , issue , reports , prescription} = req.body;
+    if (!doctor || !date || !time || !issue) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled" });
+    }
+    console.log("Parsed fields:", {
+      doctor,
+      date,
+      time,
+      issue,
+      reports,
+      prescription,
+    });
+
     const existing = await Appointment.findOne({
       doctor: doctor,
       date,
       time,
+      
     });
     if (existing) {
       res.status(400);
@@ -20,6 +36,9 @@ export const bookAppointment = async (req, res) => {
       doctor,
       date,
       time,
+      issue,
+      reports: reports || "",
+      prescription: prescription || "",
     });
     await appointment.save();
     res.status(201).json({ message: "Appointment booked", appointment });

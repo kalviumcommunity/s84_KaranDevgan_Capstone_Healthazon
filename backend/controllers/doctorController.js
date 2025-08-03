@@ -1,21 +1,15 @@
-// backend/controllers/doctorController.js
-
 import asyncHandler from "express-async-handler";
 import User from "../models/User.js";
-
-// GET /api/doctors - All approved doctors (public or auth optional)
 export const getAllApprovedDoctors = asyncHandler(async (req, res) => {
   const doctors = await User.find({ role: "doctor" }).select("-password");
   res.status(200).json(doctors);
 });
 
-// GET /api/doctor/me - Get own doctor profile (requires protect + restrictTo("doctor"))
 export const getDoctorSelfInfo = asyncHandler(async (req, res) => {
   const doctor = await User.findById(req.user._id).select("-password");
   res.status(200).json(doctor);
 });
 
-// GET /api/doctors/:id - Single doctor by ID (public)
 export const getDoctorById = asyncHandler(async (req, res) => {
   const doctor = await User.findOne({
     _id: req.params.id,
@@ -29,7 +23,6 @@ export const getDoctorById = asyncHandler(async (req, res) => {
   res.status(200).json(doctor);
 });
 
-// PUT /api/doctors/profile - Doctor updates profile (requires protect + restrictTo("doctor"))
 export const updateDoctorProfile = asyncHandler(async (req, res) => {
   const doctor = await User.findById(req.user._id);
 
@@ -60,7 +53,6 @@ export const updateDoctorProfile = asyncHandler(async (req, res) => {
   });
 });
 
-// PUT /api/doctors/status - Update doctor approval status (probably admin only)
 export const updateDoctorStatus = asyncHandler(async (req, res) => {
   const { doctorId, isApproved } = req.body;
 

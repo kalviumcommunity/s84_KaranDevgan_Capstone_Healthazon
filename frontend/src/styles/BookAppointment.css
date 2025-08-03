@@ -1,0 +1,56 @@
+.book-appointment {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.doctor-cards {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.doctor-card {
+  border: 2px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1 1 30%;
+  text-align: center;
+  background-color: #f8f8f8;
+  transition: all 0.3s ease;
+}
+
+.doctor-card:hover {
+  border-color: #3498db;
+}
+
+.doctor-card.selected {
+  border-color: #2ecc71;
+  background-color: #eafaf1;
+}
+
+button[type="submit"] {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+button[type="submit"]:hover {
+  background-color: #27ae60;
+}

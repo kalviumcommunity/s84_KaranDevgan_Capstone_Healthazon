@@ -3,7 +3,7 @@ import {
   bookAppointment,
   getPatientAppointments,
   getPatientReports,
-} from "../controllers/patientController.js"; // or split into appointmentController.js
+} from "../controllers/patientController.js"; 
 
 import { protect } from "../middleware/authMiddleware.js";
 import { restrictTo } from "../middleware/roleMiddleware.js";

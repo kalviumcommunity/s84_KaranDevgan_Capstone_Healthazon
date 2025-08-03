@@ -1,0 +1,82 @@
+.availability-page {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.availability-page h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.availability-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.checkbox-group label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.time-inputs label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+
+input[type="time"] {
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button[type="submit"] {
+  padding: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+.summary {
+  margin-top: 30px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-left: 4px solid #2ecc71;
+  border-radius: 6px;
+}
+
+.summary ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.summary li {
+  font-weight: 500;
+  padding: 4px 0;
+}

@@ -1,19 +1,12 @@
-// backend/controllers/authController.js
-
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-
 import User from "../models/User.js";
-// Utility to generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
-// @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
 export const registerUser = asyncHandler(async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -22,7 +15,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Please fill in all fields");
     }
-    console.log("User model loaded:", typeof User.findOne);
+    
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -31,7 +24,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     }
 
     const user = await User.create({ name, email, password, role });
-    console.log(user);
+    
     if (user) {
       res.status(201).json({
         message: "Registration successful.",
@@ -52,9 +45,6 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 export const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -65,7 +55,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-
+    if(!user) res.status(400).json({message : "This email is not registered"});
+    if(!user.matchPassword(password)) res.status(400).json({message : "Invalid password"});
     if (user && (await user.matchPassword(password))) {
       res.json({
         message: "Login successful.",
@@ -86,8 +77,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/current
-// @access  Private
 export const getCurrentUser = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
@@ -104,10 +93,6 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     throw new Error("Server error while fetching current user");
   }
 });
-
-// @desc    Update profile
-
-// @access  Private
 export const updateUserProfile = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -124,7 +109,6 @@ user.address = req.body.address || user.address;
 user.age = req.body.age || user.age;
 user.gender = req.body.gender || user.gender;
 
-    // Only update password if provided
     if (req.body.password) {
       user.password = req.body.password;
     }

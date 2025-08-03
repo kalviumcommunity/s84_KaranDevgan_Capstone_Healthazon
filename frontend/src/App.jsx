@@ -1,62 +1,76 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Link , useLocation } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
 
-// public pages
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Doctors from "./pages/Doctors";
-import BookAppointmentPage from "./pages/BookAppointmentPage";
-// public shared components
-import Navbar from './components/Navbar'
+import Home from "./pages/common/Home";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import About from "./pages/common/About";
+import Contact from "./pages/common/Contact";
+import PublicDoctors from "./pages/common/PublicDoctors.jsx";
+import DoctorDetails from "./pages/common/DoctorDetails.jsx";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+// Patient related imports
+import PatientDashboard from "./pages/patient/PatientDashboard";
+import PatientLayout from "./layouts/PatientLayout";
+import BookAppointment from "./pages/patient/BookAppointment";
+import MyAppointments from "./pages/patient/MyAppointments";
+import Reports from "./pages/patient/Reports";
+import Profile from "./pages/patient/Profile";
 
-// Doctor Auth
-import DoctorLogin from "./components/doctor/DoctorLogin";
-import DoctorRegister from "./components/doctor/DoctorRegister";
-
-//Patient Auth + Dashboard
-import LoginPatient from "./components/patient/LoginPatient";
-import RegisterPatient from "./components/patient/RegisterPatient";
-import PatientDashboard from "./pages/PatientDashboard";
-
-
-// Doctor Pages
-import DoctorDashboard from "./pages/DoctorDashboard";
-
-const clientId =
-  "379685038550-ke9d9mj6a8oj0k1c4evshmp2uh826itu.apps.googleusercontent.com";
-
+import CompleteDoctorProfile from "./pages/doctor/CompleteDoctorProfile.jsx";
+import Dashboard from "./pages/doctor/Dashboard";
+import DoctorLayout from "./layouts/DoctorLayout";
+import Appointments from "./pages/doctor/Appointments";
+import Availability from "./pages/doctor/Availability";
+import DoctorProfile from "./pages/doctor/Profile.jsx";
 function App() {
   return (
-    <GoogleOAuthProvider clientId={clientId}>
-      {" "}
-      {/*  Wrap Router */}
-      <Router>
-        <Navbar />
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/doctor-login" element={<DoctorLogin />} />
-          <Route path="/doctor-register" element={<DoctorRegister />} />
-          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
-
-          <Route path="/patient/login" element={<LoginPatient />} />
-          
-          <Route path="/patient/register" element={<RegisterPatient />} />
-          <Route path="/patient/dashboard" element={<PatientDashboard />} />
-
-          <Route path="/patient/book" element={<BookAppointmentPage />} />
-        </Routes>
-
-        <footer className="footer">
-          © 2025 Healthazon. All rights reserved.
-        </footer>
-      </Router>
-    </GoogleOAuthProvider>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/doctors" element={<PublicDoctors />} />
+        <Route path="/doctors/:id" element={<DoctorDetails />} />
+        <Route
+          path="/patient"
+          element={
+            <ProtectedRoute role="patient">
+              <PatientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<PatientDashboard />} />
+          <Route path="book" element={<BookAppointment />} />
+          <Route path="appointments" element={<MyAppointments />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+        <Route
+          path="/complete-doctor-profile"
+          element={<CompleteDoctorProfile />}
+        />
+        <Route
+          path="/doctor"
+          element={
+            <ProtectedRoute role="doctor">
+              <DoctorLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="appointments" element={<Appointments />} />
+          <Route path="availability" element={<Availability />} />
+          <Route path="profile" element={<DoctorProfile />} />
+        </Route>
+      </Routes>
+      <Footer />
+    </>
   );
 }
 
 export default App;
-

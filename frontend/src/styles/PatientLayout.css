@@ -1,0 +1,120 @@
+:root {
+  --primary-color: #1e3a8a;
+  --accent-color: #3b82f6;
+  --background: #f8fafc;
+  --sidebar-bg: #1e293b;
+  --text-light: #ffffff;
+  --hover-bg: #334155;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background);
+}
+
+.patient-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.patient-sidebar {
+  width: 240px;
+  background-color: var(--sidebar-bg);
+  color: var(--text-light);
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.patient-sidebar h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 10px;
+}
+
+.patient-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.patient-sidebar nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+.patient-sidebar nav a:hover {
+  background-color: var(--hover-bg);
+}
+
+.patient-sidebar nav a.active {
+  background-color: var(--accent-color);
+  font-weight: 600;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 12px;
+  background-color: #ef4444;
+  border: none;
+  color: var(--text-light);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
+.patient-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: var(--background);
+}
+
+.hamburger-btn {
+  position: fixed;
+  top: 20px;
+  left: 3 px;
+  font-size: 28px;
+  background: none;
+  border: yellowgreen;
+  color: white;
+  z-index: 100;
+  display: block;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block;
+  }
+
+  .patient-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 90;
+  }
+
+  .patient-content {
+    padding: 20px;
+    margin-left: 0;
+  }
+}
+

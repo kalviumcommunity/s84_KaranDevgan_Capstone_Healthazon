@@ -1,4 +1,4 @@
-// routes/appointmentRoutes.js
+
 import express from "express";
 import {
   bookAppointment,
