@@ -49,7 +49,7 @@ function Login() {
         navigate("/patient/dashboard");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
+      toast.error(err.response?.data?.message );
     }
   };
 

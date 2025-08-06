@@ -44,8 +44,8 @@ function Register() {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Registration error", error);
-      alert(error.response?.data?.message || "Registration failed");
+      console.error( error);
+      alert(error.response?.data?.message );
     }
   };
 
