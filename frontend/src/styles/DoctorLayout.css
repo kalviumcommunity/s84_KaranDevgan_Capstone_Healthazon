@@ -1,40 +1,94 @@
-.doctor-layout {
+.doctor-layout-container {
   display: flex;
   min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
 }
 
 .sidebar {
-  width: 220px;
-  background-color: #b61329;
-  color: white;
-  padding: 20px;
-}
-
-.sidebar h2 {
-  margin-bottom: 20px;
-  font-size: 20px;
-}
-
-.sidebar nav {
+  width: 250px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
 }
 
-.sidebar a {
-  color: #ecf0f1;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.user-info {
+  padding: 1rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.user-name {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.user-role {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.nav-links {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  padding: 0.75rem 1rem;
   text-decoration: none;
-  padding: 8px;
-  border-radius: 4px;
+  color: #64748b;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
 }
 
-.sidebar a.active {
-  background-color: #2ecc71;
+.nav-link:hover {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.nav-link.active {
+  padding: 0.75rem 1rem;
+  color: #3b82f6;
+  background-color: #eff6ff;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.logout-btn {
+  padding: 0.75rem 1rem;
+  background: #ef4444;
   color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
 }
 
 .main-content {
-  flex-grow: 1;
-  padding: 30px;
-  background-color: #d7d6e0;
+  flex: 1;
+  padding: 2rem;
 }

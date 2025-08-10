@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 
@@ -17,7 +19,7 @@ import BookAppointment from "./pages/patient/BookAppointment";
 import MyAppointments from "./pages/patient/MyAppointments";
 import Reports from "./pages/patient/Reports";
 import Profile from "./pages/patient/Profile";
-
+// Doctor related imports
 import CompleteDoctorProfile from "./pages/doctor/CompleteDoctorProfile.jsx";
 import Dashboard from "./pages/doctor/Dashboard";
 import DoctorLayout from "./layouts/DoctorLayout";
@@ -69,6 +71,18 @@ function App() {
         </Route>
       </Routes>
       <Footer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   );
 }

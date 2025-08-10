@@ -1,7 +1,5 @@
-/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Navbar Container */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -18,7 +16,6 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* Logo Styling */
 .logo {
   font-size: 1.8rem;
   font-weight: 700;
@@ -48,7 +45,6 @@
   width: 100%;
 }
 
-/* Navigation Links Container */
 .nav-links {
   display: flex;
   align-items: center;
@@ -56,7 +52,6 @@
   flex-wrap: wrap;
 }
 
-/* Navigation Links */
 .nav-links a {
   color: #4a5568;
   text-decoration: none;
@@ -94,14 +89,12 @@
   transform: translateY(0);
 }
 
-/* Active link styling */
 .nav-links a.active {
   color: #667eea;
   background: rgba(102, 126, 234, 0.1);
   font-weight: 600;
 }
 
-/* User Greeting */
 .nav-links span {
   color: #2d3748;
   font-weight: 500;
@@ -113,7 +106,6 @@
   white-space: nowrap;
 }
 
-/* Logout Button */
 .logout-btn {
   background: linear-gradient(45deg, #ef4444, #dc2626);
   color: white;
@@ -154,15 +146,13 @@
   transform: translateY(0);
 }
 
-/* Focus styles for accessibility */
 .nav-links a:focus,
 .logout-btn:focus {
   outline: 2px solid #667eea;
   outline-offset: 2px;
 }
 
-/* Mobile Responsive */
-@media (max-width: 1024px) {
+  @media (max-width: 1024px) {
   .navbar {
     padding: 1rem 1.5rem;
   }
@@ -224,6 +214,7 @@
     flex: 0 0 auto;
     text-align: center;
   }
+
 }
 
 @media (max-width: 480px) {
@@ -265,7 +256,6 @@ html {
   }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .navbar {
     background: white;

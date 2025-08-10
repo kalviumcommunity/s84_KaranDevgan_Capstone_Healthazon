@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../../styles/DoctorAvailability.css";
+import { showToast } from "../../utils/toast";
 
 const weekdays = [
   "Monday",
@@ -30,8 +31,7 @@ function DoctorAvailability() {
       startTime,
       endTime,
     };
-    console.log("Doctor availability submitted:", data);
-    // Future: Send to backend API
+    showToast.success("Doctor availability submitted:", data);
   };
 
   return (
