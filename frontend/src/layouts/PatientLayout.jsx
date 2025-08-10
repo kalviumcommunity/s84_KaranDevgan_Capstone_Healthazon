@@ -1,59 +1,156 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import "../styles/PatientLayout.css";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function PatientLayout() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   const handleLogout = () => {
     logout();
-    alert("Logged out successfully... ");
     toast.success("Logged out successfully!");
     navigate("/login");
   };
+
   return (
-    <div className="patient-layout">
-      <ToastContainer position="top-right" autoClose={2000} />
+    <div style={{ 
+      display: 'flex', 
+      minHeight: '100vh',
+      fontFamily: 'Inter, sans-serif',
+      background: '#f8fafc'
+    }}>
+      <ToastContainer position="top-right" autoClose={3000} />
+      
+      {/* Simple Sidebar */}
+      <div style={{
+        width: '250px',
+        background: 'white',
+        borderRight: '1px solid #e2e8f0',
+        padding: '2rem 1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        {/* Simple Brand */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          marginBottom: '2rem',
+          fontSize: '1.2rem',
+          fontWeight: '600',
+          color: '#3b82f6'
+        }}>
+          <span>Patient Portal</span>
+        </div>
 
-      <button
-        className="hamburger-btn"
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        ☰
-      </button>
+        {/* User Info */}
+        <div style={{
+          padding: '1rem',
+          background: '#f1f5f9',
+          borderRadius: '8px',
+          marginBottom: '1rem'
+        }}>
+          <div style={{ fontWeight: '500', color: '#1e293b' }}>Welcome, {user?.name}</div>
+          <div style={{ fontSize: '0.875rem', color: '#64748b' }}>Patient</div>
+        </div>
 
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.aside
-            className="patient-sidebar"
-            initial={{ x: -250 }}
-            animate={{ x: 0 }}
-            exit={{ x: -250 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        {/* Navigation */}
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <NavLink 
+            to="/patient/dashboard"
+            style={({ isActive }) => ({
+              padding: '0.75rem 1rem',
+              textDecoration: 'none',
+              color: isActive ? '#3b82f6' : '#64748b',
+              background: isActive ? '#eff6ff' : 'transparent',
+              borderRadius: '6px',
+              fontWeight: isActive ? '600' : '500'
+            })}
           >
-            <h2>Patient Panel</h2>
-            <nav>
-              <NavLink to="/patient/dashboard">Dashboard</NavLink>
-              <NavLink to="/patient/book">Book Appointment</NavLink>
-              <NavLink to="/patient/appointments">My Appointments</NavLink>
-              <NavLink to="/patient/reports">Reports</NavLink>
-              <NavLink to="/patient/profile">Profile</NavLink>
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </nav>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+            Dashboard
+          </NavLink>
+          
+          <NavLink 
+            to="/patient/book"
+            style={({ isActive }) => ({
+              padding: '0.75rem 1rem',
+              textDecoration: 'none',
+              color: isActive ? '#3b82f6' : '#64748b',
+              background: isActive ? '#eff6ff' : 'transparent',
+              borderRadius: '6px',
+              fontWeight: isActive ? '600' : '500'
+            })}
+          >
+            Book Appointment
+          </NavLink>
+          
+          <NavLink 
+            to="/patient/appointments"
+            style={({ isActive }) => ({
+              padding: '0.75rem 1rem',
+              textDecoration: 'none',
+              color: isActive ? '#3b82f6' : '#64748b',
+              background: isActive ? '#eff6ff' : 'transparent',
+              borderRadius: '6px',
+              fontWeight: isActive ? '600' : '500'
+            })}
+          >
+            My Appointments
+          </NavLink>
+          
+          <NavLink 
+            to="/patient/reports"
+            style={({ isActive }) => ({
+              padding: '0.75rem 1rem',
+              textDecoration: 'none',
+              color: isActive ? '#3b82f6' : '#64748b',
+              background: isActive ? '#eff6ff' : 'transparent',
+              borderRadius: '6px',
+              fontWeight: isActive ? '600' : '500'
+            })}
+          >
+            Reports
+          </NavLink>
+          
+          <NavLink 
+            to="/patient/profile"
+            style={({ isActive }) => ({
+              padding: '0.75rem 1rem',
+              textDecoration: 'none',
+              color: isActive ? '#3b82f6' : '#64748b',
+              background: isActive ? '#eff6ff' : 'transparent',
+              borderRadius: '6px',
+              fontWeight: isActive ? '600' : '500'
+            })}
+          >
+            Profile
+          </NavLink>
+        </nav>
 
-      <main className="patient-content">
+        {/* Simple Logout */}
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: '0.75rem 1rem',
+            background: '#ef4444',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '500',
+            fontSize: '0.875rem'
+          }}
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ flex: 1, padding: '2rem' }}>
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 }

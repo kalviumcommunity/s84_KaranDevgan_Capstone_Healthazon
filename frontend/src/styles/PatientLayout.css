@@ -1,120 +1,502 @@
-:root {
-  --primary-color: #1e3a8a;
-  --accent-color: #3b82f6;
-  --background: #f8fafc;
-  --sidebar-bg: #1e293b;
-  --text-light: #ffffff;
-  --hover-bg: #334155;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .patient-layout {
-  display: flex;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f8fafc;
   min-height: 100vh;
-  background-color: var(--background);
-}
-
-.patient-sidebar {
-  width: 240px;
-  background-color: var(--sidebar-bg);
-  color: var(--text-light);
-  padding: 25px 20px;
+  color: #1e293b;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.patient-sidebar h2 {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--accent-color);
-  padding-bottom: 10px;
-}
-
-.patient-sidebar nav {
+.layout-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  padding: 1rem 2rem;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
 }
 
-.patient-sidebar nav a {
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 16px;
-  padding: 10px 12px;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
   border-radius: 8px;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.brand svg {
+  color: #3b82f6;
+  font-size: 1.5rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  color: #3b82f6;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.user-info svg {
+  font-size: 1rem;
+}
+
+.notification-btn,
+.settings-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.patient-sidebar nav a:hover {
-  background-color: var(--hover-bg);
+.notification-btn:hover,
+.settings-btn:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
 }
 
-.patient-sidebar nav a.active {
-  background-color: var(--accent-color);
+.notification-badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.3rem;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.layout-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  border: 2px solid #10b981;
+}
+
+.layout-sidebar {
+  width: 300px;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(45deg, #3b82f6, #06b6d4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.user-details h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.user-details span {
+  font-size: 0.875rem;
+  color: #64748b;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  text-decoration: none;
+  color: #64748b;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent);
+  transition: width 0.3s ease;
+}
+
+.nav-item:hover::before {
+  width: 100%;
+}
+
+.nav-item:hover {
+  color: #3b82f6;
+  transform: translateX(5px);
+}
+
+.nav-item.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
   font-weight: 600;
 }
 
+.nav-item.active::before {
+  width: 100%;
+}
+
+.nav-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.nav-item.active .nav-icon {
+  background: #3b82f6;
+  color: white;
+}
+
+.nav-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.nav-description {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.2;
+}
+
+.nav-item.active .nav-description {
+  color: #64748b;
+}
+
+.sidebar-footer {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
 .logout-btn {
-  margin-top: auto;
-  padding: 12px;
-  background-color: #ef4444;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
   border: none;
-  color: var(--text-light);
-  border-radius: 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
 }
 
-.patient-content {
-  flex-grow: 1;
-  padding: 40px;
-  background-color: var(--background);
+.logout-btn svg {
+  font-size: 1rem;
 }
 
-.hamburger-btn {
+.layout-main {
+  flex: 1;
+  margin-left: 300px;
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+.content-wrapper {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  min-height: calc(100vh - 200px);
+}
+
+.mobile-overlay {
   position: fixed;
-  top: 20px;
-  left: 3 px;
-  font-size: 28px;
-  background: none;
-  border: yellowgreen;
-  color: white;
-  z-index: 100;
-  display: block;
-  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+@media (max-width: 1024px) {
+  .layout-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .layout-main {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+  
+  .content-wrapper {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .hamburger-btn {
-    display: block;
+  .layout-header {
+    padding: 1rem;
   }
-
-  .patient-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 90;
+  
+  .brand {
+    font-size: 1.1rem;
   }
-
-  .patient-content {
-    padding: 20px;
+  
+  .brand svg {
+    font-size: 1.3rem;
+  }
+  
+  .user-info {
+    display: none;
+  }
+  
+  .layout-sidebar {
+    width: 280px;
+  }
+  
+  .layout-main {
     margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .content-wrapper {
+    padding: 1rem;
+    border-radius: 15px;
+  }
+  
+  .sidebar-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .sidebar-nav {
+    padding: 1rem 0.75rem;
+  }
+  
+  .sidebar-footer {
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-header {
+    padding: 0.75rem;
+  }
+  
+  .header-left {
+    gap: 1rem;
+  }
+  
+  .brand {
+    font-size: 1rem;
+  }
+  
+  .brand svg {
+    font-size: 1.2rem;
+  }
+  
+  .layout-sidebar {
+    width: 260px;
+  }
+  
+  .layout-main {
+    padding: 0.75rem;
+  }
+  
+  .content-wrapper {
+    padding: 0.75rem;
+    border-radius: 12px;
+  }
+  
+  .nav-item {
+    padding: 0.75rem;
+  }
+  
+  .nav-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  .nav-label {
+    font-size: 0.9rem;
+  }
+  
+  .nav-description {
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.sidebar-toggle:focus,
+.nav-item:focus,
+.logout-btn:focus,
+.notification-btn:focus,
+.settings-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.layout-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.layout-sidebar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.layout-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.layout-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.1);
+}
+
+.user-info:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.nav-item.active .nav-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
   }
 }
 

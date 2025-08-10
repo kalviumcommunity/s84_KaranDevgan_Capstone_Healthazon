@@ -1,0 +1,63 @@
+.profile-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafb 0%, #e8f4fd 100%);
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.profile-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(184, 212, 240, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(232, 244, 253, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (max-width: 1024px) {
+  .profile-page {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 0.5rem;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+.profile-page:focus-within {
+  outline: none;
+}
+
+@media print {
+  .profile-page {
+    background: white;
+    padding: 1rem;
+  }
+  
+  .profile-page::before {
+    display: none;
+  }
+}

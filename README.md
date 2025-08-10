@@ -23,8 +23,7 @@
 
 The app implements real-world full-stack features:
 - Database design
-- API integrations
-- Authentication (JWT & Google)
+- Authentication (JWT )
 - File uploads
 - UI design
 - Real-time work tracking using GitHub Projects
@@ -33,10 +32,10 @@ The app implements real-world full-stack features:
 
 ## 🧰 Tech Stack
 
-**Frontend:** React, TailwindCSS  
+**Frontend:** React 
 **Backend:** Node.js, Express.js  
 **Database:** MongoDB (with Mongoose)  
-**Auth:** JWT, Google OAuth  
+**Auth:** JWT  
 **Hosting:** Render (Backend), Vercel/Netlify (Frontend)  
 **Design:** Figma  
 **APIs Testing:** Postman and Bruno  

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
-import { toast } from "react-toastify";
+import { showToast } from "../../utils/toast";
 import { useAuth } from "../../context/AuthContext";
 function CompleteDoctorProfile() {
   const navigate = useNavigate();
@@ -38,11 +38,11 @@ function CompleteDoctorProfile() {
         config
       );
 
-      toast.success("Profile completed successfully");
+      showToast.success("Profile completed successfully");
       navigate("/doctor/dashboard");
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Failed to complete doctor profile"
+    } catch (error) {
+      showToast.error(
+        error.response?.data?.message || "Failed to complete profile"
       );
     }
   };

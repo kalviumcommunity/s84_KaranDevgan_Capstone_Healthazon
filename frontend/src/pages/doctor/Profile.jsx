@@ -2,9 +2,9 @@ import "../../styles/Profile.css";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import API from "../../services/api";
-
+import { showToast } from "../../utils/toast";
 function DoctorProfile() {
-  const { user, setUser, token } = useAuth();
+  const { setUser, token } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -25,7 +25,7 @@ function DoctorProfile() {
         });
         setFormData(res.data);
       } catch (err) {
-        console.error("Error fetching doctor profile:", err);
+        showToast.error("Error fetching doctor profile:", err);
       }
     };
 
@@ -47,11 +47,10 @@ function DoctorProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert(res.data.message || "Profile updated successfully!");
+      showToast.success(res.data.message || "Profile updated successfully!");
       setUser((prev) => ({ ...prev, ...res.data.doctor })); // update context
     } catch (err) {
-      console.error("Error updating doctor profile:", err);
-      alert("Failed to update profile");
+      showToast.error("Error updating doctor profile:", err);
     }
   };
 

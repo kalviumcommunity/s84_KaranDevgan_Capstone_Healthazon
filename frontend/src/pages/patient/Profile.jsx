@@ -1,9 +1,15 @@
-import "../../styles/Profile.css";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import API from "../../services/api";
+import ProfileHeader from "../../components/profile/ProfileHeader";
+import ProfileForm from "../../components/profile/ProfileForm";
+import "../../components/profile/ProfileComponents.css";
+import { showToast } from "../../utils/toast";
+import "../../styles/ProfilePage.css";
+
 function Profile() {
   const { user, setUser, token } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -25,7 +31,7 @@ function Profile() {
         });
         setFormData(res.data);
       } catch (err) {
-        console.error("Error fetching profile:", err);
+        showToast.error("Error fetching profile:", err);
       }
     };
 
@@ -40,6 +46,8 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
       const res = await API.put(
         "/auth/profile",
@@ -51,66 +59,32 @@ function Profile() {
         }
       );
 
-      alert(res.data.message);
-      setUser(res.data); // Update AuthContext user
+      showToast.success(res.data.message);
+      setUser(res.data); 
       localStorage.setItem(
         "userInfo",
         JSON.stringify({ user: res.data, token })
-      ); // Keep storage in sync
+      ); 
     } catch (err) {
-      console.error("Update profile error:", err);
-      alert("Failed to update profile");
+      showToast.error("Failed to update profile");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="profile-page">
-      <h2>My Profile</h2>
-
-      <form onSubmit={handleSubmit} className="profile-form">
-        <label>Name:</label>
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-
-        <label>Email:</label>
-        <input name="email" value={formData.email} readOnly />
-
-        <label>Age:</label>
-        <input
-          name="age"
-          type="number"
-          value={formData.age}
-          onChange={handleChange}
-        />
-
-        <label>Gender:</label>
-        <select name="gender" value={formData.gender} onChange={handleChange}>
-          <option value="">-- Select Gender --</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-
-        <label>Contact:</label>
-        <input
-          name="contact"
-          value={formData.contact || ""}
-          onChange={handleChange}
-        />
-
-        <label>Address:</label>
-        <input
-          name="address"
-          value={formData.address || ""}
-          onChange={handleChange}
-        />
-
-        <button type="submit">Update Profile</button>
-      </form>
+      <ProfileHeader 
+        title="My Profile" 
+        subtitle="Manage your personal information and preferences"
+      />
+      
+      <ProfileForm 
+        formData={formData}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
     </div>
   );
 }
