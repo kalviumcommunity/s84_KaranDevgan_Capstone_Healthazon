@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
     // PATIENT-SPECIFIC FIELDS
     gender: { type: String },
     age: { type: Number },
+
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   { timestamps: true }
 );

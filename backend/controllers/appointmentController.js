@@ -1,7 +1,5 @@
-// controllers/appointmentController.js
 import Appointment from "../models/Appointment.js";
 
-// Book appointment (patient)
 export const bookAppointment = async (req, res) => {
   try {
     console.log("Incoming body: " , req.body);
@@ -48,7 +46,6 @@ export const bookAppointment = async (req, res) => {
   }
 };
 
-// Get all patient appointments
 export const getPatientAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ patient: req.user._id })
@@ -62,7 +59,6 @@ export const getPatientAppointments = async (req, res) => {
   }
 };
 
-// Get all doctor appointments
 export const getDoctorAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
@@ -77,7 +73,6 @@ export const getDoctorAppointments = async (req, res) => {
 };
 
 
-// Update appointment status
 export const updateAppointmentStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -92,7 +87,6 @@ export const updateAppointmentStatus = async (req, res) => {
   }
 };
 
-// Cancel appointment
 export const cancelAppointment = async (req, res) => {
   try {
     await Appointment.findByIdAndDelete(req.params.id);
