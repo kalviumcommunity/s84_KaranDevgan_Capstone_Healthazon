@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserMd, FaHeartbeat } from "react-icons/fa";
 import API from "../../services/api";
+import ForgotPassword from "./ForgotPassword";
 import { showToast } from "../../utils/toast";
 import { useAuth } from "../../context/AuthContext";
 import "../../styles/Login.css";
@@ -28,7 +29,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const res = await API.post("/auth/login", formData);
 
@@ -42,7 +43,7 @@ function Login() {
       });
 
       showToast.success("Login successful! Welcome back.");
-      
+
       // Redirect based on role
       if (res.data.role === "doctor") {
         navigate("/doctor/dashboard");
@@ -50,7 +51,7 @@ function Login() {
         navigate("/patient/dashboard");
       }
     } catch (err) {
-      showToast.error(err.response?.data?.message );
+      showToast.error(err.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +62,7 @@ function Login() {
       <div className="auth-background">
         <div className="auth-pattern"></div>
       </div>
-      
+
       <div className="auth-content">
         <motion.div
           className="auth-card"
@@ -132,8 +133,8 @@ function Login() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="auth-button primary"
                 disabled={isLoading}
               >
@@ -146,6 +147,9 @@ function Login() {
                   "Sign In"
                 )}
               </button>
+              <Link to="/forgot-password" className="auth-link">
+                Forgot Password?
+              </Link>
             </motion.div>
           </form>
 
@@ -175,7 +179,9 @@ function Login() {
               <FaUserMd />
             </div>
             <h2>Your Health Journey Starts Here</h2>
-            <p>Connect with expert doctors and manage your healthcare with ease</p>
+            <p>
+              Connect with expert doctors and manage your healthcare with ease
+            </p>
           </div>
         </motion.div>
       </div>

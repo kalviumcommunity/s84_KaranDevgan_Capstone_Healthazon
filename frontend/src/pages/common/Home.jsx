@@ -1,8 +1,8 @@
 import "../../styles/Home.css";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaUserMd, FaCalendarCheck, FaVideo, FaFileMedical, FaShieldAlt, FaHeartbeat } from "react-icons/fa";
-import { MdHealthAndSafety, MdAccessTime, MdLocationOn } from "react-icons/md";
+import { FaUserMd, FaCalendarCheck, FaVideo, FaFileMedical, FaHeartbeat } from "react-icons/fa";
+import { MdAccessTime, MdLocationOn } from "react-icons/md";
 
 function Home() {
   const services = [

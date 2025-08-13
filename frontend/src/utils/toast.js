@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 
-// Toast utility functions for consistent usage across the app
 export const showToast = {
   success: (message, options = {}) => {
     toast.success(message, {
@@ -10,7 +9,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      ...options
+      ...options,
     });
   },
 
@@ -22,7 +21,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      ...options
+      ...options,
     });
   },
 
@@ -34,7 +33,7 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      ...options
+      ...options,
     });
   },
 
@@ -46,11 +45,10 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      ...options
+      ...options,
     });
   },
 
-  // Custom toast with full control
   custom: (message, options = {}) => {
     toast(message, {
       position: "top-right",
@@ -59,12 +57,11 @@ export const showToast = {
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      ...options
+      ...options,
     });
-  }
+  },
 };
 
-// Promise-based toast for async operations
 export const showPromiseToast = (promise, messages) => {
   return toast.promise(promise, {
     pending: messages.pending || 'Loading...',
