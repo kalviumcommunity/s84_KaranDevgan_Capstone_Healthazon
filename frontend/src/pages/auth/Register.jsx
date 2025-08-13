@@ -59,7 +59,7 @@ function Register() {
         navigate("/login");
       }
     } catch (error) {
-      showToast.error(error.response?.data?.message || "Registration failed. Please try again. with valid data");
+      showToast.error(error.response?.data?.message );
     } finally {
       setIsLoading(false);
     }

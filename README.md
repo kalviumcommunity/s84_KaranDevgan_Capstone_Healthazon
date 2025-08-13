@@ -1,6 +1,5 @@
 ﻿# 🏥 Capstone Project: Healthazon
 
-**Duration:** 6 Weeks  
 **Type:** Full-Stack MERN App  
 **Theme:** Health-tech – Patient-Doctor Appointment & Consultation Platform
 
@@ -36,7 +35,7 @@ The app implements real-world full-stack features:
 **Backend:** Node.js, Express.js  
 **Database:** MongoDB (with Mongoose)  
 **Auth:** JWT  
-**Hosting:** Render (Backend), Vercel/Netlify (Frontend)  
+**Hosting:** Render (Backend), Netlify (Frontend)  
 **Design:** Figma  
 **APIs Testing:** Postman and Bruno  
 **Version Control:** Git + GitHub Projects (Board, Issues, Milestones)

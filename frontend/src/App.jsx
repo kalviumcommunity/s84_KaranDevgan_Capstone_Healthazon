@@ -9,6 +9,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import About from "./pages/common/About";
 import Contact from "./pages/common/Contact";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
 import PublicDoctors from "./pages/common/PublicDoctors.jsx";
 import DoctorDetails from "./pages/common/DoctorDetails.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -35,6 +37,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path = "/forgot-password" element = {<ForgotPassword />}/>
+        <Route path = "/reset-password/:token" element = {<ResetPassword />}/>
         <Route path="/register" element={<Register />} />
         <Route path="/doctors" element={<PublicDoctors />} />
         <Route path="/doctors/:id" element={<DoctorDetails />} />
