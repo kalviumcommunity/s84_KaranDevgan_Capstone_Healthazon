@@ -5,7 +5,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed:data": "node scripts/seedUsers.js --type=all --reset",
+    "seed:doctors": "node scripts/seedUsers.js --type=doctors --reset",
+    "seed:patients": "node scripts/seedUsers.js --type=patients --reset",
+    "seed:dry-run": "node scripts/seedUsers.js --type=all --dry-run"
   },
   "keywords": [],
   "author": "",

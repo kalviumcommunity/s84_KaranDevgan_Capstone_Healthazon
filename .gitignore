@@ -3,6 +3,10 @@
 .env.local
 .env.*.local
 
+# Seed/test data with credentials
+backend/data/doctors.json
+backend/data/patients.json
+
 # Dependencies
 node_modules/
 */node_modules/
