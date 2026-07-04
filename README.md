@@ -5,8 +5,20 @@
 
 ---
 
-## Backend Deployment Link :  https://healthazon-backend.onrender.com
-## Frontend Deployment Link : https://healthazon.netlify.app
+## 🚀 Deployment Architecture (Updated)
+
+**New: Single-Server Deployment** ✨  
+The application now runs as a consolidated single server that serves both the API and frontend UI from one Node.js/Express process. This simplifies deployment to platforms like Cloud Run, Heroku, or Docker containers.
+
+- **Single Docker Image** — One Dockerfile builds frontend and runs backend
+- **Same-Origin API** — Frontend automatically calls `/api` on same server
+- **Unified Env Vars** — Single `.env` file for both backend and frontend
+
+**See [SINGLE_SERVER_SETUP.md](SINGLE_SERVER_SETUP.md) for full setup instructions.**
+
+**Previous Deployment Links** (before single-server refactor):
+- Backend: https://healthazon-backend.onrender.com
+- Frontend: https://healthazon.netlify.app
 
 ## ✨ Project Brief
 
