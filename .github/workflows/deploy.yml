@@ -1,0 +1,60 @@
+name: Deploy to Render - Development
+
+on:
+  push:
+    tags:
+      - 'release*'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REPO: healthazon
+
+    steps:
+      # Checkout repo to get commit info
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Find the version tag for this commit
+      - name: Find version tag for current commit
+        run: |
+          # Get all tags pointing to current commit
+          VERSION_TAG=$(git tag --points-at HEAD | grep '^v' | head -n 1)
+
+          if [ -z "$VERSION_TAG" ]; then
+            echo "❌ No version tag (v*) found for this commit!"
+            echo "Please tag this commit with a version (e.g., v1.0.1) before deploying."
+            exit 1
+          fi
+
+          echo "Found version tag: $VERSION_TAG"
+          IMAGE="${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${VERSION_TAG}"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+          echo "🐳 Will deploy image: $IMAGE"
+
+      # Trigger Render deployment via webhook
+      - name: Deploy to Render
+        run: |
+          echo "🚀 Triggering Render deployment..."
+          
+          # Call Render deploy webhook with image tag
+          RESPONSE=$(curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"imageName": "'"${{ env.IMAGE }}"'"}' \
+            -w "\n%{http_code}")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          
+          if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "201" ]; then
+            echo "✅ Render deployment triggered successfully"
+          else
+            echo "❌ Failed to trigger Render deployment"
+            echo "HTTP Status: $HTTP_CODE"
+            echo "Response: $(echo "$RESPONSE" | head -n-1)"
+            exit 1
+          fi

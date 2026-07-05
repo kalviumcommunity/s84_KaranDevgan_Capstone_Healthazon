@@ -1,0 +1,22 @@
+name: Test the build in feature branches
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build-and-push:
+    name: Build & Test Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+
+      # Build Docker image with Vite build args
+      - name: Build Docker image
+        run: |
+          docker build -t "test-image" .
