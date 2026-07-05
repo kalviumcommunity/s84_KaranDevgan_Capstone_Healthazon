@@ -116,7 +116,7 @@ function About() {
       >
         <div className="container">
           <motion.div
-            className="hero-content"
+            className="about-hero-content"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -124,22 +124,22 @@ function About() {
             <h1>
               About <span className="highlight">Healthazon</span>
             </h1>
-            <p className="hero-subtitle">
+            <p className="about-hero-subtitle">
               Your trusted digital healthcare partner — built to simplify the process 
               of finding and consulting with doctors, whether online or in person.
             </p>
-            <div className="hero-stats">
+            <div className="about-hero-stats">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  className="stat-item"
+                  className="about-stat-item"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                 >
-                  <div className="stat-icon">{stat.icon}</div>
-                  <div className="stat-number">{stat.number}</div>
-                  <div className="stat-label">{stat.label}</div>
+                  <div className="about-stat-icon">{stat.icon}</div>
+                  <div className="about-stat-number">{stat.number}</div>
+                  <div className="about-stat-label">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
