@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUserMd, FaCalendarCheck, FaVideo, FaFileMedical, FaHeartbeat } from "react-icons/fa";
 import { MdAccessTime, MdLocationOn } from "react-icons/md";
-import heroIllustration from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/hero_illustration_1783257672843.png";
+import heroIllustration from "../../assets/hero_illustration.png";
 
 function Home() {
   const services = [

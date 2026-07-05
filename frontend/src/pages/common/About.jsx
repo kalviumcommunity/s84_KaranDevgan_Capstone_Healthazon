@@ -14,9 +14,9 @@ import {
 } from "react-icons/fa";
 import { MdHealthAndSafety, MdSecurity, MdAccessibility } from "react-icons/md";
 
-import sarahChenImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/cmo_sarah_chen_1783257515296.png";
-import michaelRodriguezImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/cto_michael_rodriguez_1783257527122.png";
-import emilyWatsonImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/dir_emily_watson_1783257541874.png";
+import sarahChenImg from "../../assets/cmo_sarah_chen.png";
+import michaelRodriguezImg from "../../assets/cto_michael_rodriguez.png";
+import emilyWatsonImg from "../../assets/dir_emily_watson.png";
 
 function About() {
   const missionData = {
