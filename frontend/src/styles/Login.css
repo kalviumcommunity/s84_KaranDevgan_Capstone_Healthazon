@@ -107,6 +107,7 @@
   align-items: center;
 }
 
+
 .input-icon {
   position: absolute;
   left: 1.25rem;
@@ -123,7 +124,8 @@
 
 .auth-input {
   width: 100%;
-  padding: 1rem 1rem 1rem 3.25rem;
+  padding: 1rem 3.25rem;
+  text-align: center;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   font-size: 1rem;
@@ -141,6 +143,7 @@
 
 .auth-input::placeholder {
   color: #94a3b8;
+  text-align: center;
 }
 
 .password-toggle {
@@ -166,7 +169,11 @@
 }
 
 .form-actions {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .auth-button {
