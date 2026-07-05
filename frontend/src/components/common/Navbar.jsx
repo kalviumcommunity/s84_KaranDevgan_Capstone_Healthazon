@@ -14,7 +14,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="logo-link" aria-label="Healthazon home">
-        <span className="logo-badge">H</span>
+        <img src="/logo.svg" className="logo-badge" alt="Healthazon logo" />
         <h2 className="logo">Healthazon</h2>
       </Link>
       <div className="nav-links">
