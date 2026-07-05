@@ -1,17 +1,16 @@
-name: Deploy to Cloud Run - Development
+name: Deploy to Render - Development
 
 on:
   push:
     tags:
-      - 'dev*'
+      - 'release*'
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      CLOUD_RUN_SERVICE: healthazon-app
-      GCP_ARTIFACT_REPO: healthazon-repo
+      DOCKER_REPO: healthazon
 
     steps:
       # Checkout repo to get commit info
@@ -19,13 +18,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Authenticate to Google Cloud
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       # Find the version tag for this commit
       - name: Find version tag for current commit
@@ -40,27 +32,29 @@ jobs:
           fi
 
           echo "Found version tag: $VERSION_TAG"
-          IMAGE="asia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${GCP_ARTIFACT_REPO}/stack-03:${VERSION_TAG}"
+          IMAGE="${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${VERSION_TAG}"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
           echo "🐳 Will deploy image: $IMAGE"
 
-      # Verify image exists in Artifact Registry
-      - name: Verify image exists
+      # Trigger Render deployment via webhook
+      - name: Deploy to Render
         run: |
-          echo "🔍 Verifying image exists in Artifact Registry..."
-          if ! gcloud artifacts docker images describe "$IMAGE" --format="value(name)" 2>/dev/null; then
-            echo "❌ Image not found: $IMAGE"
-            echo "Please ensure the build workflow has completed for this version tag."
+          echo "🚀 Triggering Render deployment..."
+          
+          # Call Render deploy webhook with image tag
+          RESPONSE=$(curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"imageName": "'"${{ env.IMAGE }}"'"}' \
+            -w "\n%{http_code}")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          
+          if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "201" ]; then
+            echo "✅ Render deployment triggered successfully"
+          else
+            echo "❌ Failed to trigger Render deployment"
+            echo "HTTP Status: $HTTP_CODE"
+            echo "Response: $(echo "$RESPONSE" | head -n-1)"
             exit 1
           fi
-          echo "✅ Image found in registry"
-
-      # Deploy to Cloud Run
-      - name: Deploy to Cloud Run
-        run: |
-          echo "🚀 Deploying to Cloud Run service: $CLOUD_RUN_SERVICE..."
-          gcloud run deploy $CLOUD_RUN_SERVICE \
-            --image $IMAGE \
-            --region asia-southeast1 \
-            --platform managed \
-            --allow-unauthenticated
