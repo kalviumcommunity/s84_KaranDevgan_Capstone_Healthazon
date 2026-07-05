@@ -3,7 +3,7 @@ name: Deploy to Render - Development
 on:
   push:
     tags:
-      - 'release*'
+      - 'v*'
 
 jobs:
   deploy:
@@ -37,25 +37,36 @@ jobs:
           echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
           echo "🐳 Will deploy image: $IMAGE"
 
-      # Trigger Render deployment via webhook
       - name: Deploy to Render
         run: |
           echo "🚀 Triggering Render deployment..."
           
-          # URL-encode the image URL
-          ENCODED_IMAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${{ env.IMAGE }}'))")
+          # URL-encode the image URL completely (handling slashes, etc.)
+          ENCODED_IMAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${{ env.IMAGE }}', safe=''))")
           
+          # Determine proper separator: Render deploy hooks already contain '?key=' so we should append using '&'
+          if [[ "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" == *\?* ]]; then
+            SEPARATOR="&"
+          else
+            SEPARATOR="?"
+          fi
+
+          # Safely print URL with masked key for debugging
+          MASKED_URL=$(echo "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" | sed 's/key=[^&]*/key=**redacted**/g')
+          echo "Calling hook: ${MASKED_URL}${SEPARATOR}imgURL=${ENCODED_IMAGE}"
+
           # Call Render deploy webhook with image tag via query parameter
-          RESPONSE=$(curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}?imgURL=${ENCODED_IMAGE}" \
+          RESPONSE=$(curl -sS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}${SEPARATOR}imgURL=${ENCODED_IMAGE}" \
             -w "\n%{http_code}")
           
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
           
-          if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "201" ]; then
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ]; then
             echo "✅ Render deployment triggered successfully"
           else
             echo "❌ Failed to trigger Render deployment"
             echo "HTTP Status: $HTTP_CODE"
-            echo "Response: $(echo "$RESPONSE" | head -n-1)"
+            echo "Response: $BODY"
             exit 1
           fi
