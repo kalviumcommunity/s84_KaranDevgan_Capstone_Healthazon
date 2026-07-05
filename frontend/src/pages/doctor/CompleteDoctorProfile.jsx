@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { showToast } from "../../utils/toast";
 import { useAuth } from "../../context/AuthContext";
+import { motion } from "framer-motion";
+import { FaBriefcaseMedical, FaMapMarkerAlt, FaRegClock, FaStethoscope, FaUserMd } from "react-icons/fa";
+import "../../styles/DoctorProfile.css";
 function CompleteDoctorProfile() {
   const navigate = useNavigate();
   const {token} = useAuth();
@@ -32,7 +35,7 @@ function CompleteDoctorProfile() {
         },
       };
 
-      const res = await API.put(
+      await API.put(
         "/doctor/profile",
         formData,
         config
@@ -48,60 +51,111 @@ function CompleteDoctorProfile() {
   };
 
   return (
-    <div className="register-container">
-      <form className="register-form" onSubmit={handleSubmit}>
-        <h2>Complete Doctor Profile</h2>
+    <div className="doctor-profile-page">
+      <motion.section
+        className="doctor-profile-hero"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+      >
+        <div>
+          <span className="doctor-profile-kicker">Doctor onboarding</span>
+          <h1>Complete your professional profile</h1>
+          <p>Add your clinical details so patients can trust your listing and book with confidence.</p>
+        </div>
+        <div className="doctor-profile-hero-chip">
+          <FaUserMd />
+          <span>Verified presence on Healthazon</span>
+        </div>
+      </motion.section>
 
-        <input
-          type="text"
-          name="specialization"
-          placeholder="Specialization"
-          required
-          value={formData.specialization}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="experience"
-          placeholder="Experience (years)"
-          required
-          value={formData.experience}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="contact"
-          placeholder="Contact Number"
-          required
-          value={formData.contact}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="Clinic Address"
-          required
-          value={formData.address}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="availableTimings"
-          placeholder="Available Timings"
-          required
-          value={formData.availableTimings}
-          onChange={handleChange}
-        />
-        <textarea
-          name="bio"
-          placeholder="Short Bio"
-          rows="3"
-          value={formData.bio}
-          onChange={handleChange}
-        />
+      <motion.form
+        className="doctor-profile-card"
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.05 }}
+      >
+        <div className="doctor-profile-section-title">
+          <FaBriefcaseMedical />
+          <h2>Professional details</h2>
+        </div>
 
-        <button type="submit">Save Profile</button>
-      </form>
+        <div className="doctor-profile-grid">
+          <label className="doctor-field">
+            <span><FaStethoscope /> Specialization</span>
+            <input
+              type="text"
+              name="specialization"
+              placeholder="Cardiology, Dermatology, General Medicine"
+              required
+              value={formData.specialization}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="doctor-field">
+            <span><FaRegClock /> Experience (years)</span>
+            <input
+              type="number"
+              name="experience"
+              placeholder="5"
+              required
+              value={formData.experience}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="doctor-field">
+            <span>Contact number</span>
+            <input
+              type="text"
+              name="contact"
+              placeholder="+1 555 000 0000"
+              required
+              value={formData.contact}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="doctor-field doctor-field-full">
+            <span><FaMapMarkerAlt /> Clinic address</span>
+            <input
+              type="text"
+              name="address"
+              placeholder="Clinic address"
+              required
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="doctor-field">
+            <span>Available timings</span>
+            <input
+              type="text"
+              name="availableTimings"
+              placeholder="Mon-Fri, 9:00 AM - 5:00 PM"
+              required
+              value={formData.availableTimings}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="doctor-field doctor-field-full">
+            <span>Bio</span>
+            <textarea
+              name="bio"
+              placeholder="Short professional summary and patient care focus"
+              rows="4"
+              value={formData.bio}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        <button type="submit" className="doctor-profile-save">Save profile</button>
+      </motion.form>
     </div>
   );
 }

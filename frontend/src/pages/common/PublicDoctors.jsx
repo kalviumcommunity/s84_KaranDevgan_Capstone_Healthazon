@@ -84,55 +84,82 @@ function SearchFilters({
 function DoctorCard({ doctor, index }) {
   const navigate = useNavigate();
   const { token, user } = useAuth();
+
   const handleBookAppointment = (e) => {
+    e.preventDefault();
     if (!token || !user) {
       showToast.error("Please login to book an appointment");
+      navigate("/login");
+      return;
     }
+
+    navigate("/patient/book", {
+      state: {
+        doctor,
+        doctorId: doctor._id,
+        source: "public-doctor-card",
+      },
+    });
   };
+
+  const initials = doctor.name
+    ? doctor.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase()
+    : "DR";
+
   return (
     <motion.div
       className="doctor-card"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.5 + index * 0.06 }}
-      whileHover={{ y: -6, scale: 1.03 }}
+      whileHover={{ y: -6 }}
     >
       <div className="doctor-card-header">
-        <div className="doctor-avatar">
-          <FaUserMd />
+        <div className="doctor-avatar-circle">
+          <span>{initials}</span>
+          <span className="verified-dot" title="Verified Professional">✓</span>
         </div>
         <h3 className="doctor-name">{doctor.name}</h3>
-        <p className="specialty small">
+        <span className="specialty-badge">
           {doctor.specialization || "General Physician"}
-        </p>
+        </span>
       </div>
 
       <div className="doctor-card-body">
-        <p className="experience">
-          <FaClock /> {doctor.experience || 0} yrs
-        </p>
-        <p className="location">
-          <FaMapMarkerAlt /> Available
-        </p>
+        <div className="info-item">
+          <FaClock className="info-icon" />
+          <span><strong>{doctor.experience || 0}</strong> years experience</span>
+        </div>
+        <div className="info-item">
+          <FaMapMarkerAlt className="info-icon text-success" />
+          <span className="availability-status">Available Today</span>
+        </div>
 
-        <div className="rating">
-          {[...Array(5)].map((_, i) => (
-            <FaStar key={i} className={i < 4 ? "star filled" : "star"} />
-          ))}
-          <span className="rating-text">4.8</span>
+        <div className="card-rating-row">
+          <div className="stars-wrapper">
+            {[...Array(5)].map((_, i) => (
+              <FaStar key={i} className={i < 4 ? "star filled" : "star"} />
+            ))}
+          </div>
+          <span className="rating-number">4.8 (98 reviews)</span>
         </div>
       </div>
 
       <div className="doctor-card-footer">
         <Link to={`/doctors/${doctor._id}`} className="view-details-btn">
-          View
+          View Profile
         </Link>
-        <Link
-          to={token && user ? `/patient/book` : "#"}
-          className="book-appointment-btn"          onClick={handleBookAppointment}
+        <button
+          className="book-appointment-btn"
+          onClick={handleBookAppointment}
         >
-          Book
-        </Link>
+          Book Now
+        </button>
       </div>
     </motion.div>
   );
@@ -150,8 +177,8 @@ export default function PublicDoctors() {
       try {
         const res = await API.get("/doctor");
         setDoctors(res.data);
-      } catch (err) {
-        showToast.error("Failed to fetch doctors:", err);
+      } catch {
+        showToast.error("Failed to fetch doctors");
       } finally {
         setLoading(false);
       }

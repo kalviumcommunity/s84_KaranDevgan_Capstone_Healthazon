@@ -8,7 +8,7 @@ import { showToast } from "../../utils/toast";
 import "../../styles/ProfilePage.css";
 
 function Profile() {
-  const { user, setUser, token } = useAuth();
+  const { setUser, token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ function Profile() {
         });
         setFormData(res.data);
       } catch (err) {
-        showToast.error("Error fetching profile:", err);
+        showToast.error("Error fetching profile");
       }
     };
 

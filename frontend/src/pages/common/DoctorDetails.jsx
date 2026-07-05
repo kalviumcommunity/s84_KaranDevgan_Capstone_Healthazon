@@ -50,7 +50,13 @@ function DoctorDetails() {
       showToast.info("Please log in to book an appointment");
       navigate("/login");
     } else {
-      navigate("/patient/book", { state: { doctorId: doctor._id } });
+      navigate("/patient/book", {
+        state: {
+          doctor,
+          doctorId: doctor._id,
+          source: "doctor-details",
+        },
+      });
     }
   };
 

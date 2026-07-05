@@ -32,7 +32,7 @@ jobs:
           fi
 
           echo "Found version tag: $VERSION_TAG"
-          IMAGE="${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${VERSION_TAG}"
+          IMAGE="docker.io/${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${VERSION_TAG}"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
           echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
           echo "🐳 Will deploy image: $IMAGE"
@@ -42,10 +42,11 @@ jobs:
         run: |
           echo "🚀 Triggering Render deployment..."
           
-          # Call Render deploy webhook with image tag
-          RESPONSE=$(curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{"imageName": "'"${{ env.IMAGE }}"'"}' \
+          # URL-encode the image URL
+          ENCODED_IMAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${{ env.IMAGE }}'))")
+          
+          # Call Render deploy webhook with image tag via query parameter
+          RESPONSE=$(curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}?imgURL=${ENCODED_IMAGE}" \
             -w "\n%{http_code}")
           
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)

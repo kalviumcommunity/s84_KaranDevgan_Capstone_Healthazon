@@ -14,6 +14,10 @@ import {
 } from "react-icons/fa";
 import { MdHealthAndSafety, MdSecurity, MdAccessibility } from "react-icons/md";
 
+import sarahChenImg from "../../assets/cmo_sarah_chen.png";
+import michaelRodriguezImg from "../../assets/cto_michael_rodriguez.png";
+import emilyWatsonImg from "../../assets/dir_emily_watson.png";
+
 function About() {
   const missionData = {
     title: "Our Mission",
@@ -81,18 +85,21 @@ function About() {
     {
       name: "Dr. Sarah Chen",
       role: "Chief Medical Officer",
+      image: sarahChenImg,
       description: "Board-certified cardiologist with 15+ years of experience in digital health innovation.",
       expertise: "Cardiology, Digital Health"
     },
     {
       name: "Michael Rodriguez",
       role: "Head of Technology",
+      image: michaelRodriguezImg,
       description: "Former tech lead at leading healthcare startups, passionate about making healthcare accessible.",
       expertise: "Healthcare Tech, AI/ML"
     },
     {
       name: "Dr. Emily Watson",
       role: "Clinical Director",
+      image: emilyWatsonImg,
       description: "Specialist in telemedicine with expertise in remote patient monitoring and care coordination.",
       expertise: "Telemedicine, Patient Care"
     }
@@ -109,7 +116,7 @@ function About() {
       >
         <div className="container">
           <motion.div
-            className="hero-content"
+            className="about-hero-content"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -117,22 +124,22 @@ function About() {
             <h1>
               About <span className="highlight">Healthazon</span>
             </h1>
-            <p className="hero-subtitle">
+            <p className="about-hero-subtitle">
               Your trusted digital healthcare partner — built to simplify the process 
               of finding and consulting with doctors, whether online or in person.
             </p>
-            <div className="hero-stats">
+            <div className="about-hero-stats">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  className="stat-item"
+                  className="about-stat-item"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                 >
-                  <div className="stat-icon">{stat.icon}</div>
-                  <div className="stat-number">{stat.number}</div>
-                  <div className="stat-label">{stat.label}</div>
+                  <div className="about-stat-icon">{stat.icon}</div>
+                  <div className="about-stat-number">{stat.number}</div>
+                  <div className="about-stat-label">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -261,7 +268,11 @@ function About() {
                 whileHover={{ y: -5 }}
               >
                 <div className="member-avatar">
-                  <FaUsers />
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="member-img" />
+                  ) : (
+                    <FaUsers />
+                  )}
                 </div>
                 <h3>{member.name}</h3>
                 <h4>{member.role}</h4>

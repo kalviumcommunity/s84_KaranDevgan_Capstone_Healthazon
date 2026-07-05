@@ -36,7 +36,7 @@ function AppointmentsHeader({ appointmentsCount, onSearch, onFilter }) {
               onChange={(e) => onSearch(e.target.value)}
             />
           </div>
-          <button className="filter-btn" onClick={onFilter}>
+          <button type="button" className="filter-btn" onClick={onFilter}>
             <FaFilter />
           </button>
         </div>
@@ -147,6 +147,8 @@ function DoctorAppointments() {
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -171,15 +173,24 @@ function DoctorAppointments() {
   }, [token]);
 
   useEffect(() => {
-    if (searchTerm) {
-      const filtered = appointments.filter(appt =>
-        appt.patient?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredAppointments(filtered);
-    } else {
-      setFilteredAppointments(appointments);
-    }
-  }, [searchTerm, appointments]);
+    const normalizedSearch = searchTerm.toLowerCase();
+    const filtered = appointments.filter((appt) => {
+      const patientEmail = appt.patient?.email?.toLowerCase() || "";
+      const issue = appt.issue?.toLowerCase() || "";
+      const matchesSearch =
+        !normalizedSearch ||
+        appt.patient?.name?.toLowerCase().includes(normalizedSearch) ||
+        patientEmail.includes(normalizedSearch) ||
+        issue.includes(normalizedSearch);
+
+      const matchesStatus =
+        statusFilter === 'all' || appt.status?.toLowerCase() === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    setFilteredAppointments(filtered);
+  }, [searchTerm, statusFilter, appointments]);
 
   const handleComplete = async (id) => {
     try {
@@ -196,8 +207,8 @@ function DoctorAppointments() {
           appt._id === id ? { ...appt, status: "Completed" } : appt
         )
       );
-    } catch (err) {
-      showToast.error("Failed to update appointment status:", err);
+    } catch {
+      showToast.error("Failed to update appointment status");
     }
   };
 
@@ -206,7 +217,7 @@ function DoctorAppointments() {
   };
 
   const handleFilter = () => {
-    console.log('Filter functionality coming soon');
+    setShowFilterMenu((current) => !current);
   };
 
   if (loading) {
@@ -220,6 +231,24 @@ function DoctorAppointments() {
         onSearch={handleSearch}
         onFilter={handleFilter}
       />
+
+      {showFilterMenu && (
+        <div className="filter-menu">
+          {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={statusFilter === item ? 'active' : ''}
+              onClick={() => {
+                setStatusFilter(item);
+                setShowFilterMenu(false);
+              }}
+            >
+              {item === 'all' ? 'All statuses' : item.charAt(0).toUpperCase() + item.slice(1)}
+            </button>
+          ))}
+        </div>
+      )}
       
       {filteredAppointments.length === 0 ? (
         <EmptyState />

@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import API from "../../services/api";
 import { showToast } from "../../utils/toast";
+import "../../styles/DoctorProfile.css";
 function DoctorProfile() {
   const { setUser, token } = useAuth();
 
@@ -24,8 +25,8 @@ function DoctorProfile() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFormData(res.data);
-      } catch (err) {
-        showToast.error("Error fetching doctor profile:", err);
+      } catch {
+        showToast.error("Error fetching doctor profile");
       }
     };
 
@@ -49,71 +50,78 @@ function DoctorProfile() {
 
       showToast.success(res.data.message || "Profile updated successfully!");
       setUser((prev) => ({ ...prev, ...res.data.doctor })); // update context
-    } catch (err) {
-      showToast.error("Error updating doctor profile:", err);
+    } catch {
+      showToast.error("Error updating doctor profile");
     }
   };
 
   return (
-    <div className="profile-page">
-      <h2>My Profile</h2>
+    <div className="doctor-profile-page">
+      <div className="doctor-profile-hero compact">
+        <div>
+          <span className="doctor-profile-kicker">Profile management</span>
+          <h1>My doctor profile</h1>
+          <p>Keep your professional information accurate so patients can reach you easily.</p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="profile-form">
-        <label>Name:</label>
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
+      <form onSubmit={handleSubmit} className="doctor-profile-card">
+        <div className="doctor-profile-grid">
+          <label className="doctor-field">
+            <span>Name</span>
+            <input name="name" value={formData.name} onChange={handleChange} required />
+          </label>
 
-        <label>Email:</label>
-        <input name="email" value={formData.email} readOnly />
+          <label className="doctor-field">
+            <span>Email</span>
+            <input name="email" value={formData.email} readOnly />
+          </label>
 
-        <label>Specialization:</label>
-        <input
-          name="specialization"
-          value={formData.specialization || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field">
+            <span>Specialization</span>
+            <input
+              name="specialization"
+              value={formData.specialization || ""}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>Experience (years):</label>
-        <input
-          type="number"
-          name="experience"
-          value={formData.experience || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field">
+            <span>Experience (years)</span>
+            <input
+              type="number"
+              name="experience"
+              value={formData.experience || ""}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>Bio:</label>
-        <textarea
-          name="bio"
-          value={formData.bio || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field doctor-field-full">
+            <span>Bio</span>
+            <textarea name="bio" value={formData.bio || ""} onChange={handleChange} />
+          </label>
 
-        <label>Contact:</label>
-        <input
-          name="contact"
-          value={formData.contact || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field">
+            <span>Contact</span>
+            <input name="contact" value={formData.contact || ""} onChange={handleChange} />
+          </label>
 
-        <label>Address:</label>
-        <input
-          name="address"
-          value={formData.address || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field">
+            <span>Address</span>
+            <input name="address" value={formData.address || ""} onChange={handleChange} />
+          </label>
 
-        <label>Available Timings:</label>
-        <input
-          name="availableTimings"
-          value={formData.availableTimings || ""}
-          onChange={handleChange}
-        />
+          <label className="doctor-field doctor-field-full">
+            <span>Available timings</span>
+            <input
+              name="availableTimings"
+              value={formData.availableTimings || ""}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
 
-        <button type="submit">Update Profile</button>
+        <button type="submit" className="doctor-profile-save">Update profile</button>
       </form>
     </div>
   );

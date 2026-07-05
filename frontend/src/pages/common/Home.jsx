@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUserMd, FaCalendarCheck, FaVideo, FaFileMedical, FaHeartbeat } from "react-icons/fa";
 import { MdAccessTime, MdLocationOn } from "react-icons/md";
+import heroIllustration from "../../assets/hero_illustration.png";
 
 function Home() {
   const services = [
@@ -64,14 +65,14 @@ function Home() {
     <div className="home-container">
       {/* Hero Section */}
       <motion.section 
-        className="hero-section"
+        className="home-hero-section"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="hero-content">
+        <div className="home-hero-content">
           <motion.div
-            className="hero-text"
+            className="home-hero-text"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -84,7 +85,7 @@ function Home() {
               schedule appointments instantly, and manage your health journey 
               with cutting-edge technology.
             </p>
-            <div className="hero-buttons">
+            <div className="home-hero-buttons">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link to="/register" className="primary-btn">
                   Get Started Today
@@ -98,12 +99,13 @@ function Home() {
             </div>
           </motion.div>
           <motion.div
-            className="hero-visual"
+            className="home-hero-visual"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="hero-image">
+            <div className="home-hero-image-wrapper">
+              <img src={heroIllustration} alt="Healthazon digital assistant" className="home-hero-img" />
               <div className="floating-card card-1">
                 <FaUserMd />
                 <span>Expert Doctors</span>
@@ -146,7 +148,7 @@ function Home() {
                 viewport={{ once: true }}
                 whileHover={{ y: -10, scale: 1.02 }}
               >
-                <div className="service-icon" style={{ backgroundColor: service.color }}>
+                <div className="service-icon" style={{ backgroundColor: `${service.color}18`, color: service.color }}>
                   {service.icon}
                 </div>
                 <h3>{service.title}</h3>
@@ -158,21 +160,21 @@ function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="stats-section">
+      <section className="home-stats-section">
         <div className="container">
-          <div className="stats-grid">
+          <div className="home-stats-grid">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
-                className="stat-card"
+                className="home-stat-card"
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="stat-icon">{stat.icon}</div>
-                <div className="stat-number">{stat.number}</div>
-                <div className="stat-label">{stat.label}</div>
+                <div className="home-stat-icon">{stat.icon}</div>
+                <div className="home-stat-number">{stat.number}</div>
+                <div className="home-stat-label">{stat.label}</div>
               </motion.div>
             ))}
           </div>

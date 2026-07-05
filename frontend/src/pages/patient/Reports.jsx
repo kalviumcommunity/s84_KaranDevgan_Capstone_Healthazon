@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiUpload,
   FiFile,
@@ -7,30 +7,48 @@ import {
   FiCheck,
   FiTrash2,
 } from "react-icons/fi";
+import { showToast } from "../../utils/toast";
 import "../../styles/Reports.css";
 
+const STORAGE_KEY = "healthazon-patient-reports";
+
 function Reports() {
-  const [uploadedReports, setUploadedReports] = useState([
-    {
-      id: 1,
-      name: "Blood Test Report",
-      date: "2025-07-10",
-      type: "PDF",
-      size: "2.4 MB",
-      status: "uploaded",
-    },
-    {
-      id: 2,
-      name: "X-Ray Scan",
-      date: "2025-06-28",
-      type: "Image",
-      size: "1.8 MB",
-      status: "uploaded",
-    },
-  ]);
+  const [uploadedReports, setUploadedReports] = useState([]);
 
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    const savedReports = window.localStorage.getItem(STORAGE_KEY);
+    if (savedReports) {
+      try {
+        setUploadedReports(JSON.parse(savedReports));
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+    } else {
+      const seedReports = [
+        {
+          id: 1,
+          name: "Blood Test Report",
+          date: "2025-07-10",
+          type: "PDF",
+          size: "2.4 MB",
+          status: "uploaded",
+        },
+        {
+          id: 2,
+          name: "X-Ray Scan",
+          date: "2025-06-28",
+          type: "Image",
+          size: "1.8 MB",
+          status: "uploaded",
+        },
+      ];
+      setUploadedReports(seedReports);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(seedReports));
+    }
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -63,12 +81,12 @@ function Reports() {
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     if (!validTypes.includes(file.type)) {
-      alert("Please upload a valid file type (PDF, JPG, PNG)");
+      showToast.error("Please upload a valid file type (PDF, JPG, PNG).");
       return;
     }
 
     if (file.size > maxSize) {
-      alert("File size should not exceed 5MB");
+      showToast.error("File size should not exceed 5MB.");
       return;
     }
 
@@ -93,8 +111,11 @@ function Reports() {
       status: "uploaded",
     };
 
-    setUploadedReports([newReport, ...uploadedReports]);
+    const updatedReports = [newReport, ...uploadedReports];
+    setUploadedReports(updatedReports);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedReports));
     setSelectedFile(null);
+    showToast.success("Report saved to your local report library.");
   };
 
   const removeFile = () => {
@@ -102,7 +123,10 @@ function Reports() {
   };
 
   const deleteReport = (id) => {
-    setUploadedReports(uploadedReports.filter((report) => report.id !== id));
+    const updatedReports = uploadedReports.filter((report) => report.id !== id);
+    setUploadedReports(updatedReports);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedReports));
+    showToast.info("Report removed from your local view.");
   };
 
   const formatDate = (dateString) => {
