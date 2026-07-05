@@ -1,4 +1,4 @@
-name: Deploy to Render - Development
+name: Build, Push, and Deploy to Render
 
 on:
   push:
@@ -6,14 +6,50 @@ on:
       - 'v*'
 
 jobs:
-  deploy:
-    name: Deploy
+  build-and-push:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
     env:
       DOCKER_REPO: healthazon
 
     steps:
-      # Checkout repo to get commit info
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Authenticate to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build Docker image with version tag
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          VERSION_TAG=${GITHUB_REF#refs/tags/}
+          IMAGE="docker.io/${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${VERSION_TAG}"
+          docker build -f Dockerfile -t "$IMAGE" .
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+
+      # Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          echo "Pushing Docker image to Docker Hub..."
+          docker push "docker.io/${{ secrets.DOCKER_USERNAME }}/${DOCKER_REPO}:${{ env.VERSION_TAG }}"
+          echo "✅ Image pushed successfully"
+
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    env:
+      DOCKER_REPO: healthazon
+
+    steps:
+      # Checkout repo to get commit/tag info
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -37,6 +73,7 @@ jobs:
           echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
           echo "🐳 Will deploy image: $IMAGE"
 
+      # Trigger Render deployment via webhook
       - name: Deploy to Render
         run: |
           echo "🚀 Triggering Render deployment..."
