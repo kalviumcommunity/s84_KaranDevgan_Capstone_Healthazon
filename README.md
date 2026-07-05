@@ -16,9 +16,7 @@ The application now runs as a consolidated single server that serves both the AP
 
 **See [SINGLE_SERVER_SETUP.md](SINGLE_SERVER_SETUP.md) for full setup instructions.**
 
-**Previous Deployment Links** (before single-server refactor):
-- Backend: https://healthazon-backend.onrender.com
-- Frontend: https://healthazon.netlify.app
+**Deployment Link** : https://healthazon.onrender.com
 
 ## ✨ Project Brief
 
