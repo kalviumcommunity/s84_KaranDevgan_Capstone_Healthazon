@@ -131,12 +131,23 @@ function MyAppointments() {
   const handleReschedule = (appointment) => {
     navigate("/patient/book", { 
       state: { 
+        doctor: appointment.doctor,
+        doctorId: appointment.doctor?._id,
         selectedDoctor: appointment.doctor?._id,
         appointmentDate: appointment.date,
         appointmentTime: appointment.time,
-        issue: appointment.issue
+        issue: appointment.issue,
+        rescheduleFromId: appointment._id,
       }
     });
+  };
+
+  const handleViewDetails = (appointment) => {
+    if (appointment.doctor?._id) {
+      navigate(`/doctors/${appointment.doctor._id}`);
+    } else {
+      showToast.info("Doctor details are not available for this appointment.");
+    }
   };
 
   if (isLoading) {
@@ -306,7 +317,7 @@ function MyAppointments() {
                 </div>
 
                 <div className="appointment-actions">
-                  <button className="action-btn view">
+                  <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
                     <FaEye />
                     View Details
                   </button>
@@ -315,6 +326,7 @@ function MyAppointments() {
                     <>
                       <button 
                         className="action-btn edit"
+                        type="button"
                         onClick={() => handleReschedule(appointment)}
                       >
                         <FaEdit />
@@ -322,6 +334,7 @@ function MyAppointments() {
                       </button>
                       <button 
                         className="action-btn cancel"
+                        type="button"
                         onClick={() => handleCancelAppointment(appointment._id)}
                       >
                         <FaTrash />

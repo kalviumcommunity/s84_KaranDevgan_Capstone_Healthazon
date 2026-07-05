@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { 
   FaCalendarAlt, 
@@ -12,7 +12,7 @@ import {
   FaFilter
 } from "react-icons/fa";
 import { MdHealthAndSafety, MdAccessTime } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
 import API from "../../services/api";
@@ -33,6 +33,14 @@ function BookAppointment() {
   
   const { token } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const bookingState = useMemo(() => location.state || {}, [location.state]);
+
+  const selectedDoctor = useMemo(
+    () => doctors.find((doctor) => doctor._id === selectedDoctorId) || null,
+    [doctors, selectedDoctorId]
+  );
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -46,6 +54,37 @@ function BookAppointment() {
     };
     fetchDoctors();
   }, []);
+
+  useEffect(() => {
+    if (!bookingState) return;
+
+    const incomingDoctorId =
+      bookingState.doctorId || bookingState.selectedDoctor || bookingState.doctor?._id || "";
+
+    if (incomingDoctorId) {
+      setSelectedDoctorId(incomingDoctorId);
+    }
+
+    if (bookingState.appointmentDate) {
+      setAppointmentDate(bookingState.appointmentDate);
+    }
+
+    if (bookingState.appointmentTime) {
+      setAppointmentTime(bookingState.appointmentTime);
+    }
+
+    if (bookingState.issue) {
+      setIssue(bookingState.issue);
+    }
+
+    if (bookingState.reports) {
+      setReports(bookingState.reports);
+    }
+
+    if (bookingState.prescription) {
+      setPrescription(bookingState.prescription);
+    }
+  }, [bookingState]);
 
   useEffect(() => {
     let filtered = doctors;
@@ -91,11 +130,14 @@ function BookAppointment() {
         issue,
         reports,
         prescription,
+        rescheduleFrom: bookingState.rescheduleFromId || bookingState.rescheduleFrom || null,
       };
       
       await API.post("/appointment/new", data, config);
       
-      showToast.success("Appointment booked successfully!");
+      showToast.success(
+        bookingState.rescheduleFromId ? "Appointment rescheduled successfully!" : "Appointment booked successfully!"
+      );
       navigate("/patient/appointments");
     } catch (err) {
       console.error("Failed to book appointment", err);
@@ -140,6 +182,24 @@ function BookAppointment() {
       </motion.div>
 
       <div className="booking-container">
+        {selectedDoctor && (
+          <motion.div
+            className="booking-summary"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+          >
+            <div>
+              <p className="summary-label">Selected doctor</p>
+              <h3>Dr. {selectedDoctor.name}</h3>
+              <p className="summary-meta">{selectedDoctor.specialization || "General Physician"}</p>
+            </div>
+            <button type="button" className="summary-link" onClick={() => navigate(`/doctors/${selectedDoctor._id}`)}>
+              View profile
+            </button>
+          </motion.div>
+        )}
+
         {/* Doctor Selection Section */}
         <motion.div
           className="doctor-selection"
@@ -336,6 +396,11 @@ function BookAppointment() {
                 </>
               )}
             </motion.button>
+            {bookingState.rescheduleFromId && (
+              <p className="reschedule-note">
+                You are updating an existing appointment. Save changes to create the revised booking in your schedule.
+              </p>
+            )}
           </form>
         </motion.div>
       </div>

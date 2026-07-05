@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUserMd, FaCalendarCheck, FaVideo, FaFileMedical, FaHeartbeat } from "react-icons/fa";
 import { MdAccessTime, MdLocationOn } from "react-icons/md";
+import heroIllustration from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/hero_illustration_1783257672843.png";
 
 function Home() {
   const services = [
@@ -103,7 +104,8 @@ function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="hero-image">
+            <div className="hero-image-wrapper">
+              <img src={heroIllustration} alt="Healthazon digital assistant" className="hero-img" />
               <div className="floating-card card-1">
                 <FaUserMd />
                 <span>Expert Doctors</span>
@@ -146,7 +148,7 @@ function Home() {
                 viewport={{ once: true }}
                 whileHover={{ y: -10, scale: 1.02 }}
               >
-                <div className="service-icon" style={{ backgroundColor: service.color }}>
+                <div className="service-icon" style={{ backgroundColor: `${service.color}18`, color: service.color }}>
                   {service.icon}
                 </div>
                 <h3>{service.title}</h3>

@@ -1,5 +1,6 @@
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   FaUserMd, 
   FaCalendarCheck, 
@@ -52,7 +53,7 @@ function StatCard({ icon, title, value, color, description }) {
   );
 }
 
-function AppointmentItem({ appointment, index }) {
+function AppointmentItem({ appointment }) {
   return (
     <div className="appointment-item">
       <div className="appointment-info">
@@ -87,11 +88,13 @@ function QuickActionCard({ icon, label, onClick }) {
 
 function DoctorDashboard() {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [totalAppointments, setTotalAppointments] = useState(0);
   const [upcomingAppointments, setUpcomingAppointments] = useState(0);
   const [availability, setAvailability] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [recentAppointments, setRecentAppointments] = useState([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -241,30 +244,59 @@ function DoctorDashboard() {
               <QuickActionCard
                 icon={<FaCalendarCheck />}
                 label="View Schedule"
-                onClick={() => console.log('View Schedule')}
+                onClick={() => navigate("/doctor/appointments")}
               />
               
               <QuickActionCard
                 icon={<FaUsers />}
                 label="Patient List"
-                onClick={() => console.log('Patient List')}
+                onClick={() => navigate("/doctor/appointments")}
               />
               
               <QuickActionCard
                 icon={<MdAccessTime />}
                 label="Set Availability"
-                onClick={() => console.log('Set Availability')}
+                onClick={() => navigate("/doctor/availability")}
               />
               
               <QuickActionCard
                 icon={<FaChartLine />}
                 label="Analytics"
-                onClick={() => console.log('Analytics')}
+                onClick={() => setShowAnalytics(true)}
               />
             </div>
           </div>
         </div>
       </div>
+
+      {showAnalytics && (
+        <div className="analytics-modal-backdrop" onClick={() => setShowAnalytics(false)}>
+          <div className="analytics-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="analytics-modal-header">
+              <h3>Practice analytics</h3>
+              <button type="button" onClick={() => setShowAnalytics(false)}>Close</button>
+            </div>
+            <div className="analytics-grid">
+              <div>
+                <span>Total appointments</span>
+                <strong>{totalAppointments}</strong>
+              </div>
+              <div>
+                <span>Upcoming</span>
+                <strong>{upcomingAppointments}</strong>
+              </div>
+              <div>
+                <span>Availability</span>
+                <strong>{availability || "Not set"}</strong>
+              </div>
+              <div>
+                <span>Recent activity</span>
+                <strong>{recentAppointments.length}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

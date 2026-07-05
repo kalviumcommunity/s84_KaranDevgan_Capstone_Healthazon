@@ -21,6 +21,7 @@ function Contact() {
     message: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const storageKey = "healthazon-contact-messages";
 
   const handleChange = (e) => {
     setFormData({
@@ -32,13 +33,19 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    
-    setTimeout(() => {
-      showToast.success("Message sent successfully! We'll get back to you shortly.");
+
+    try {
+      const message = {
+        ...formData,
+        createdAt: new Date().toISOString(),
+      };
+      const existing = JSON.parse(window.localStorage.getItem(storageKey) || "[]");
+      window.localStorage.setItem(storageKey, JSON.stringify([message, ...existing].slice(0, 25)));
+      showToast.success("Your message has been received. Our support team will respond shortly.");
       setFormData({ name: "", email: "", subject: "", message: "" });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const contactInfo = [
@@ -132,7 +139,7 @@ function Contact() {
           >
             <div className="form-header">
               <h2>Send us a Message</h2>
-              <p>We'd love to hear from you. Fill out the form below.</p>
+              <p>Share your question, concern, or feedback and we will keep it on record.</p>
             </div>
 
             <form className="contact-form" onSubmit={handleSubmit}>

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "../../styles/Navbar.css";
 import { useAuth } from "../../context/AuthContext";
 
@@ -13,28 +13,27 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <h2 className="logo">   Healthazon</h2>
+      <Link to="/" className="logo-link" aria-label="Healthazon home">
+        <span className="logo-badge">H</span>
+        <h2 className="logo">Healthazon</h2>
+      </Link>
       <div className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-         <Link to  = "/doctors">Doctors</Link>
+        <NavLink to="/" end>Home</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/doctors">Doctors</NavLink>
         {user ? (
           <>
-            {user.role === "patient" && (
-              <Link to="/patient/dashboard">My Dashboard</Link>
-            )}
-            {user.role === "doctor" && (
-              <Link to="/doctor/dashboard">Doctor Panel</Link>
-            )}
-            <span>Hello, {user.name}</span>
-            <button className="logout-btn" onClick={handleLogOut}>
+            {user.role === "patient" && <NavLink to="/patient/dashboard">My Dashboard</NavLink>}
+            {user.role === "doctor" && <NavLink to="/doctor/dashboard">Doctor Panel</NavLink>}
+            <span className="user-pill">Hello, {user.name}</span>
+            <button type="button" className="logout-btn" onClick={handleLogOut}>
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/register" className="cta-link">Register</NavLink>
           </>
         )}
       </div>

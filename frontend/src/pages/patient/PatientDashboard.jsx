@@ -5,31 +5,29 @@ import {
   FaCalendarAlt, 
   FaUserMd, 
   FaFileMedical, 
-  FaBell,
   FaHeartbeat,
   FaClock,
   FaStethoscope,
   FaChartLine,
   FaPlus,
-  FaSearch,
-  FaDownload,
   FaEye,
   FaEdit
 } from "react-icons/fa";
 import { MdHealthAndSafety, MdAccessTime, MdNotifications } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { showToast } from "../../utils/toast";
 import "../../styles/PatientDashboard.css";
 
 function PatientDashboard() {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [nextAppointment, setNextAppointment] = useState(null);
   const [appointmentCount, setAppointmentCount] = useState(0);
   const [reportCount, setReportCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [recentAppointments, setRecentAppointments] = useState([]);
-  const [healthScore, setHealthScore] = useState(85);
+  const healthScore = 85;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -62,7 +60,7 @@ function PatientDashboard() {
 
         setReportCount(0); // Change later if you fetch reports
       } catch (err) {
-        showToast.error("Failed to fetch dashboard data", err);
+        showToast.error("Failed to fetch dashboard data");
       } finally {
         setIsLoading(false);
       }
@@ -171,6 +169,8 @@ function PatientDashboard() {
         <div className="header-actions">
           <motion.button
             className="notification-btn"
+                type="button"
+                onClick={() => showToast.info("You have 2 upcoming reminders and 1 booking update.")}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -266,11 +266,31 @@ function PatientDashboard() {
                 </div>
               </div>
               <div className="appointment-actions">
-                <button className="btn-primary">
+                <button
+                  className="btn-primary"
+                  type="button"
+                  onClick={() => navigate(`/doctors/${nextAppointment.doctor?._id}`)}
+                >
                   <FaEye />
                   View Details
                 </button>
-                <button className="btn-secondary">
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={() =>
+                    navigate("/patient/book", {
+                      state: {
+                        doctor: nextAppointment.doctor,
+                        doctorId: nextAppointment.doctor?._id,
+                        selectedDoctor: nextAppointment.doctor?._id,
+                        appointmentDate: nextAppointment.date,
+                        appointmentTime: nextAppointment.time,
+                        issue: nextAppointment.issue,
+                        rescheduleFromId: nextAppointment._id,
+                      },
+                    })
+                  }
+                >
                   <FaEdit />
                   Reschedule
                 </button>

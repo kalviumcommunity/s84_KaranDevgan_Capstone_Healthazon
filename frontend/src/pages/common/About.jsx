@@ -14,6 +14,10 @@ import {
 } from "react-icons/fa";
 import { MdHealthAndSafety, MdSecurity, MdAccessibility } from "react-icons/md";
 
+import sarahChenImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/cmo_sarah_chen_1783257515296.png";
+import michaelRodriguezImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/cto_michael_rodriguez_1783257527122.png";
+import emilyWatsonImg from "/home/karan-devgan/.gemini/antigravity/brain/73ea0d02-3d79-472d-9de1-a64d0fa3fe92/dir_emily_watson_1783257541874.png";
+
 function About() {
   const missionData = {
     title: "Our Mission",
@@ -81,18 +85,21 @@ function About() {
     {
       name: "Dr. Sarah Chen",
       role: "Chief Medical Officer",
+      image: sarahChenImg,
       description: "Board-certified cardiologist with 15+ years of experience in digital health innovation.",
       expertise: "Cardiology, Digital Health"
     },
     {
       name: "Michael Rodriguez",
       role: "Head of Technology",
+      image: michaelRodriguezImg,
       description: "Former tech lead at leading healthcare startups, passionate about making healthcare accessible.",
       expertise: "Healthcare Tech, AI/ML"
     },
     {
       name: "Dr. Emily Watson",
       role: "Clinical Director",
+      image: emilyWatsonImg,
       description: "Specialist in telemedicine with expertise in remote patient monitoring and care coordination.",
       expertise: "Telemedicine, Patient Care"
     }
@@ -261,7 +268,11 @@ function About() {
                 whileHover={{ y: -5 }}
               >
                 <div className="member-avatar">
-                  <FaUsers />
+                  {member.image ? (
+                    <img src={member.image} alt={member.name} className="member-img" />
+                  ) : (
+                    <FaUsers />
+                  )}
                 </div>
                 <h3>{member.name}</h3>
                 <h4>{member.role}</h4>
