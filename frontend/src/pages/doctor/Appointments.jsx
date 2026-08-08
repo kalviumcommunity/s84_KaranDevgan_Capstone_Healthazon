@@ -19,6 +19,8 @@ import { isAppointmentTimePassed } from "../../utils/appointmentUtils";
 import CompletionModal from "../../components/doctor/CompletionModal";
 import PrescriptionModal from "../../components/common/PrescriptionModal";
 
+import PrescriptionCard from "../../components/common/PrescriptionCard";
+
 function AppointmentsHeader({ appointmentsCount, onSearch, onFilter }) {
   return (
     <div className="appointments-header">
@@ -115,37 +117,32 @@ function AppointmentCard({ appointment, onOpenComplete, onViewRx }) {
         </div>
       </div>
 
-      <div className="appointment-actions">
-        {isCompleted ? (
-          <button 
-            type="button" 
-            className="view-rx-btn"
-            onClick={() => onViewRx(appointment)}
-          >
-            <FaFileMedical />
-            View Rx & Advice
-          </button>
-        ) : canComplete ? (
-          <button 
-            type="button"
-            className="complete-btn"
-            onClick={() => onOpenComplete(appointment)}
-          >
-            <FaCheck />
-            Complete Consultation
-          </button>
-        ) : (
-          <button 
-            type="button"
-            className="complete-btn disabled"
-            disabled
-            title="Appointment time has not arrived yet"
-          >
-            <FaLock />
-            Scheduled for Future
-          </button>
-        )}
-      </div>
+      {(isCompleted || appointment.prescription || appointment.diagnosis) ? (
+        <PrescriptionCard appointment={appointment} isDoctor={true} onEdit={onOpenComplete} />
+      ) : (
+        <div className="appointment-actions">
+          {canComplete ? (
+            <button 
+              type="button"
+              className="complete-btn"
+              onClick={() => onOpenComplete(appointment)}
+            >
+              <FaCheck />
+              Complete Consultation
+            </button>
+          ) : (
+            <button 
+              type="button"
+              className="complete-btn disabled"
+              disabled
+              title="Appointment time has not arrived yet"
+            >
+              <FaLock />
+              Scheduled for Future
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

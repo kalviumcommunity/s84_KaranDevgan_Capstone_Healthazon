@@ -22,6 +22,7 @@ import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
 import { formatDoctorName } from "../../utils/doctorUtils";
 import PrescriptionModal from "../../components/common/PrescriptionModal";
+import PrescriptionCard from "../../components/common/PrescriptionCard";
 import API from "../../services/api";
 import "../../styles/MyAppointments.css";
 
@@ -320,45 +321,37 @@ function MyAppointments() {
                   )}
                 </div>
 
-                <div className="appointment-actions">
-                  {appointment.status?.toLowerCase() === 'completed' ? (
-                    <button 
-                      className="action-btn view rx-btn" 
-                      type="button" 
-                      onClick={() => setActiveRxAppt(appointment)}
-                      style={{ background: "#0284c7", color: "#fff" }}
-                    >
-                      <FaFileMedical />
-                      View Rx & Advice
-                    </button>
-                  ) : (
+                {(appointment.status?.toLowerCase() === 'completed' || appointment.prescription || appointment.diagnosis) ? (
+                  <PrescriptionCard appointment={appointment} isDoctor={false} />
+                ) : (
+                  <div className="appointment-actions">
                     <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
                       <FaEye />
                       View Details
                     </button>
-                  )}
-                  
-                  {appointment.date >= today && appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
-                    <>
-                      <button 
-                        className="action-btn edit"
-                        type="button"
-                        onClick={() => handleReschedule(appointment)}
-                      >
-                        <FaEdit />
-                        Reschedule
-                      </button>
-                      <button 
-                        className="action-btn cancel"
-                        type="button"
-                        onClick={() => handleCancelAppointment(appointment._id)}
-                      >
-                        <FaTrash />
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                </div>
+                    
+                    {appointment.date >= today && appointment.status !== 'cancelled' && (
+                      <>
+                        <button 
+                          className="action-btn edit"
+                          type="button"
+                          onClick={() => handleReschedule(appointment)}
+                        >
+                          <FaEdit />
+                          Reschedule
+                        </button>
+                        <button 
+                          className="action-btn cancel"
+                          type="button"
+                          onClick={() => handleCancelAppointment(appointment._id)}
+                        >
+                          <FaTrash />
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
