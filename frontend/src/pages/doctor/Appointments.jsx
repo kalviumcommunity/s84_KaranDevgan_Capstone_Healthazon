@@ -10,9 +10,16 @@ import {
   FaSpinner,
   FaCalendarCheck,
   FaSearch,
-  FaFilter
+  FaFilter,
+  FaLock,
+  FaFileMedical
 } from "react-icons/fa";
 import { showToast } from "../../utils/toast";
+import { isAppointmentTimePassed } from "../../utils/appointmentUtils";
+import CompletionModal from "../../components/doctor/CompletionModal";
+import PrescriptionModal from "../../components/common/PrescriptionModal";
+
+import PrescriptionCard from "../../components/common/PrescriptionCard";
 
 function AppointmentsHeader({ appointmentsCount, onSearch, onFilter }) {
   return (
@@ -45,7 +52,10 @@ function AppointmentsHeader({ appointmentsCount, onSearch, onFilter }) {
   );
 }
 
-function AppointmentCard({ appointment, onComplete }) {
+function AppointmentCard({ appointment, onOpenComplete, onViewRx }) {
+  const isCompleted = appointment.status?.toLowerCase() === "completed";
+  const canComplete = isAppointmentTimePassed(appointment.date, appointment.time);
+
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'confirmed': return '#3b82f6';
@@ -92,6 +102,9 @@ function AppointmentCard({ appointment, onComplete }) {
                 {formatTime(appointment.time)}
               </span>
             </div>
+            {appointment.issue && (
+              <p className="patient-issue"><strong>Reason:</strong> {appointment.issue}</p>
+            )}
           </div>
         </div>
         <div className="appointment-status">
@@ -103,15 +116,31 @@ function AppointmentCard({ appointment, onComplete }) {
           </span>
         </div>
       </div>
-      {appointment.status?.toLowerCase() !== 'completed' && (
+
+      {(isCompleted || appointment.prescription || appointment.diagnosis) ? (
+        <PrescriptionCard appointment={appointment} isDoctor={true} onEdit={onOpenComplete} />
+      ) : (
         <div className="appointment-actions">
-          <button 
-            className="complete-btn"
-            onClick={() => onComplete(appointment._id)}
-          >
-            <FaCheck />
-            Mark Complete
-          </button>
+          {canComplete ? (
+            <button 
+              type="button"
+              className="complete-btn"
+              onClick={() => onOpenComplete(appointment)}
+            >
+              <FaCheck />
+              Complete Consultation
+            </button>
+          ) : (
+            <button 
+              type="button"
+              className="complete-btn disabled"
+              disabled
+              title="Appointment time has not arrived yet"
+            >
+              <FaLock />
+              Scheduled for Future
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -149,6 +178,11 @@ function DoctorAppointments() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+
+  // Modals state
+  const [activeCompleteAppt, setActiveCompleteAppt] = useState(null);
+  const [activeRxAppt, setActiveRxAppt] = useState(null);
+  const [isSubmittingComplete, setIsSubmittingComplete] = useState(false);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -192,23 +226,52 @@ function DoctorAppointments() {
     setFilteredAppointments(filtered);
   }, [searchTerm, statusFilter, appointments]);
 
-  const handleComplete = async (id) => {
+  const handleOpenCompleteModal = (appointment) => {
+    if (!isAppointmentTimePassed(appointment.date, appointment.time)) {
+      showToast.error("You can only mark an appointment as completed after its scheduled date and time.");
+      return;
+    }
+    setActiveCompleteAppt(appointment);
+  };
+
+  const handleCompleteSubmit = async (formData) => {
+    if (!activeCompleteAppt) return;
+    setIsSubmittingComplete(true);
+
     try {
       const config = {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
       };
-      await API.put(
-        `/appointment/${id}/status`,
-        { status: "Completed" },
+
+      const res = await API.put(
+        `/appointment/${activeCompleteAppt._id}/status`,
+        { 
+          status: "completed",
+          prescription: formData.prescription,
+          investigations: formData.investigations,
+          diagnosis: formData.diagnosis,
+          notes: formData.notes
+        },
         config
       );
+
+      const updatedAppointment = res.data;
       setAppointments((prev) =>
         prev.map((appt) =>
-          appt._id === id ? { ...appt, status: "Completed" } : appt
+          appt._id === activeCompleteAppt._id ? { ...appt, ...updatedAppointment, status: "completed" } : appt
         )
       );
-    } catch {
-      showToast.error("Failed to update appointment status");
+
+      showToast.success("Consultation completed and prescription saved successfully!");
+      setActiveCompleteAppt(null);
+    } catch (err) {
+      console.error("Failed to complete appointment:", err);
+      showToast.error(err.response?.data?.message || "Failed to update appointment status");
+    } finally {
+      setIsSubmittingComplete(false);
     }
   };
 
@@ -258,11 +321,27 @@ function DoctorAppointments() {
             <AppointmentCard
               key={appointment._id}
               appointment={appointment}
-              onComplete={handleComplete}
+              onOpenComplete={handleOpenCompleteModal}
+              onViewRx={(appt) => setActiveRxAppt(appt)}
             />
           ))}
         </div>
       )}
+
+      {/* Modals */}
+      <CompletionModal 
+        appointment={activeCompleteAppt}
+        isOpen={Boolean(activeCompleteAppt)}
+        onClose={() => setActiveCompleteAppt(null)}
+        onSubmit={handleCompleteSubmit}
+        isSubmitting={isSubmittingComplete}
+      />
+
+      <PrescriptionModal
+        appointment={activeRxAppt}
+        isOpen={Boolean(activeRxAppt)}
+        onClose={() => setActiveRxAppt(null)}
+      />
     </div>
   );
 }

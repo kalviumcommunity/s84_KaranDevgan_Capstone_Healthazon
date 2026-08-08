@@ -14,6 +14,7 @@ import {
   FaSearch,
   FaFilter,
 } from "react-icons/fa";
+import { cleanDoctorName, formatDoctorName } from "../../utils/doctorUtils";
 import API from "../../services/api";
 import "../../styles/PublicDoctors.css";
 
@@ -102,8 +103,9 @@ function DoctorCard({ doctor, index }) {
     });
   };
 
-  const initials = doctor.name
-    ? doctor.name
+  const cleaned = cleanDoctorName(doctor.name);
+  const initials = cleaned
+    ? cleaned
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -124,7 +126,7 @@ function DoctorCard({ doctor, index }) {
           <span>{initials}</span>
           <span className="verified-dot" title="Verified Professional">✓</span>
         </div>
-        <h3 className="doctor-name">{doctor.name}</h3>
+        <h3 className="doctor-name">{formatDoctorName(doctor.name)}</h3>
         <span className="specialty-badge">
           {doctor.specialization || "General Physician"}
         </span>

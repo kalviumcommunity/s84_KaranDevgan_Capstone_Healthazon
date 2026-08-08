@@ -107,7 +107,7 @@ function DoctorDashboard() {
 
         // Fetch doctor profile
         const doctorRes = await API.get("/doctor/me", config);
-        setAvailability(doctorRes.data.availableTimings || "Not set");
+        setAvailability(doctorRes.data?.availableTimings || user?.availableTimings || "Not set");
 
         // Fetch doctor's appointments
         const apptRes = await API.get("/appointment/doctor", config);

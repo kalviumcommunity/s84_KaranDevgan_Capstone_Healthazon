@@ -13,12 +13,16 @@ import {
   FaExclamationTriangle,
   FaArrowLeft,
   FaFilter,
-  FaSearch
+  FaSearch,
+  FaFileMedical
 } from "react-icons/fa";
 import { MdAccessTime, MdHistory } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
+import { formatDoctorName } from "../../utils/doctorUtils";
+import PrescriptionModal from "../../components/common/PrescriptionModal";
+import PrescriptionCard from "../../components/common/PrescriptionCard";
 import API from "../../services/api";
 import "../../styles/MyAppointments.css";
 
@@ -27,6 +31,7 @@ function MyAppointments() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeRxAppt, setActiveRxAppt] = useState(null);
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -289,7 +294,7 @@ function MyAppointments() {
                       <FaUserMd />
                     </div>
                     <div>
-                      <h3> {appointment.doctor?.name || "Doctor"}</h3>
+                      <h3>{formatDoctorName(appointment.doctor?.name)}</h3>
                       <p className="specialty">{appointment.doctor?.specialization || "General Physician"}</p>
                     </div>
                   </div>
@@ -316,33 +321,37 @@ function MyAppointments() {
                   )}
                 </div>
 
-                <div className="appointment-actions">
-                  <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
-                    <FaEye />
-                    View Details
-                  </button>
-                  
-                  {appointment.date >= today && appointment.status !== 'cancelled' && (
-                    <>
-                      <button 
-                        className="action-btn edit"
-                        type="button"
-                        onClick={() => handleReschedule(appointment)}
-                      >
-                        <FaEdit />
-                        Reschedule
-                      </button>
-                      <button 
-                        className="action-btn cancel"
-                        type="button"
-                        onClick={() => handleCancelAppointment(appointment._id)}
-                      >
-                        <FaTrash />
-                        Cancel
-                      </button>
-                    </>
-                  )}
-                </div>
+                {(appointment.status?.toLowerCase() === 'completed' || appointment.prescription || appointment.diagnosis) ? (
+                  <PrescriptionCard appointment={appointment} isDoctor={false} />
+                ) : (
+                  <div className="appointment-actions">
+                    <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
+                      <FaEye />
+                      View Details
+                    </button>
+                    
+                    {appointment.date >= today && appointment.status !== 'cancelled' && (
+                      <>
+                        <button 
+                          className="action-btn edit"
+                          type="button"
+                          onClick={() => handleReschedule(appointment)}
+                        >
+                          <FaEdit />
+                          Reschedule
+                        </button>
+                        <button 
+                          className="action-btn cancel"
+                          type="button"
+                          onClick={() => handleCancelAppointment(appointment._id)}
+                        >
+                          <FaTrash />
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -367,6 +376,12 @@ function MyAppointments() {
           </div>
         )}
       </motion.div>
+
+      <PrescriptionModal
+        appointment={activeRxAppt}
+        isOpen={Boolean(activeRxAppt)}
+        onClose={() => setActiveRxAppt(null)}
+      />
     </div>
   );
 }

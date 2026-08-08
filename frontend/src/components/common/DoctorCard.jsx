@@ -1,10 +1,12 @@
 import "../../styles/DoctorCard.css";
 import { FaCheckCircle } from "react-icons/fa";
+import { cleanDoctorName, formatDoctorName } from "../../utils/doctorUtils";
 
 function DoctorCard({ doctor, isSelected, onSelect }) {
   const specialtyName = doctor.specialization || doctor.specialty || "General Physician";
-  const initials = doctor.name
-    ? doctor.name
+  const cleaned = cleanDoctorName(doctor.name);
+  const initials = cleaned
+    ? cleaned
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -22,7 +24,7 @@ function DoctorCard({ doctor, isSelected, onSelect }) {
         <FaCheckCircle className="verified-icon" />
       </div>
       <div className="card-info">
-        <h4 className="card-name">{doctor.name}</h4>
+        <h4 className="card-name">{formatDoctorName(doctor.name)}</h4>
         <span className="card-specialty">{specialtyName}</span>
         {doctor.experience && (
           <span className="card-exp">{doctor.experience} yrs experience</span>

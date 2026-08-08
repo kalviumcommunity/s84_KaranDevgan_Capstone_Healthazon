@@ -21,6 +21,7 @@ router.put(
   restrictTo("doctor"),
   updateAppointmentStatus
 );
-router.delete("/:id", protect, cancelAppointment); // optional: restrict to same user or admin
+router.put("/:id/cancel", protect, cancelAppointment);
+router.delete("/:id", protect, cancelAppointment);
 
 export default router;

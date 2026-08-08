@@ -1,4 +1,5 @@
 import "../../styles/AppointmentCard.css";
+import { formatDoctorName } from "../../utils/doctorUtils";
 
 function AppointmentCard({ data, onComplete, role }) {
   const { patientName, doctorName, date, time, status } = data;
@@ -6,7 +7,7 @@ function AppointmentCard({ data, onComplete, role }) {
   return (
     <div className="appointment-card">
       <div>
-        <h4>{role === "doctor" ? patientName : `Dr. ${doctorName}`}</h4>
+        <h4>{role === "doctor" ? patientName : formatDoctorName(doctorName)}</h4>
         <p>
           {date} at {time}
         </p>

@@ -8,7 +8,7 @@ import { FaBriefcaseMedical, FaMapMarkerAlt, FaRegClock, FaStethoscope, FaUserMd
 import "../../styles/DoctorProfile.css";
 function CompleteDoctorProfile() {
   const navigate = useNavigate();
-  const {token} = useAuth();
+  const { token, setUser } = useAuth();
   const [formData, setFormData] = useState({
     specialization: "",
     experience: "",
@@ -28,18 +28,21 @@ function CompleteDoctorProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
 
-      await API.put(
+      const res = await API.put(
         "/doctor/profile",
         formData,
         config
       );
+
+      if (res.data?.doctor) {
+        setUser((prev) => ({ ...prev, ...res.data.doctor }));
+      }
 
       showToast.success("Profile completed successfully");
       navigate("/doctor/dashboard");
