@@ -126,6 +126,10 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       role: updatedUser.role,
+      contact: updatedUser.contact,
+      address: updatedUser.address,
+      age: updatedUser.age,
+      gender: updatedUser.gender,
       token: generateToken(updatedUser._id),
     });
   } catch (error) {

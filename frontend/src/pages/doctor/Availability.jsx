@@ -2,19 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { FaCalendarCheck, FaClock, FaRegSave, FaShieldAlt } from "react-icons/fa";
 import { showToast } from "../../utils/toast";
+import { useAuth } from "../../context/AuthContext";
+import API from "../../services/api";
 import "../../styles/DoctorAvailability.css";
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const STORAGE_KEY = "healthazon-doctor-availability";
 
 function DoctorAvailability() {
+  const { user, setUser, token } = useAuth();
   const [availableDays, setAvailableDays] = useState([]);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [notes, setNotes] = useState("");
   const [lastSavedAt, setLastSavedAt] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // 1. Check local storage cache
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
@@ -28,7 +33,30 @@ function DoctorAvailability() {
         window.localStorage.removeItem(STORAGE_KEY);
       }
     }
-  }, []);
+
+    // 2. Fetch latest profile from backend database to ensure sync
+    const fetchDoctorProfile = async () => {
+      if (!token) return;
+      try {
+        const res = await API.get("/doctor/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.data?.availableTimings) {
+          // If availableTimings exists in backend DB and no local cache was set, fallback defaults
+          if (!saved) {
+            const daysFound = weekdays.filter((w) =>
+              res.data.availableTimings.toLowerCase().includes(w.toLowerCase().slice(0, 3))
+            );
+            if (daysFound.length > 0) setAvailableDays(daysFound);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch doctor profile availability:", err);
+      }
+    };
+
+    fetchDoctorProfile();
+  }, [token]);
 
   const toggleDay = (day) => {
     setAvailableDays((current) =>
@@ -41,7 +69,7 @@ function DoctorAvailability() {
     return `${availableDays.length} day${availableDays.length > 1 ? "s" : ""} selected`;
   }, [availableDays]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (availableDays.length === 0) {
@@ -54,17 +82,50 @@ function DoctorAvailability() {
       return;
     }
 
-    const payload = {
-      availableDays,
-      startTime,
-      endTime,
-      notes,
-      lastSavedAt: new Date().toISOString(),
-    };
+    setIsSaving(true);
+    const dayAbbrs = availableDays.map((d) => d.slice(0, 3)).join(", ");
+    const formattedTimings = `${dayAbbrs} ${startTime}-${endTime}${notes ? ` (${notes})` : ""}`;
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    setLastSavedAt(payload.lastSavedAt);
-    showToast.success("Availability saved locally for your dashboard view.");
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const res = await API.put(
+        "/doctor/profile",
+        { availableTimings: formattedTimings },
+        config
+      );
+
+      // Save to AuthContext
+      setUser((prev) => ({
+        ...prev,
+        availableTimings: formattedTimings,
+        ...(res.data?.doctor || {}),
+      }));
+
+      // Cache locally
+      const payload = {
+        availableDays,
+        startTime,
+        endTime,
+        notes,
+        formattedTimings,
+        lastSavedAt: new Date().toISOString(),
+      };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      setLastSavedAt(payload.lastSavedAt);
+
+      showToast.success("Availability updated on database and live dashboard!");
+    } catch (err) {
+      console.error("Failed to save availability:", err);
+      showToast.error(err.response?.data?.message || "Failed to update availability on server");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -147,9 +208,9 @@ function DoctorAvailability() {
             />
           </label>
 
-          <button type="submit" className="save-btn">
+          <button type="submit" className="save-btn" disabled={isSaving}>
             <FaRegSave />
-            Save availability
+            {isSaving ? "Saving..." : "Save availability"}
           </button>
         </motion.form>
 

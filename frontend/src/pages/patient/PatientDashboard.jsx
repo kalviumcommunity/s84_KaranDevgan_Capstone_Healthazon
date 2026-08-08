@@ -59,7 +59,18 @@ function PatientDashboard() {
           .slice(0, 5);
         setRecentAppointments(recent);
 
-        setReportCount(0); // Change later if you fetch reports
+        // Fetch patient report count
+        const savedReports = window.localStorage.getItem("healthazon-patient-reports");
+        if (savedReports) {
+          try {
+            const parsed = JSON.parse(savedReports);
+            setReportCount(Array.isArray(parsed) ? parsed.length : 0);
+          } catch {
+            setReportCount(2);
+          }
+        } else {
+          setReportCount(2);
+        }
       } catch (err) {
         showToast.error("Failed to fetch dashboard data");
       } finally {

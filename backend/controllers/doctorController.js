@@ -26,16 +26,21 @@ export const getDoctorById = asyncHandler(async (req, res) => {
 export const updateDoctorProfile = asyncHandler(async (req, res) => {
   const doctor = await User.findById(req.user._id);
 
+  if (!doctor) {
+    res.status(404);
+    throw new Error("Doctor not found");
+  }
+
   doctor.name = req.body.name || doctor.name;
   doctor.email = req.body.email || doctor.email;
-  doctor.specialization = req.body.specialization || doctor.specialization;
-  doctor.experience = req.body.experience || doctor.experience;
-  doctor.bio = req.body.bio || doctor.bio;
-  doctor.isApproved = req.body.isApproved || doctor.isApproved;
-  doctor.contact = req.body.contact || doctor.contact;
-  doctor.address = req.body.address || doctor.address;
-  doctor.availableTimings =
-    req.body.availableTimings || doctor.availableTimings;
+  doctor.specialization = req.body.specialization !== undefined ? req.body.specialization : doctor.specialization;
+  doctor.experience = req.body.experience !== undefined ? req.body.experience : doctor.experience;
+  doctor.bio = req.body.bio !== undefined ? req.body.bio : doctor.bio;
+  if (req.body.isApproved !== undefined) doctor.isApproved = req.body.isApproved;
+  doctor.contact = req.body.contact !== undefined ? req.body.contact : doctor.contact;
+  doctor.address = req.body.address !== undefined ? req.body.address : doctor.address;
+  doctor.availableTimings = req.body.availableTimings !== undefined ? req.body.availableTimings : doctor.availableTimings;
+  
   const updated = await doctor.save();
 
   res.status(200).json({
@@ -49,6 +54,9 @@ export const updateDoctorProfile = asyncHandler(async (req, res) => {
       experience: updated.experience,
       bio: updated.bio,
       isApproved: updated.isApproved,
+      contact: updated.contact,
+      address: updated.address,
+      availableTimings: updated.availableTimings,
     },
   });
 });

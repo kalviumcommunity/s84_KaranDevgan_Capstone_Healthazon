@@ -2,31 +2,25 @@ import Appointment from "../models/Appointment.js";
 
 export const bookAppointment = async (req, res) => {
   try {
-    console.log("Incoming body: " , req.body);
-    const { doctor, date, time , issue , reports , prescription} = req.body;
+    const { doctor, date, time, issue, reports, prescription, rescheduleFrom } = req.body;
     if (!doctor || !date || !time || !issue) {
       return res
         .status(400)
         .json({ message: "All required fields must be filled" });
     }
-    console.log("Parsed fields:", {
+
+    if (rescheduleFrom) {
+      await Appointment.findByIdAndDelete(rescheduleFrom);
+    }
+
+    const existing = await Appointment.findOne({
       doctor,
       date,
       time,
-      issue,
-      reports,
-      prescription,
-    });
-
-    const existing = await Appointment.findOne({
-      doctor: doctor,
-      date,
-      time,
-      
+      _id: { $ne: rescheduleFrom },
     });
     if (existing) {
-      res.status(400);
-      throw new Error("This time slot is already booked.");
+      return res.status(400).json({ message: "This time slot is already booked." });
     }
 
     const appointment = new Appointment({
@@ -49,10 +43,9 @@ export const bookAppointment = async (req, res) => {
 export const getPatientAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ patient: req.user._id })
-      .populate("doctor", "name specialty")
+      .populate("doctor", "name specialization availableTimings experience bio address contact email")
       .sort({ date: -1 });
     res.status(200).json(appointments);
-    console.log(appointments);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -65,20 +58,20 @@ export const getDoctorAppointments = async (req, res) => {
       doctor: req.user._id,
     })
       .populate("patient", "name email age gender contact")
-      .populate("doctor", "name specialization");
-    res.status(200).json({appointments});
+      .populate("doctor", "name specialization availableTimings")
+      .sort({ date: -1 });
+    res.status(200).json({ appointments });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 export const updateAppointmentStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const appointment = await Appointment.findByIdAndUpdate(
       req.params.id,
-      { status },
+      { status: status?.toLowerCase() || status },
       { new: true }
     );
     res.status(200).json(appointment);
@@ -90,7 +83,7 @@ export const updateAppointmentStatus = async (req, res) => {
 export const cancelAppointment = async (req, res) => {
   try {
     await Appointment.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Appointment cancelled" });
+    res.status(200).json({ message: "Appointment cancelled successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
