@@ -85,11 +85,12 @@ export const updateAppointmentStatus = async (req, res) => {
       const day = String(now.getDate()).padStart(2, "0");
       const localTodayStr = `${year}-${month}-${day}`;
 
+      const cleanApptDate = String(appointment.date || "").split("T")[0].trim();
       let apptTimePassed = false;
 
-      if (appointment.date < localTodayStr) {
+      if (cleanApptDate < localTodayStr) {
         apptTimePassed = true;
-      } else if (appointment.date > localTodayStr) {
+      } else if (cleanApptDate > localTodayStr) {
         apptTimePassed = false;
       } else {
         // Scheduled for today: check if current time is at or after appointment time

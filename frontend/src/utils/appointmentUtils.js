@@ -15,8 +15,10 @@ export const isAppointmentTimePassed = (dateStr, timeStr) => {
   const day = String(now.getDate()).padStart(2, "0");
   const localTodayStr = `${year}-${month}-${day}`;
 
-  if (dateStr < localTodayStr) return true;
-  if (dateStr > localTodayStr) return false;
+  const cleanDateStr = String(dateStr || "").split("T")[0].trim();
+
+  if (cleanDateStr < localTodayStr) return true;
+  if (cleanDateStr > localTodayStr) return false;
 
   // Same day check: starting from the scheduled appointment hour/minute onwards
   if (timeStr && typeof timeStr === "string") {

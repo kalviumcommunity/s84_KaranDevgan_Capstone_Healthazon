@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { showToast } from "../../utils/toast";
 import { formatDoctorName } from "../../utils/doctorUtils";
+import PrescriptionModal from "../../components/common/PrescriptionModal";
 import "../../styles/PatientDashboard.css";
 
 function PatientDashboard() {
@@ -28,6 +29,7 @@ function PatientDashboard() {
   const [reportCount, setReportCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [recentAppointments, setRecentAppointments] = useState([]);
+  const [activeRxAppt, setActiveRxAppt] = useState(null);
   const healthScore = 85;
 
   useEffect(() => {
@@ -142,10 +144,10 @@ function PatientDashboard() {
     },
     {
       icon: <FaChartLine />,
-      title: "Health Records",
-      description: "View your history",
+      title: "My Appointments",
+      description: "View history & prescriptions",
       color: "#10B981",
-      link: "/patient/reports"
+      link: "/patient/appointments"
     }
   ];
 
@@ -392,6 +394,14 @@ function PatientDashboard() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
                 whileHover={{ x: 5 }}
+                onClick={() => {
+                  if (appointment.status?.toLowerCase() === 'completed') {
+                    setActiveRxAppt(appointment);
+                  } else {
+                    navigate("/patient/appointments");
+                  }
+                }}
+                style={{ cursor: "pointer" }}
               >
                 <div className="activity-icon">
                   <FaUserMd />
@@ -401,9 +411,15 @@ function PatientDashboard() {
                   <p>{new Date(appointment.date).toLocaleDateString()} at {appointment.time}</p>
                 </div>
                 <div className="activity-status">
-                  <span className={`status ${appointment.status || 'completed'}`}>
-                    {appointment.status || 'Completed'}
-                  </span>
+                  {appointment.status?.toLowerCase() === 'completed' ? (
+                    <span className="status completed" style={{ background: "#0284c7", color: "#fff", padding: "0.25rem 0.6rem", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                      <FaFileMedical /> View Rx
+                    </span>
+                  ) : (
+                    <span className={`status ${appointment.status || 'completed'}`}>
+                      {appointment.status || 'Completed'}
+                    </span>
+                  )}
                 </div>
               </motion.div>
             ))
@@ -416,6 +432,12 @@ function PatientDashboard() {
           )}
         </div>
       </motion.div>
+
+      <PrescriptionModal
+        appointment={activeRxAppt}
+        isOpen={Boolean(activeRxAppt)}
+        onClose={() => setActiveRxAppt(null)}
+      />
     </div>
   );
 }
