@@ -22,6 +22,10 @@ const appointmentSchema = new mongoose.Schema(
     issue: { type: String },
     reports: { type: String },
     prescription: { type: String },
+    investigations: { type: String },
+    diagnosis: { type: String },
+    notes: { type: String },
+    completedAt: { type: Date },
   },
   { timestamps: true }
 );

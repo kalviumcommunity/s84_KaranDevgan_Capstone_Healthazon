@@ -68,13 +68,48 @@ export const getDoctorAppointments = async (req, res) => {
 
 export const updateAppointmentStatus = async (req, res) => {
   try {
-    const { status } = req.body;
-    const appointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
-      { status: status?.toLowerCase() || status },
-      { new: true }
-    );
-    res.status(200).json(appointment);
+    const { status, prescription, investigations, diagnosis, notes } = req.body;
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    const targetStatus = status?.toLowerCase() || appointment.status;
+
+    // Validate that appointment time has arrived/passed before marking as completed
+    if (targetStatus === "completed") {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const now = new Date();
+
+      let apptTimePassed = false;
+      const combinedDateTimeStr = `${appointment.date}T${appointment.time.length === 5 ? appointment.time + ":00" : appointment.time}`;
+      const apptDateObj = new Date(combinedDateTimeStr);
+
+      if (!isNaN(apptDateObj.getTime())) {
+        apptTimePassed = apptDateObj <= now;
+      } else {
+        apptTimePassed = appointment.date < todayStr || (appointment.date === todayStr);
+      }
+
+      if (!apptTimePassed) {
+        return res.status(400).json({
+          message: "You can only mark an appointment as completed after its scheduled date and time has passed.",
+        });
+      }
+
+      appointment.status = "completed";
+      appointment.prescription = prescription !== undefined ? prescription : appointment.prescription;
+      appointment.investigations = investigations !== undefined ? investigations : appointment.investigations;
+      appointment.diagnosis = diagnosis !== undefined ? diagnosis : appointment.diagnosis;
+      appointment.notes = notes !== undefined ? notes : appointment.notes;
+      appointment.completedAt = new Date();
+    } else {
+      appointment.status = targetStatus;
+    }
+
+    const updated = await appointment.save();
+    res.status(200).json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

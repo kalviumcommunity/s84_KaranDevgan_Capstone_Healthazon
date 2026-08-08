@@ -13,13 +13,15 @@ import {
   FaExclamationTriangle,
   FaArrowLeft,
   FaFilter,
-  FaSearch
+  FaSearch,
+  FaFileMedical
 } from "react-icons/fa";
 import { MdAccessTime, MdHistory } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
 import { formatDoctorName } from "../../utils/doctorUtils";
+import PrescriptionModal from "../../components/common/PrescriptionModal";
 import API from "../../services/api";
 import "../../styles/MyAppointments.css";
 
@@ -28,6 +30,7 @@ function MyAppointments() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeRxAppt, setActiveRxAppt] = useState(null);
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -318,12 +321,24 @@ function MyAppointments() {
                 </div>
 
                 <div className="appointment-actions">
-                  <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
-                    <FaEye />
-                    View Details
-                  </button>
+                  {appointment.status?.toLowerCase() === 'completed' ? (
+                    <button 
+                      className="action-btn view rx-btn" 
+                      type="button" 
+                      onClick={() => setActiveRxAppt(appointment)}
+                      style={{ background: "#0284c7", color: "#fff" }}
+                    >
+                      <FaFileMedical />
+                      View Rx & Advice
+                    </button>
+                  ) : (
+                    <button className="action-btn view" type="button" onClick={() => handleViewDetails(appointment)}>
+                      <FaEye />
+                      View Details
+                    </button>
+                  )}
                   
-                  {appointment.date >= today && appointment.status !== 'cancelled' && (
+                  {appointment.date >= today && appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
                     <>
                       <button 
                         className="action-btn edit"
@@ -368,6 +383,12 @@ function MyAppointments() {
           </div>
         )}
       </motion.div>
+
+      <PrescriptionModal
+        appointment={activeRxAppt}
+        isOpen={Boolean(activeRxAppt)}
+        onClose={() => setActiveRxAppt(null)}
+      />
     </div>
   );
 }
