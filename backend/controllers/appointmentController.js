@@ -79,17 +79,42 @@ export const updateAppointmentStatus = async (req, res) => {
 
     // Validate that appointment time has arrived/passed before marking as completed
     if (targetStatus === "completed") {
-      const todayStr = new Date().toISOString().split("T")[0];
       const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const localTodayStr = `${year}-${month}-${day}`;
 
       let apptTimePassed = false;
-      const combinedDateTimeStr = `${appointment.date}T${appointment.time.length === 5 ? appointment.time + ":00" : appointment.time}`;
-      const apptDateObj = new Date(combinedDateTimeStr);
 
-      if (!isNaN(apptDateObj.getTime())) {
-        apptTimePassed = apptDateObj <= now;
+      if (appointment.date < localTodayStr) {
+        apptTimePassed = true;
+      } else if (appointment.date > localTodayStr) {
+        apptTimePassed = false;
       } else {
-        apptTimePassed = appointment.date < todayStr || (appointment.date === todayStr);
+        // Scheduled for today: check if current time is at or after appointment time
+        let apptHours = 0;
+        let apptMinutes = 0;
+
+        if (appointment.time && typeof appointment.time === "string") {
+          const cleanTime = appointment.time.trim().toLowerCase();
+          const isPM = cleanTime.includes("pm");
+          const isAM = cleanTime.includes("am");
+          const match = cleanTime.match(/(\d{1,2}):(\d{2})/);
+
+          if (match) {
+            apptHours = parseInt(match[1], 10);
+            apptMinutes = parseInt(match[2], 10);
+
+            if (isPM && apptHours < 12) apptHours += 12;
+            if (isAM && apptHours === 12) apptHours = 0;
+          }
+        }
+
+        const currentTotalMins = now.getHours() * 60 + now.getMinutes();
+        const apptTotalMins = apptHours * 60 + apptMinutes;
+
+        apptTimePassed = currentTotalMins >= apptTotalMins;
       }
 
       if (!apptTimePassed) {
