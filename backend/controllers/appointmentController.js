@@ -77,46 +77,59 @@ export const updateAppointmentStatus = async (req, res) => {
 
     const targetStatus = status?.toLowerCase() || appointment.status;
 
+    console.log("================ APPOINTMENT TIMECHECK DEBUG ================");
+    console.log("Appointment ID:", appointment._id);
+    console.log("Raw Appointment Date:", appointment.date);
+    console.log("Raw Appointment Time:", appointment.time);
+    console.log("Target Status:", targetStatus);
+
     // Validate that appointment time has arrived/passed before marking as completed
     if (targetStatus === "completed") {
       const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      const localTodayStr = `${year}-${month}-${day}`;
+      const cleanDate = String(appointment.date || "").split("T")[0].trim();
+      let apptHours = 0;
+      let apptMinutes = 0;
 
-      const cleanApptDate = String(appointment.date || "").split("T")[0].trim();
-      let apptTimePassed = false;
+      if (appointment.time && typeof appointment.time === "string") {
+        const cleanTime = appointment.time.trim().toLowerCase();
+        const isPM = cleanTime.includes("pm");
+        const isAM = cleanTime.includes("am");
+        const match = cleanTime.match(/(\d{1,2}):(\d{2})/);
 
-      if (cleanApptDate < localTodayStr) {
-        apptTimePassed = true;
-      } else if (cleanApptDate > localTodayStr) {
-        apptTimePassed = false;
-      } else {
-        // Scheduled for today: check if current time is at or after appointment time
-        let apptHours = 0;
-        let apptMinutes = 0;
+        if (match) {
+          apptHours = parseInt(match[1], 10);
+          apptMinutes = parseInt(match[2], 10);
 
-        if (appointment.time && typeof appointment.time === "string") {
-          const cleanTime = appointment.time.trim().toLowerCase();
-          const isPM = cleanTime.includes("pm");
-          const isAM = cleanTime.includes("am");
-          const match = cleanTime.match(/(\d{1,2}):(\d{2})/);
-
-          if (match) {
-            apptHours = parseInt(match[1], 10);
-            apptMinutes = parseInt(match[2], 10);
-
-            if (isPM && apptHours < 12) apptHours += 12;
-            if (isAM && apptHours === 12) apptHours = 0;
-          }
+          if (isPM && apptHours < 12) apptHours += 12;
+          if (isAM && apptHours === 12) apptHours = 0;
         }
-
-        const currentTotalMins = now.getHours() * 60 + now.getMinutes();
-        const apptTotalMins = apptHours * 60 + apptMinutes;
-
-        apptTimePassed = currentTotalMins >= apptTotalMins;
       }
+
+      const padH = String(apptHours).padStart(2, "0");
+      const padM = String(apptMinutes).padStart(2, "0");
+
+      // Construct timezone-aware local datetime (+05:30 IST)
+      const isoWithOffset = `${cleanDate}T${padH}:${padM}:00+05:30`;
+      const apptDateObj = new Date(isoWithOffset);
+
+      let apptTimePassed = false;
+      if (!isNaN(apptDateObj.getTime())) {
+        apptTimePassed = now.getTime() >= apptDateObj.getTime();
+      } else {
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        const localTodayStr = `${year}-${month}-${day}`;
+        apptTimePassed = cleanDate <= localTodayStr;
+      }
+
+      console.log("Clean Appt Date:", cleanDate);
+      console.log("Parsed Appt Time:", `${padH}:${padM}`);
+      console.log("Appt Time ISO (+05:30):", isoWithOffset);
+      console.log("Appt Date UTC Epoch:", apptDateObj.toISOString());
+      console.log("Current Server UTC Time:", now.toISOString());
+      console.log("Comparison result (now >= apptDateObj):", apptTimePassed);
+      console.log("=============================================================");
 
       if (!apptTimePassed) {
         return res.status(400).json({

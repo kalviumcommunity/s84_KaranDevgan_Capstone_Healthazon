@@ -10,39 +10,39 @@ export const isAppointmentTimePassed = (dateStr, timeStr) => {
   if (!dateStr) return false;
   
   const now = new Date();
+  const cleanDate = String(dateStr || "").split("T")[0].trim();
+  let apptHours = 0;
+  let apptMinutes = 0;
+
+  if (timeStr && typeof timeStr === "string") {
+    const cleanTime = timeStr.trim().toLowerCase();
+    const isPM = cleanTime.includes("pm");
+    const isAM = cleanTime.includes("am");
+    const match = cleanTime.match(/(\d{1,2}):(\d{2})/);
+
+    if (match) {
+      apptHours = parseInt(match[1], 10);
+      apptMinutes = parseInt(match[2], 10);
+
+      if (isPM && apptHours < 12) apptHours += 12;
+      if (isAM && apptHours === 12) apptHours = 0;
+    }
+  }
+
+  const padH = String(apptHours).padStart(2, "0");
+  const padM = String(apptMinutes).padStart(2, "0");
+
+  const isoWithOffset = `${cleanDate}T${padH}:${padM}:00+05:30`;
+  const apptDateObj = new Date(isoWithOffset);
+
+  if (!isNaN(apptDateObj.getTime())) {
+    return now.getTime() >= apptDateObj.getTime();
+  }
+
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   const localTodayStr = `${year}-${month}-${day}`;
 
-  const cleanDateStr = String(dateStr || "").split("T")[0].trim();
-
-  if (cleanDateStr < localTodayStr) return true;
-  if (cleanDateStr > localTodayStr) return false;
-
-  // Same day check: starting from the scheduled appointment hour/minute onwards
-  if (timeStr && typeof timeStr === "string") {
-    let apptHours = 0;
-    let apptMinutes = 0;
-
-    const cleanTime = timeStr.trim().toLowerCase();
-    const isPM = cleanTime.includes("pm");
-    const isAM = cleanTime.includes("am");
-    const digitsMatch = cleanTime.match(/(\d{1,2}):(\d{2})/);
-
-    if (digitsMatch) {
-      apptHours = parseInt(digitsMatch[1], 10);
-      apptMinutes = parseInt(digitsMatch[2], 10);
-
-      if (isPM && apptHours < 12) apptHours += 12;
-      if (isAM && apptHours === 12) apptHours = 0;
-    }
-
-    const apptTimeMinutes = apptHours * 60 + apptMinutes;
-    const nowTimeMinutes = now.getHours() * 60 + now.getMinutes();
-
-    return apptTimeMinutes <= nowTimeMinutes;
-  }
-
-  return true;
+  return cleanDate <= localTodayStr;
 };
