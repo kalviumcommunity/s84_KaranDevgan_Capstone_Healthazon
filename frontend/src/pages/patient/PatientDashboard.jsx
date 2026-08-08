@@ -17,6 +17,7 @@ import { MdHealthAndSafety, MdAccessTime, MdNotifications } from "react-icons/md
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { showToast } from "../../utils/toast";
+import { formatDoctorName } from "../../utils/doctorUtils";
 import "../../styles/PatientDashboard.css";
 
 function PatientDashboard() {
@@ -244,7 +245,7 @@ function PatientDashboard() {
                     <FaUserMd />
                   </div>
                   <div>
-                    <h3> {nextAppointment.doctor?.name || "Doctor"}</h3>
+                    <h3>{formatDoctorName(nextAppointment.doctor?.name)}</h3>
                     <p className="specialty">General Physician</p>
                   </div>
                 </div>
@@ -385,7 +386,7 @@ function PatientDashboard() {
                   <FaUserMd />
                 </div>
                 <div className="activity-content">
-                  <h4>Appointment with  {appointment.doctor?.name || "Doctor"}</h4>
+                  <h4>Appointment with {formatDoctorName(appointment.doctor?.name)}</h4>
                   <p>{new Date(appointment.date).toLocaleDateString()} at {appointment.time}</p>
                 </div>
                 <div className="activity-status">

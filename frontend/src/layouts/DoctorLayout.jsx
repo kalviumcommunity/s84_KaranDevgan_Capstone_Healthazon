@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { FaCalendarAlt, FaClock, FaSignOutAlt, FaUserMd } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { formatDoctorName } from "../utils/doctorUtils";
 import "../styles/PortalLayout.css";
 
 function DoctorLayout() {
@@ -34,7 +35,7 @@ function DoctorLayout() {
 
         <div className="portal-user-card">
           <p>Welcome back</p>
-          <h3>Dr. {user?.name || "Doctor"}</h3>
+          <h3>{formatDoctorName(user?.name)}</h3>
           <span>Clinical workspace</span>
         </div>
 

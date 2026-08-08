@@ -19,6 +19,7 @@ import { MdHealthAndSafety, MdAccessTime } from "react-icons/md";
 import API from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
+import { formatDoctorName } from "../../utils/doctorUtils";
 import "../../styles/DoctorDetails.css";
 
 function DoctorDetails() {
@@ -68,8 +69,8 @@ function DoctorDetails() {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: `Dr. ${doctor.name}`,
-        text: `Check out Dr. ${doctor.name} on Healthazon`,
+        title: formatDoctorName(doctor.name),
+        text: `Check out ${formatDoctorName(doctor.name)} on Healthazon`,
         url: window.location.href,
       });
     } else {
@@ -166,7 +167,7 @@ function DoctorDetails() {
               <FaUserMd />
             </div>
             <div className="profile-info">
-              <h1>Dr. {doctor.name}</h1>
+              <h1>{formatDoctorName(doctor.name)}</h1>
               <p className="specialty">
                 <FaStethoscope />
                 {doctor.specialization || "General Physician"}
@@ -232,7 +233,7 @@ function DoctorDetails() {
           >
             <h2>
               <MdHealthAndSafety />
-              About Dr. {doctor.name}
+              About {formatDoctorName(doctor.name)}
             </h2>
             <p>{doctor.bio || "No bio available for this doctor."}</p>
           </motion.div>
@@ -247,7 +248,7 @@ function DoctorDetails() {
               <FaCalendarAlt />
               Book Appointment
             </h2>
-            <p>Schedule a consultation with Dr. {doctor.name}</p>
+            <p>Schedule a consultation with {formatDoctorName(doctor.name)}</p>
             
             <div className="appointment-features">
               <div className="feature">

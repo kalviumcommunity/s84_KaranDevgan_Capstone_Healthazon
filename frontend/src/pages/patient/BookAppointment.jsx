@@ -15,6 +15,7 @@ import { MdHealthAndSafety, MdAccessTime } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
+import { formatDoctorName } from "../../utils/doctorUtils";
 import API from "../../services/api";
 import "../../styles/BookAppointment.css";
 
@@ -191,7 +192,7 @@ function BookAppointment() {
           >
             <div>
               <p className="summary-label">Selected doctor</p>
-              <h3>Dr. {selectedDoctor.name}</h3>
+              <h3>{formatDoctorName(selectedDoctor.name)}</h3>
               <p className="summary-meta">{selectedDoctor.specialization || "General Physician"}</p>
             </div>
             <button type="button" className="summary-link" onClick={() => navigate(`/doctors/${selectedDoctor._id}`)}>
@@ -259,7 +260,7 @@ function BookAppointment() {
                     <FaUserMd />
                   </div>
                   <div className="doctor-info">
-                    <h3>Dr. {doctor.name}</h3>
+                    <h3>{formatDoctorName(doctor.name)}</h3>
                     <p className="specialty">{doctor.specialization || "General Physician"}</p>
                     <p className="experience">{doctor.experience || "5+ years"} experience</p>
                   </div>

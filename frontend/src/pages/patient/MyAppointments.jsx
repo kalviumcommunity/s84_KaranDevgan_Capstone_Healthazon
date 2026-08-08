@@ -19,6 +19,7 @@ import { MdAccessTime, MdHistory } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { showToast } from "../../utils/toast";
+import { formatDoctorName } from "../../utils/doctorUtils";
 import API from "../../services/api";
 import "../../styles/MyAppointments.css";
 
@@ -289,7 +290,7 @@ function MyAppointments() {
                       <FaUserMd />
                     </div>
                     <div>
-                      <h3> {appointment.doctor?.name || "Doctor"}</h3>
+                      <h3>{formatDoctorName(appointment.doctor?.name)}</h3>
                       <p className="specialty">{appointment.doctor?.specialization || "General Physician"}</p>
                     </div>
                   </div>
